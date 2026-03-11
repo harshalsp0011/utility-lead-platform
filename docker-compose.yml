@@ -1,0 +1,89 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: leads
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  orchestrator:
+    build: ./agents/orchestrator
+    env_file: .env
+    depends_on:
+      - postgres
+    ports:
+      - "8000:8000"
+
+  scout:
+    build: ./agents/scout
+    env_file: .env
+    depends_on:
+      - postgres
+
+  analyst:
+    build: ./agents/analyst
+    env_file: .env
+    depends_on:
+      - postgres
+
+  writer:
+    build: ./agents/writer
+    env_file: .env
+    depends_on:
+      - postgres
+
+  outreach:
+    build: ./agents/outreach
+    env_file: .env
+    depends_on:
+      - postgres
+
+  tracker:
+    build: ./agents/tracker
+    env_file: .env
+    depends_on:
+      - postgres
+
+  api:
+    build: ./api
+    env_file: .env
+    ports:
+      - "8001:8001"
+    depends_on:
+      - postgres
+
+  frontend:
+    build: ./dashboard
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
+  airflow:
+    image: apache/airflow:2.8.0
+    env_file: .env
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3001:3000"
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
+volumes:
+  pgdata:

@@ -1,0 +1,41 @@
+from __future__ import annotations
+
+from pathlib import Path
+
+from sqlalchemy import create_engine, text
+from sqlalchemy.orm import Session, sessionmaker
+
+from config.settings import get_settings
+
+settings = get_settings()
+
+engine = create_engine(settings.DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+_MIGRATIONS_DIR = Path(__file__).resolve().parent / "migrations"
+
+
+def get_db() -> Session:
+    """Return a database session."""
+    return SessionLocal()
+
+
+def run_migrations() -> None:
+    """Run SQL migration files in numeric order."""
+    migration_files = sorted(_MIGRATIONS_DIR.glob("*.sql"), key=lambda path: path.name)
+
+    with engine.begin() as connection:
+        for migration_file in migration_files:
+            sql = migration_file.read_text(encoding="utf-8").strip()
+            if sql:
+                connection.exec_driver_sql(sql)
+
+
+def check_connection() -> bool:
+    """Return True when the database is reachable, otherwise False."""
+    try:
+        with engine.connect() as connection:
+            connection.execute(text("SELECT 1"))
+        return True
+    except Exception:
+        return False

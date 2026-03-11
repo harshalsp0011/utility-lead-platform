@@ -1,0 +1,47 @@
+{
+  "industry_benchmarks": [
+    {
+      "industry_bucket": "healthcare",
+      "avg_sqft_per_site": 150000,
+      "kwh_per_sqft_per_year": 25,
+      "telecom_per_employee": 1200
+    },
+    {
+      "industry_bucket": "hospitality",
+      "avg_sqft_per_site": 100000,
+      "kwh_per_sqft_per_year": 20,
+      "telecom_per_employee": 1200
+    },
+    {
+      "industry_bucket": "manufacturing",
+      "avg_sqft_per_site": 200000,
+      "kwh_per_sqft_per_year": 18,
+      "telecom_per_employee": 900
+    },
+    {
+      "industry_bucket": "retail",
+      "avg_sqft_per_site": 50000,
+      "kwh_per_sqft_per_year": 22,
+      "telecom_per_employee": 800
+    },
+    {
+      "industry_bucket": "public_sector",
+      "avg_sqft_per_site": 80000,
+      "kwh_per_sqft_per_year": 12,
+      "telecom_per_employee": 700
+    },
+    {
+      "industry_bucket": "office",
+      "avg_sqft_per_site": 30000,
+      "kwh_per_sqft_per_year": 10,
+      "telecom_per_employee": 1500
+    }
+  ],
+  "electricity_rate_by_state": {
+    "NY": 0.19,
+    "CA": 0.22,
+    "TX": 0.12,
+    "FL": 0.12,
+    "default": 0.12
+  }
+}
