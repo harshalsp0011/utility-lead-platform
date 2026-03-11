@@ -1,3 +1,6 @@
+-- Creates stored email drafts for outreach.
+-- Each draft can link to a company and a contact for approval and sending.
+
 CREATE TABLE IF NOT EXISTS email_drafts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     company_id UUID REFERENCES companies(id),

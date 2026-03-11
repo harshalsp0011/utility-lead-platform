@@ -1,3 +1,6 @@
+-- Creates derived feature fields for each company.
+-- This table stores scoring inputs like spend estimates and quality signals.
+
 CREATE TABLE IF NOT EXISTS company_features (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     company_id UUID REFERENCES companies(id),

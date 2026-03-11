@@ -1,19 +1,27 @@
 from __future__ import annotations
 
-from typing import Union
+"""LLM configuration helpers.
+
+This file reads the LLM settings and returns the model client the app should
+use. Other agents import `get_llm()` when they need to generate text, analyze
+data, or call either Ollama or OpenAI through one shared place.
+"""
+
+from typing import Any
 
 from config.settings import get_settings
 
 
-def get_llm() -> Union["Ollama", "OpenAI"]:
+def get_llm() -> Any:
     """Return the appropriate LLM client based on LLM_PROVIDER in .env."""
     settings = get_settings()
     provider = settings.LLM_PROVIDER.lower()
 
     if provider == "ollama":
-        from ollama import Client as OllamaClient
+            from importlib import import_module
+            chat_ollama = import_module("langchain_ollama").ChatOllama
 
-        return OllamaClient(host=settings.OLLAMA_BASE_URL, model=settings.LLM_MODEL)
+            return chat_ollama(model=settings.LLM_MODEL, base_url=settings.OLLAMA_BASE_URL)
 
     if provider == "openai":
         if not settings.OPENAI_API_KEY:

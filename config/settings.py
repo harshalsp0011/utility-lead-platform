@@ -1,5 +1,12 @@
 from __future__ import annotations
 
+"""Central application settings.
+
+This file loads values from the `.env` file and exposes them through one
+cached `Settings` object. Almost every part of the project depends on this
+module to read API keys, database settings, scraping limits, and feature flags.
+"""
+
 import os
 from functools import lru_cache
 from pathlib import Path

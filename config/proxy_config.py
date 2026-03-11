@@ -1,5 +1,12 @@
 from __future__ import annotations
 
+"""Proxy configuration helpers for scraping.
+
+This file decides which proxy URL the Scout scraper should use based on the
+current settings. Other scraping code imports `get_proxy_url()` so proxy logic
+stays in one place.
+"""
+
 from typing import Optional
 
 from config.settings import get_settings

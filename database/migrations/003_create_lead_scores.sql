@@ -1,3 +1,6 @@
+-- Creates the lead_scores table for AI or analyst scoring results.
+-- It connects each score back to a company record.
+
 CREATE TABLE IF NOT EXISTS lead_scores (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     company_id UUID REFERENCES companies(id),

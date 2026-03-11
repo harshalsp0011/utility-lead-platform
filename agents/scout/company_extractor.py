@@ -1,5 +1,12 @@
 from __future__ import annotations
 
+"""Company extraction and cleanup helpers for the Scout agent.
+
+This file turns raw directory HTML into cleaned company fields, normalizes data
+like state and phone number, checks whether a company already exists, and saves
+new company records into the `companies` table.
+"""
+
 import re
 from typing import Any, Optional
 from urllib.parse import urlparse
@@ -229,8 +236,10 @@ def clean_phone(raw_phone: Optional[str]) -> Optional[str]:
 
 def _extract_name(soup: BeautifulSoup, raw_text: str) -> Optional[str]:
     meta_name = soup.find("meta", property="og:site_name") or soup.find("meta", attrs={"name": "title"})
-    if meta_name and meta_name.get("content"):
-        return meta_name["content"].strip()
+    if meta_name:
+        content = _get_attribute_string(meta_name, "content")
+        if content:
+            return content.strip()
 
     for tag_name in ("h1", "h2", "title"):
         tag = soup.find(tag_name)
@@ -244,18 +253,17 @@ def _extract_name(soup: BeautifulSoup, raw_text: str) -> Optional[str]:
 
 
 def _extract_website(soup: BeautifulSoup, raw_text: str) -> Optional[str]:
-    prioritized_anchor = soup.find(
-        "a",
-        href=True,
-        string=re.compile(r"website|visit|learn more", re.IGNORECASE),
-    )
-    if prioritized_anchor:
-        return prioritized_anchor["href"].strip()
+    for anchor in soup.find_all("a", href=True):
+        anchor_text = anchor.get_text(" ", strip=True)
+        if re.search(r"website|visit|learn more", anchor_text, re.IGNORECASE):
+            href = _get_attribute_string(anchor, "href")
+            if href:
+                return href.strip()
 
     for anchor in soup.find_all("a", href=True):
-        href = anchor["href"].strip()
-        if href.lower().startswith(("http://", "https://")):
-            return href
+        href = _get_attribute_string(anchor, "href")
+        if href and href.lower().startswith(("http://", "https://")):
+            return href.strip()
 
     match = _URL_REGEX.search(raw_text)
     return match.group(0) if match else None
@@ -276,8 +284,10 @@ def _extract_category(soup: BeautifulSoup, raw_text: str) -> Optional[str]:
 
 def _extract_phone(soup: BeautifulSoup, raw_text: str) -> Optional[str]:
     phone_link = soup.find("a", href=re.compile(r"^tel:", re.IGNORECASE))
-    if phone_link and phone_link.get("href"):
-        return clean_phone(phone_link["href"].split(":", 1)[1])
+    if phone_link:
+        href = _get_attribute_string(phone_link, "href")
+        if href:
+            return clean_phone(href.split(":", 1)[1])
 
     phone_text = _find_text_by_attr(soup, ("phone", "telephone", "tel"))
     if phone_text:
@@ -311,8 +321,8 @@ def _extract_city_state(soup: BeautifulSoup, raw_text: str) -> tuple[Optional[st
 def _find_text_by_attr(soup: BeautifulSoup, keywords: tuple[str, ...]) -> Optional[str]:
     pattern = re.compile("|".join(re.escape(keyword) for keyword in keywords), re.IGNORECASE)
     for tag in soup.find_all(True):
-        classes = " ".join(tag.get("class", []))
-        tag_id = tag.get("id", "")
+        classes = _get_attribute_string(tag, "class") or ""
+        tag_id = _get_attribute_string(tag, "id") or ""
         if pattern.search(classes) or pattern.search(tag_id):
             text_value = tag.get_text(" ", strip=True)
             if text_value:
@@ -322,3 +332,12 @@ def _find_text_by_attr(soup: BeautifulSoup, keywords: tuple[str, ...]) -> Option
 
 def _strip_label(value: str) -> str:
     return re.sub(r"^(category|industry|sector|city|state|phone|telephone|location|address)\s*:?\s*", "", value, flags=re.IGNORECASE).strip()
+
+
+def _get_attribute_string(tag: Any, attribute_name: str) -> Optional[str]:
+    value = tag.get(attribute_name)
+    if value is None:
+        return None
+    if isinstance(value, list):
+        return " ".join(str(item) for item in value)
+    return str(value)

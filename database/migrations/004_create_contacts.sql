@@ -1,3 +1,6 @@
+-- Creates the contacts table for people linked to a company.
+-- Outreach and email draft records use these contact entries later.
+
 CREATE TABLE IF NOT EXISTS contacts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     company_id UUID REFERENCES companies(id),

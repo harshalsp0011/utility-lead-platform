@@ -1,5 +1,12 @@
 from __future__ import annotations
 
+"""Database connection and migration helpers.
+
+This file creates the PostgreSQL engine and database sessions for the app.
+Other modules use it to open DB sessions, check whether the database is up,
+and run the SQL migration files in the database/migrations folder.
+"""
+
 from pathlib import Path
 
 from sqlalchemy import create_engine, text

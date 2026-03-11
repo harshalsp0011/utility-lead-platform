@@ -1,3 +1,6 @@
+-- Creates outreach event history such as sends, replies, and follow-ups.
+-- This table links outreach activity back to companies, contacts, and drafts.
+
 CREATE TABLE IF NOT EXISTS outreach_events (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     company_id UUID REFERENCES companies(id),

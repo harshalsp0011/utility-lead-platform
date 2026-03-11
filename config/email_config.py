@@ -1,5 +1,12 @@
 from __future__ import annotations
 
+"""Email configuration helpers.
+
+This file reads email settings and returns the email client the app should use.
+Other parts of the system can import these helpers when they need to send
+outreach emails or read the daily sending limit.
+"""
+
 from typing import Any
 
 from config.settings import get_settings

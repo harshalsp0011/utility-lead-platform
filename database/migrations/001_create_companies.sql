@@ -1,3 +1,6 @@
+-- Creates the main companies table used by the app.
+-- Other tables connect back to this table through company_id.
+
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 CREATE TABLE IF NOT EXISTS companies (
