@@ -1,0 +1,5 @@
+Hi {{contact_first_name}} — I will assume timing is not right for {{company_name}}, and that is completely fine.
+Happy to reconnect whenever it makes sense; if helpful, estimated opportunity is around {{savings_mid_formatted}}.
+
+{{tb_sender_name}}
+Unsubscribe: {{unsubscribe_link}}

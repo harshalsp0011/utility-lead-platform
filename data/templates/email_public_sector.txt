@@ -1,0 +1,20 @@
+Subject: {{subject_line}}
+
+Hi {{contact_first_name}},
+
+I’m reaching out because {{company_name}} operates {{site_count}} sites in {{state}}, and public-sector portfolios often have complex billing structures across departments and facilities.
+
+In government and public institutions, utility audits frequently identify overcharges tied to incorrect tariffs, taxes, and meter configurations that can persist for years.
+
+Based on your footprint, we estimate a potential recovery and cost reduction range of {{savings_low_formatted}} to {{savings_high_formatted}}.
+
+Troy & Banks works on a contingency model: we only get paid when we find and recover real savings for your organization, so there is no upfront consulting fee and no financial risk to begin.
+
+Would you be open to a 20-minute call to discuss how this approach can support your audit and stewardship goals?
+
+Best regards,
+{{tb_sender_name}}
+{{tb_sender_title}}
+{{tb_phone}}
+
+Unsubscribe: {{unsubscribe_link}}

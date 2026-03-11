@@ -1,0 +1,20 @@
+Subject: {{subject_line}}
+
+Hi {{contact_first_name}},
+
+I’m reaching out because {{company_name}} operates {{site_count}} sites in {{state}}, and retail chains often face utility complexity from varied rate plans, store formats, and billing cycles.
+
+In retail, billing discrepancies can stay hidden for long periods because invoices are distributed across many locations and managed through multiple local utility providers.
+
+Based on your footprint, we estimate a potential recovery and cost reduction range of {{savings_low_formatted}} to {{savings_high_formatted}}.
+
+Troy & Banks works on a contingency model: we only get paid when we find and recover real savings for your organization, so there is no upfront consulting fee and no financial risk to begin.
+
+Would you be open to a 20-minute call to discuss a practical recovery review for your {{state}} locations?
+
+Best regards,
+{{tb_sender_name}}
+{{tb_sender_title}}
+{{tb_phone}}
+
+Unsubscribe: {{unsubscribe_link}}

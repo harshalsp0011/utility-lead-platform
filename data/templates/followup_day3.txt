@@ -1,0 +1,6 @@
+Hi {{contact_first_name}}, I wanted to quickly follow up on my note about {{company_name}}.
+Our work is fully contingency-based, so there is no upfront cost and we only get paid from verified savings (around {{savings_mid_formatted}} in similar profiles).
+Are you the right person to speak with, or is there someone else I should reach out to?
+
+{{tb_sender_name}}
+Unsubscribe: {{unsubscribe_link}}

@@ -1,0 +1,6 @@
+Hi {{contact_first_name}} — quick follow-up on {{company_name}}: we recently helped a similar healthcare system recover mid-six figures through utility audit corrections.
+Because our model is contingency-based, there is no upfront fee, and potential outcomes around {{savings_mid_formatted}} are common in this profile.
+Should I continue with you, or is there a better contact?
+
+{{tb_sender_name}}
+Unsubscribe: {{unsubscribe_link}}
