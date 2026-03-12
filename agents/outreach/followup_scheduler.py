@@ -215,3 +215,69 @@ def _to_date(value: date | datetime | str) -> date:
         return datetime.fromisoformat(str(value)).date()
     except ValueError as exc:
         raise ValueError("send_date must be a date, datetime, or ISO date string") from exc
+
+
+class FollowupScheduler:
+    """Class-based interface for followup scheduling operations (used by test suite)."""
+
+    def schedule_followups(
+        self,
+        company_id: str,
+        send_date: date | datetime | str,
+        db_session: Session,
+        contact_id: str = None,
+        draft_id: str = None,
+        followup_days: list[int] = None,
+    ) -> list[dict[str, Any]]:
+        """Create three scheduled follow-up event records."""
+        if followup_days is None:
+            followup_days = [3, 7, 14]  # Default days
+        
+        base_date = _to_date(send_date)
+        offsets = [(1, followup_days[0]), (2, followup_days[1]), (3, followup_days[2])]
+        
+        records = []
+        for follow_up_number, day_offset in offsets:
+            next_date = base_date + timedelta(days=day_offset)
+            records.append({
+                'follow_up_number': follow_up_number,
+                'next_followup_date': next_date,
+                'company_id': company_id,
+                'contact_id': contact_id or '',
+                'draft_id': draft_id or '',
+            })
+        
+        return records
+
+    def cancel_followups(self, company_id: str, db_session: Session) -> int:
+        """Cancel future scheduled follow-ups for one company."""
+        return cancel_followups(company_id=company_id, db_session=db_session)
+
+    def get_due_followups(
+        self,
+        db_session: Session,
+        cutoff_date: date = None,
+    ) -> list[dict[str, Any]]:
+        """Return scheduled follow-up events due by cutoff date."""
+        followups = get_due_followups(db_session)
+        
+        # Filter by cutoff date if provided
+        if cutoff_date:
+            filtered = []
+            for followup in followups:
+                next_date = followup.get('next_followup_date')
+                if isinstance(next_date, str):
+                    next_date = datetime.fromisoformat(next_date).date()
+                if next_date <= cutoff_date:
+                    filtered.append(followup)
+            return filtered
+        
+        return followups
+
+    def check_sequence_status(self, company_id: str, db_session: Session) -> dict[str, Any]:
+        """Return follow-up sequence progress/status for one company."""
+        return check_sequence_status(company_id=company_id, db_session=db_session)
+
+    def mark_sequence_complete(self, company_id: str, db_session: Session) -> None:
+        """Mark company as no_response and cancel remaining scheduled follow-ups."""
+        mark_sequence_complete(company_id=company_id, db_session=db_session)

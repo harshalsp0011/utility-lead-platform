@@ -303,3 +303,96 @@ def log_send_event(
     ).scalar_one()
 
     return str(inserted_id)
+
+
+class EmailSender:
+    """Class-based interface for email sending operations (used by test suite)."""
+
+    def add_unsubscribe_footer(self, email_body: str) -> str:
+        """Append standard unsubscribe footer to outgoing email body."""
+        return add_unsubscribe_footer(email_body)
+
+    def select_provider(self) -> str:
+        """Return configured email provider name."""
+        return select_provider()
+
+    def check_daily_limit(self, db_session: Session, daily_limit: int = None) -> dict[str, Any]:
+        """Return whether today's sent email count is below configured daily cap."""
+        result = check_daily_limit(db_session)
+        
+        # If custom limit provided, recalculate remaining
+        if daily_limit is not None:
+            sent_count = result['sent_today']
+            result['within_limit'] = sent_count < daily_limit
+            if sent_count >= daily_limit:
+                result['remaining'] = 0
+            else:
+                result['remaining'] = daily_limit - sent_count
+        else:
+            # Use default limit
+            limit = int(getattr(get_settings(), "EMAIL_DAILY_LIMIT", 50) or 50)
+            sent_count = result['sent_today']
+            if sent_count >= limit:
+                result['remaining'] = 0
+            else:
+                result['remaining'] = limit - sent_count
+        
+        return result
+
+    def send_email(
+        self,
+        contact: Any,
+        subject: str,
+        body: str,
+        db_session: Session = None,
+    ) -> dict[str, Any]:
+        """Send email to contact (simplified for test interface)."""
+        # Check if unsubscribed
+        if hasattr(contact, 'unsubscribed') and contact.unsubscribed:
+            return {'success': False, 'reason': 'contact_unsubscribed'}
+        
+        # Get email address
+        to_email = getattr(contact, 'email', '')
+        if not to_email:
+            return {'success': False, 'reason': 'no_email'}
+        
+        # Select provider and send
+        try:
+            provider = select_provider()
+            if provider == 'sendgrid':
+                result = self._send_via_sendgrid(
+                    to_email=to_email,
+                    subject=subject,
+                    body=body
+                )
+            elif provider == 'instantly':
+                result = self._send_via_instantly(
+                    to_email=to_email,
+                    subject=subject,
+                    body=body
+                )
+            else:
+                result = {'success': False, 'message_id': f'Unknown provider: {provider}'}
+            
+            return result
+        except Exception as exc:
+            return {'success': False, 'reason': str(exc)}
+
+    def _send_via_sendgrid(self, to_email: str, subject: str, body: str) -> dict[str, Any]:
+        """Send via SendGrid (test wrapper)."""
+        return send_via_sendgrid(
+            to_email=to_email,
+            to_name='',
+            subject=subject,
+            body=body,
+            from_email=get_settings().SENDGRID_FROM_EMAIL or ''
+        )
+
+    def _send_via_instantly(self, to_email: str, subject: str, body: str) -> dict[str, Any]:
+        """Send via Instantly (test wrapper)."""
+        return send_via_instantly(
+            to_email=to_email,
+            to_name='',
+            subject=subject,
+            body=body
+        )

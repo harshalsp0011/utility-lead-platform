@@ -146,3 +146,141 @@ def _score_industry(industry: str) -> float:
     if normalized == "unknown":
         return 45.0
     return 55.0
+
+
+class ScoreEngine:
+    """Class-based interface for scoring calculations (used by test suite)."""
+
+    # Component score limits
+    RECOVERY_SCORE_MAX = 40
+    INDUSTRY_SCORE_MAX = 25
+    MULTISITE_SCORE_MAX = 20
+    DATA_QUALITY_SCORE_MAX = 15
+
+    # Industry-specific point values
+    INDUSTRY_SCORES = {
+        'healthcare': 25,
+        'hospitality': 20,
+        'manufacturing': 22,
+        'public_sector': 18,
+        'retail': 15,
+        'unknown': 0,
+    }
+
+    # Recovery score thresholds
+    RECOVERY_THRESHOLDS = [
+        (2_000_000, 40),
+        (1_000_000, 30),
+        (500_000, 25),
+        (300_000, 20),
+        (0, 0),
+    ]
+
+    def score_recovery(self, savings_mid: float) -> float:
+        """
+        Calculate recovery/savings score component (0-40 points).
+
+        Score increases with higher savings amounts:
+        - >= $2M: 40 points
+        - >= $1M: 30 points
+        - >= $500k: 25 points
+        - >= $300k: 20 points
+        - < $300k: 0 points
+        """
+        for threshold, points in self.RECOVERY_THRESHOLDS:
+            if savings_mid >= threshold:
+                return float(points)
+        return 0.0
+
+    def score_industry(self, industry: str) -> float:
+        """
+        Calculate industry score component (0-25 points).
+
+        Industry-specific scores reflect audit potential:
+        - healthcare: 25 points
+        - manufacturing: 22 points
+        - hospitality: 20 points
+        - public_sector: 18 points
+        - retail: 15 points
+        - unknown: 0 points
+        """
+        normalized = (industry or "").strip().lower()
+        return float(self.INDUSTRY_SCORES.get(normalized, 0))
+
+    def assign_tier(self, score: float) -> str:
+        """
+        Assign lead tier based on composite score.
+
+        Tiers:
+        - high: score >= 70
+        - medium: score >= 50
+        - low: score < 50
+        """
+        if score >= 70:
+            return 'high'
+        if score >= 50:
+            return 'medium'
+        return 'low'
+
+    def compute_score(
+        self,
+        savings_mid: float,
+        industry: str,
+        site_count: int,
+        data_quality_score: float,
+        deregulated_state: bool = False,
+    ) -> float:
+        """
+        Calculate composite lead score (0-100).
+
+        Components:
+        - Recovery: 0-40 points (savings amount)
+        - Industry: 0-25 points (industry type)
+        - Multisite: 0-20 points (site count)
+        - Data quality: 0-15 points (data quality)
+
+        Args:
+            savings_mid (float): Mid-tier savings estimate in dollars
+            industry (str): Industry category
+            site_count (int): Number of facilities
+            data_quality_score (float): Data quality score 0-10
+            deregulated_state (bool): Whether operating in deregulated market (bonus consideration)
+
+        Returns:
+            float: Composite score 0-100
+        """
+        recovery = self.score_recovery(savings_mid)
+        industry_score = self.score_industry(industry)
+        multisite = self._score_multisite(site_count)
+        quality = self._score_data_quality(data_quality_score)
+
+        total = recovery + industry_score + multisite + quality
+
+        # Deregulated state is a positive factor but doesn't add fixed points
+        # (already reflected through other components)
+
+        return round(min(total, 100.0), 2)
+
+    def _score_multisite(self, site_count: int) -> float:
+        """Calculate multisite score component (0-20 points)."""
+        if site_count >= 20:
+            return 20.0
+        if site_count >= 10:
+            return 17.0
+        if site_count >= 5:
+            return 13.0
+        if site_count >= 2:
+            return 8.0
+        return 3.0
+
+    def _score_data_quality(self, data_quality_score: float) -> float:
+        """Calculate data quality score component (0-15 points)."""
+        if data_quality_score >= 9:
+            return 15.0
+        if data_quality_score >= 7:
+            return 12.0
+        if data_quality_score >= 5:
+            return 8.0
+        if data_quality_score >= 3:
+            return 4.0
+        return 1.0

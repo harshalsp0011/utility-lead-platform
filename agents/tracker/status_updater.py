@@ -220,6 +220,49 @@ def mark_bounced(contact_id: str, db_session: Session) -> None:
     db_session.commit()
 
 
+class StatusUpdater:
+    """Class interface for lead/contact status update functions.
+
+    Wraps module-level status functions for class-based access in tests and
+    structured service flows. The ``update_lead_status`` method raises
+    ``ValueError`` for invalid statuses (whereas the underlying function returns
+    ``False``) so callers get an immediate, explicit signal of bad input.
+    """
+
+    def update_lead_status(
+        self,
+        company_id: str,
+        new_status: str,
+        db_session: Session,
+    ) -> bool:
+        """Update company status; raises ValueError for unrecognized status values."""
+        normalized = (new_status or "").strip().lower()
+        if normalized not in _VALID_STATUSES:
+            raise ValueError(
+                f"Invalid lead status: '{new_status}'. "
+                f"Must be one of: {sorted(_VALID_STATUSES)}"
+            )
+        return update_lead_status(company_id, new_status, db_session)
+
+    def mark_replied(
+        self,
+        company_id: str,
+        reply_content: str,
+        sentiment: str,
+        db_session: Session,
+    ) -> None:
+        """Mark lead as replied and cancel pending follow-ups."""
+        mark_replied(company_id, reply_content, sentiment, db_session)
+
+    def mark_unsubscribed(self, contact_id: str, db_session: Session) -> None:
+        """Flag contact as unsubscribed and archive company if no active contacts remain."""
+        mark_unsubscribed(contact_id, db_session)
+
+    def mark_bounced(self, contact_id: str, db_session: Session) -> None:
+        """Invalidate bounced contact and log the bounce event."""
+        mark_bounced(contact_id, db_session)
+
+
 def mark_opened(company_id: str, contact_id: str, db_session: Session) -> None:
     """Insert opened event only; do not change lead status."""
     db_session.execute(

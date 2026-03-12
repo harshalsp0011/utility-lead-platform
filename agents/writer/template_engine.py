@@ -147,3 +147,36 @@ def _extract_first_name(value: Any) -> str:
 
 def _format_currency_full(value: float) -> str:
     return f"${value:,.0f}"
+
+
+class TemplateEngine:
+    """Class-based interface for template operations (used by test suite)."""
+
+    def fill_static_fields(self, template_string: str, context_dict: dict[str, Any]) -> str:
+        """Replace known placeholders while leaving unknown placeholders unchanged."""
+        return fill_static_fields(template_string, context_dict)
+
+    def build_context(
+        self,
+        company: Any,
+        features: Any,
+        score: Any,
+        contact: Any,
+        settings: Any,
+    ) -> dict[str, Any]:
+        """Build context dictionary with all template placeholders."""
+        context = build_context(
+            company=company,
+            features=features,
+            score=score,
+            contact=contact,
+            settings=settings,
+        )
+        # Add industry field if available from features
+        if features and hasattr(features, 'industry'):
+            context['industry'] = _as_string(getattr(features, 'industry', ''))
+        return context
+
+    def get_template_for_industry(self, industry: str) -> str:
+        """Return the full file path for an industry's primary email template."""
+        return get_template_for_industry(industry)

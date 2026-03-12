@@ -47,5 +47,30 @@ def _format_currency_short(value: float) -> str:
     if amount >= 1_000_000:
         return f"${amount / 1_000_000:.1f}M"
     if amount >= 1_000:
-        return f"${amount / 1_000:.1f}k"
+        formatted = f"{amount / 1_000:.0f}"
+        return f"${formatted}k"
     return f"${amount:,.0f}"
+
+
+class SavingsCalculator:
+    """Class-based interface for savings calculations (used by test suite)."""
+
+    def calculate_savings_low(self, total_spend: float) -> float:
+        """Return low savings estimate (10% of total spend)."""
+        return calculate_savings_low(total_spend)
+
+    def calculate_savings_mid(self, total_spend: float) -> float:
+        """Return mid savings estimate (13.5% of total spend)."""
+        return calculate_savings_mid(total_spend)
+
+    def calculate_savings_high(self, total_spend: float) -> float:
+        """Return high savings estimate (17% of total spend)."""
+        return calculate_savings_high(total_spend)
+
+    def calculate_tb_revenue(self, savings_mid: float) -> float:
+        """Return expected Troy & Banks revenue from mid savings estimate."""
+        return calculate_tb_revenue(savings_mid)
+
+    def format_savings(self, amount: float) -> str:
+        """Return human-friendly currency format (e.g., '$1.5M', '$500k')."""
+        return _format_currency_short(amount)

@@ -129,3 +129,27 @@ def check_savings_claim(email_body: str) -> str | None:
             return "Savings claim seems unrealistically high — verify"
 
     return None
+
+
+class ToneValidator:
+    """Class-based interface for tone validation (used by test suite)."""
+
+    def validate_tone(self, subject: str = "", body: str = "") -> dict[str, Any]:
+        """Run all tone checks and return pass/fail with issues and score."""
+        return validate_tone(subject, body)
+
+    def check_spam_words(self, text: str) -> list[str]:
+        """Return spam words/phrases that appear in text (case-insensitive)."""
+        return check_spam_words(text)
+
+    def check_length(self, text: str) -> str | None:
+        """Validate body word count range (50 to 250 words)."""
+        return check_length(text)
+
+    def check_cta(self, text: str) -> str | None:
+        """Ensure at least one call-to-action keyword is present."""
+        return check_cta_present(text)
+
+    def check_caps(self, text: str) -> str | None:
+        """Flag excessive all-caps words that can increase spam risk."""
+        return check_caps_usage(text)

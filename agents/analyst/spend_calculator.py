@@ -49,3 +49,23 @@ def get_kwh_per_sqft(industry: str) -> float:
 def get_electricity_rate(state: str) -> float:
     """Return electricity rate ($/kWh) for a state code."""
     return get_state_electricity_rate(state)
+
+
+class SpendCalculator:
+    """Class-based interface for spend calculations (used by test suite)."""
+
+    def calculate_utility_spend(self, site_count: int, industry: str, state: str) -> float:
+        """Estimate annual utility spend in USD for a multi-site company."""
+        return calculate_utility_spend(site_count, industry, state)
+
+    def calculate_telecom_spend(self, employee_count: int, industry: str) -> float:
+        """Estimate annual telecom spend in USD from employee count."""
+        return calculate_telecom_spend(employee_count, industry)
+
+    def calculate_total_spend(self, utility_spend: float, telecom_spend: float) -> float:
+        """Return combined annual utility + telecom spend."""
+        return calculate_total_spend(utility_spend, telecom_spend)
+
+    def get_electricity_rate(self, state: str) -> float:
+        """Return electricity rate ($/kWh) for a state code."""
+        return get_electricity_rate(state)

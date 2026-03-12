@@ -220,3 +220,19 @@ def _import_tracker_agent() -> Any:
     except Exception:
         logger.warning("Could not import agents.tracker.tracker_agent")
         return None
+
+
+class WebhookListener:
+    """Class interface for webhook listener functions.
+
+    Wraps module-level functions for class-based access, primarily used in tests
+    and structured service initialization.
+    """
+
+    def parse_sendgrid_event(self, raw_payload: str) -> list[dict[str, Any]]:
+        """Parse raw SendGrid webhook JSON and return normalized event dicts."""
+        return parse_sendgrid_event(raw_payload)
+
+    def extract_reply_content(self, sendgrid_inbound_event: dict[str, Any]) -> str:
+        """Extract and clean human reply text from an inbound event dict."""
+        return extract_reply_content(sendgrid_inbound_event)

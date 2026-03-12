@@ -180,3 +180,15 @@ def _polish_followup_body(
     if provider == "openai":
         return llm_connector.call_openai(prompt)
     return llm_connector.call_ollama(prompt)
+
+
+class SequenceManager:
+    """Class-based interface for sequence management operations (used by test suite)."""
+
+    def build_followup_subject(self, original_subject: str, follow_up_number: int) -> str:
+        """Build follow-up subject line based on sequence number."""
+        return build_followup_subject(original_subject, follow_up_number)
+
+    def get_followup_template(self, follow_up_number: int) -> str:
+        """Load raw follow-up template string for sequence position 1/2/3."""
+        return get_followup_template(follow_up_number)

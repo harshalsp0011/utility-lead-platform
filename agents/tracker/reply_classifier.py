@@ -239,3 +239,27 @@ def _get_writer_llm_connector() -> Any:
         return import_module("agents.writer.llm_connector")
     except Exception:
         return None
+
+
+class ReplyClassifier:
+    """Class interface for reply classification functions.
+
+    Wraps module-level classification functions for class-based access in tests
+    and structured service flows.
+    """
+
+    def _get_llm_connector(self) -> Any:
+        """Return LLM connector module, or None if unavailable."""
+        return _get_tracker_llm_connector()
+
+    def classify_reply(self, reply_text: str) -> dict[str, Any]:
+        """Classify reply text into sentiment/intent/summary/confidence."""
+        return classify_reply(reply_text)
+
+    def rule_based_classify(self, reply_text: str) -> dict[str, Any]:
+        """Classify reply using keyword rules only (no LLM)."""
+        return rule_based_classify(reply_text)
+
+    def should_alert_sales(self, sentiment: str, intent: str) -> bool:
+        """Return True if the reply warrants a sales team alert."""
+        return should_alert_sales(sentiment, intent)
