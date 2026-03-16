@@ -401,7 +401,7 @@ If you use a custom frontend environment, verify `REACT_APP_API_URL` points to t
 
 Fix:
 
-- Check `data/sources/directory_urls.json` for active sources.
+- Check `directory_sources` table for active sources.
 - Run Scout manually from the Triggers page or via a direct Python command.
 - Check Airflow and container logs for errors from Scout or Analyst.
 

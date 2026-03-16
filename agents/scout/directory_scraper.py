@@ -7,29 +7,35 @@ pagination, and extracts raw company listing cards. It is meant to work with
 the company extractor, which cleans these raw listings before saving them.
 """
 
-import json
 import logging
 import re
 import time
-from pathlib import Path
+from datetime import datetime, timezone
 from typing import Any, Optional
 from urllib.parse import urljoin, urlparse
 
 import requests
 from bs4 import BeautifulSoup
 from bs4.element import Tag
+from sqlalchemy.orm import Session
 
+from config.proxy_config import get_proxy_url
 from config.settings import get_settings
+from database.orm_models import DirectorySource
 
 logger = logging.getLogger(__name__)
-
-_PROJECT_ROOT = Path(__file__).resolve().parents[2]
-_DIRECTORY_SOURCES_PATH = _PROJECT_ROOT / "data" / "sources" / "directory_urls.json"
 _LISTING_HINTS = ("listing", "result", "member", "business", "company", "card")
 
 
 def scrape_directory(directory_url: str, proxy_url: Optional[str] = None) -> list[dict[str, Optional[str]]]:
     """Scrape all company listings from a directory, following pagination."""
+    if proxy_url is None:
+        try:
+            proxy_url = get_proxy_url()
+        except ValueError as exc:
+            logger.warning("Proxy config unavailable; scraping without proxy: %s", exc)
+            proxy_url = None
+
     found_companies: list[dict[str, Optional[str]]] = []
     visited_urls: set[str] = set()
     current_url: Optional[str] = directory_url
@@ -159,10 +165,102 @@ def fetch_page(url: str, proxy_url: Optional[str] = None) -> str:
     raise RuntimeError(f"Failed to fetch {url} after {settings.MAX_RETRIES} attempts") from last_error
 
 
-def load_directory_sources() -> list[dict[str, Any]]:
-    """Load active directory source definitions from JSON."""
-    sources = json.loads(_DIRECTORY_SOURCES_PATH.read_text(encoding="utf-8"))
-    return [source for source in sources if source.get("active") is True]
+def load_directory_sources(db_session: Optional[Session] = None) -> list[dict[str, Any]]:
+    """Load active source definitions from DB, deduplicated by URL."""
+    if db_session is None:
+        logger.warning("DB session missing for source loading; returning no sources")
+        return []
+
+    merged_sources: list[dict[str, Any]] = []
+    seen_urls: set[str] = set()
+
+    try:
+        rows = (
+            db_session.query(DirectorySource)
+            .filter(DirectorySource.active.is_(True))
+            .order_by(DirectorySource.created_at.asc())
+            .all()
+        )
+    except Exception as exc:
+        logger.warning("Could not load directory sources from DB: %s", exc)
+        return []
+
+    for row in rows:
+        source_url = str(row.url or "").strip().rstrip("/")
+        if not source_url or source_url in seen_urls:
+            continue
+
+        seen_urls.add(source_url)
+        merged_sources.append(
+            {
+                "name": row.name,
+                "url": row.url,
+                "category": row.category,
+                "location": row.location,
+                "pagination": row.pagination,
+                "active": row.active,
+                "notes": row.notes,
+            }
+        )
+
+    return merged_sources
+
+
+def save_directory_sources(
+    sources: list[dict[str, Any]],
+    db_session: Session,
+    discovered_via: str = "tavily",
+) -> int:
+    """Persist discovered sources for future scout runs, updating existing rows."""
+    if not sources:
+        return 0
+
+    now_utc = datetime.now(timezone.utc)
+    saved_count = 0
+
+    for source in sources:
+        source_url = str(source.get("url", "")).strip().rstrip("/")
+        if not source_url:
+            continue
+
+        existing = (
+            db_session.query(DirectorySource)
+            .filter(DirectorySource.url == source_url)
+            .one_or_none()
+        )
+
+        if existing:
+            existing.active = True
+            existing.name = str(source.get("name") or existing.name)
+            existing.category = str(source.get("category") or existing.category)
+            existing.location = str(source.get("location") or existing.location)
+            existing.pagination = bool(source.get("pagination", existing.pagination))
+            existing.notes = str(source.get("notes") or existing.notes or "") or None
+            existing.discovered_via = existing.discovered_via or discovered_via
+            existing.updated_at = now_utc
+            saved_count += 1
+            continue
+
+        db_session.add(
+            DirectorySource(
+                name=str(source.get("name") or source_url),
+                url=source_url,
+                category=str(source.get("category") or "") or None,
+                location=str(source.get("location") or "") or None,
+                pagination=bool(source.get("pagination", False)),
+                active=bool(source.get("active", True)),
+                discovered_via=discovered_via,
+                notes=str(source.get("notes") or "") or None,
+                created_at=now_utc,
+                updated_at=now_utc,
+            )
+        )
+        saved_count += 1
+
+    if saved_count:
+        db_session.commit()
+
+    return saved_count
 
 
 def _find_listing_elements(soup: BeautifulSoup) -> list[Tag]:

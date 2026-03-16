@@ -12,7 +12,7 @@ from typing import Any, TypedDict
 
 from sqlalchemy.orm import Session
 
-from agents.scout import company_extractor, directory_scraper, website_crawler
+from agents.scout import company_extractor, directory_scraper, search_client, website_crawler
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +55,7 @@ def run(industry: str, location: str, count: int, db_session: Session) -> list[s
                 current_state["industry"],
                 current_state["location"],
                 current_state["used_sources"],
+                current_state["db_session"],
             )
             if next_source is None:
                 break
@@ -161,9 +162,14 @@ def validate_company(raw_company_dict: dict[str, Any]) -> bool:
     return website_crawler.is_site_reachable(website)
 
 
-def decide_next_source(industry: str, location: str, used_sources: list[str]) -> dict[str, Any] | None:
+def decide_next_source(
+    industry: str,
+    location: str,
+    used_sources: list[str],
+    db_session: Session,
+) -> dict[str, Any] | None:
     """Return the next eligible active source, or None when exhausted."""
-    sources = directory_scraper.load_directory_sources()
+    sources = directory_scraper.load_directory_sources(db_session)
 
     target_industry = industry.strip().lower()
     target_location = location.strip().lower()
@@ -190,6 +196,14 @@ def decide_next_source(industry: str, location: str, used_sources: list[str]) ->
         )
 
         if industry_match and location_match:
+            return source
+
+    # Fall back to dynamic search discovery when no configured source matches
+    # or all matching configured sources have been exhausted.
+    dynamic_sources = search_client.search_directory_sources(industry, location, db_session)
+    for source in dynamic_sources:
+        source_name = str(source.get("name", "")).strip().lower()
+        if source_name and source_name not in used_names:
             return source
 
     return None

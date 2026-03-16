@@ -7,7 +7,7 @@ Creates the PostgreSQL engine, opens sessions, checks connectivity, and runs SQL
 
 `orm_models.py`
 Defines typed SQLAlchemy ORM mappings for `companies`, `company_features`, `lead_scores`,
-`contacts`, `email_drafts`, and `outreach_events`. Services can import these models to use
+`contacts`, `email_drafts`, `outreach_events`, and `directory_sources`. Services can import these models to use
 ORM queries instead of raw SQL text statements.
 
 Compatibility note:
@@ -24,6 +24,7 @@ Current table flow:
 4. `004_create_contacts.sql` stores people linked to each company.
 5. `005_create_email_drafts.sql` stores outreach drafts for companies and contacts.
 6. `006_create_outreach_events.sql` stores sends, replies, and follow-up activity.
+7. `007_create_directory_sources.sql` stores reusable scout source URLs from static config and Tavily discovery.
 
 `seed_data/`
 Stores static JSON data such as industry benchmark values.

@@ -7,7 +7,7 @@ Main coordinator for the Scout workflow. It chooses sources, runs scraping,
 validates candidates, enriches data from company websites, and saves records.
 
 `directory_scraper.py`
-Loads active sources, downloads directory pages, follows pagination, and returns raw company listing cards.
+Loads active sources from DB, downloads directory pages, follows pagination, and returns raw company listing cards.
 
 `company_extractor.py`
 Takes those raw listing cards, cleans the fields, normalizes values like state and phone, checks duplicates, and saves companies to the database.
@@ -15,10 +15,13 @@ Takes those raw listing cards, cleans the fields, normalizes values like state a
 `website_crawler.py`
 Visits each company website (including JavaScript-rendered pages via Playwright) and extracts enrichment signals such as location count, employee signals, and facility type.
 
+`search_client.py`
+Calls the configured search provider (currently Tavily) to discover extra directory/member-list URLs when configured DB sources are exhausted.
+
 How they work together:
 
 1. `scout_agent.py` starts the run with target industry, location, and count.
-2. It loads sources from `data/sources/directory_urls.json`.
+2. It loads sources from the `directory_sources` database table.
 3. It calls `directory_scraper.py` to fetch listing pages.
 4. It sends each listing into `company_extractor.py` for cleanup and normalization.
 5. It uses `website_crawler.py` for website-based enrichment signals.
@@ -26,15 +29,24 @@ How they work together:
 
 Operational note:
 - If one configured source fails to load or parse, `scout_agent.py` now logs the failure and continues to the next eligible source instead of aborting the whole scout run.
-- If a listing does not include an explicit category/industry value, `scout_agent.py` falls back to the source-level `category` from `data/sources/directory_urls.json` before deciding whether to discard the record as `unknown`.
+- If a listing does not include an explicit category/industry value, `scout_agent.py` falls back to the source-level `category` from `directory_sources` before deciding whether to discard the record as `unknown`.
 - Duplicate protection now compares normalized full website URLs (exact URL match) instead of broad domain matching.
+- `directory_scraper.py` now auto-loads proxy settings from `.env` when no explicit proxy is passed. With `PROXY_PROVIDER=scraperapi` (or `brightdata`), outbound directory fetches run through that proxy automatically.
 
 Source matching note:
-- `POST /trigger/scout` does not discover source URLs dynamically. It loads them from `data/sources/directory_urls.json`.
+- `POST /trigger/scout` loads sources from the `directory_sources` database table.
+- If no eligible configured source remains, `scout_agent.py` now falls back to dynamic source discovery via `search_client.py` when `SEARCH_PROVIDER=tavily` and `TAVILY_API_KEY` is set.
+- Tavily-discovered sources are persisted into `directory_sources` so future runs can reuse them without calling Tavily for the same URLs.
 - The request `industry` is matched against each source entry's `category`.
 - The request `location` is matched against each source entry's `location`.
 - `count` only controls how many companies scout tries to save; it does not affect which URLs are chosen.
 - `run_mode` chooses the pipeline mode; it does not affect source selection.
+
+Scraping proxy setup:
+- `PROXY_PROVIDER=scraperapi` requires `SCRAPERAPI_KEY`.
+- `PROXY_PROVIDER=brightdata` requires `BRIGHTDATA_KEY`.
+- `PROXY_PROVIDER=none` disables proxy usage.
+- Invalid proxy configuration no longer crashes scout; scraper logs a warning and falls back to direct requests.
 
 This means the scraper collects raw directory data, the extractor normalizes it,
 and the crawler adds website intelligence before persistence.
