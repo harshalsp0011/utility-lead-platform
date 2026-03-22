@@ -192,6 +192,7 @@ class Company(Base):
     status: Mapped[str | None] = mapped_column(String(50), nullable=True)
     run_id: Mapped[uuid.UUID | None] = mapped_column(PGUUID(as_uuid=True), ForeignKey("agent_runs.id"), nullable=True)
     quality_score: Mapped[float | None] = mapped_column(Float, nullable=True)
+    intent_signal: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     updated_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
 

@@ -55,15 +55,21 @@ def chat(body: dict) -> ChatStartResponse:
     if not message:
         raise HTTPException(status_code=422, detail="message is required")
 
+    # history: last N [{role, content}] messages from the frontend for context carry-forward
+    history = body.get("history") or []
+    if not isinstance(history, list):
+        history = []
+
     run_id = str(uuid_mod.uuid4())
     _results[run_id] = {"status": "pending", "run_id": run_id}
 
-    logger.info("Chat request received — run_id=%s message=%r", run_id, message[:120])
+    logger.info("Chat request received — run_id=%s message=%r history_len=%d",
+                run_id, message[:120], len(history))
 
     def _run_background() -> None:
         db = SessionLocal()
         try:
-            result = run_chat(message, db, run_id=run_id)
+            result = run_chat(message, db, run_id=run_id, history=history)
             _results[run_id] = {
                 "status": "done",
                 "reply": result["reply"],

@@ -361,12 +361,13 @@ export async function fetchTopLeads(limit = 10) {
  * Start a chat run in the background — returns run_id immediately.
  * The client should then poll fetchRunStatus + fetchChatResult.
  * @param {string} message - User message
+ * @param {Array} history - Recent conversation [{role, content}] for context carry-forward
  * @returns {Promise<object>} - { run_id, status: "started" }
  */
-export async function startChat(message) {
+export async function startChat(message, history = []) {
   return fetchAPI('/chat', {
     method: 'POST',
-    body: JSON.stringify({ message }),
+    body: JSON.stringify({ message, history }),
   });
 }
 

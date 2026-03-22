@@ -23,7 +23,7 @@ from typing import Any
 
 from sqlalchemy.orm import Session
 
-from agents.scout import company_extractor, directory_scraper, llm_deduplicator, llm_query_planner, search_client, website_crawler
+from agents.scout import company_extractor, directory_scraper, llm_deduplicator, llm_query_planner, news_scout_client, search_client, website_crawler
 from agents.scout.scout_critic import (
     evaluate_quality,
     is_quality_sufficient,
@@ -100,10 +100,59 @@ def run(
     # Rank API sources by past performance for this context
     ranked_api_sources = rank_sources(industry, location, _API_SOURCES, db_session)
 
-    # --- Phase 1: configured directory sources ---
-    dir_sources = directory_scraper.load_directory_sources(db_session)
-    if dir_sources:
-        _log_progress(db_session, run_id, f"Checking {len(dir_sources)} configured directory source(s)...")
+    # --- Phase 0: News-based intent scout ---
+    # Finds companies IN THE NEWS with buying signals (expansion, cost pressure, new facility).
+    # These are the warmest leads — a specific reason they need an audit RIGHT NOW.
+    # Runs first so intent-signal companies are prioritised and saved before generic results.
+    # Agentic concept: Intent-Based Prospecting
+    _log_progress(db_session, run_id, "Scanning local business news for buying signals...")
+    try:
+        news_companies = news_scout_client.find_companies_in_news(
+            industry, location, max_results=max(count, 5)
+        )
+        if news_companies:
+            _log_progress(
+                db_session, run_id,
+                f"News scout found {len(news_companies)} companies with buying signals "
+                f"(expansion, cost pressure, new facility)"
+            )
+            remaining_before_news = count - len(saved_ids)
+            news_ids = _save_news_companies(news_companies, db_session, run_id, max_save=remaining_before_news)
+            saved_ids.extend(news_ids)
+            source_results.append({
+                "source": "news_scout",
+                "found": len(news_companies),
+                "passed": len(news_ids),
+                "score": evaluate_quality(news_companies),
+            })
+            _log_progress(
+                db_session, run_id,
+                f"Saved {len(news_ids)} intent-signal companies from news (total: {len(saved_ids)})"
+            )
+        else:
+            _log_progress(db_session, run_id, "No news signals found — continuing with directory search")
+    except Exception as exc:
+        logger.warning("[scout] News scout failed (non-fatal): %s", exc)
+        _log_progress(db_session, run_id, "News scout skipped — continuing with directory search")
+
+    # --- Phase 1: configured directory sources (location-filtered) ---
+    # Only try directory sources whose name contains a word from the target location.
+    # This prevents Buffalo-specific sources from being tried for Rochester, Chicago, etc.
+    # Sources that don't mention the location are almost guaranteed to fail and waste time.
+    all_dir_sources = directory_scraper.load_directory_sources(db_session)
+    location_words = {w.lower() for w in location.lower().split() if len(w) > 2}
+    dir_sources = [
+        s for s in all_dir_sources
+        if any(w in str(s.get("name", "")).lower() for w in location_words)
+    ]
+    if all_dir_sources and not dir_sources:
+        _log_progress(
+            db_session, run_id,
+            f"Skipping {len(all_dir_sources)} directory sources — none match location '{location}'. "
+            "Going straight to Tavily + Google Maps."
+        )
+    elif dir_sources:
+        _log_progress(db_session, run_id, f"Checking {len(dir_sources)} directory source(s) for {location}...")
     for source in dir_sources:
         if len(saved_ids) >= count:
             break
@@ -231,9 +280,9 @@ def run(
         logger.info("[scout] Dedup: %d → %d companies", len(api_batch_all), len(api_batch_deduped))
 
         remaining = count - len(saved_ids)
-        new_ids = _save_api_companies(api_batch_deduped, db_session, run_id)
-        saved_ids.extend(new_ids[:remaining])
-        _log_progress(db_session, run_id, f"Saved {len(new_ids)} companies from API sources (total: {len(saved_ids)})")
+        new_ids = _save_api_companies(api_batch_deduped, db_session, run_id, max_save=remaining)
+        saved_ids.extend(new_ids)
+        _log_progress(db_session, run_id, f"Saved {len(new_ids)} of {len(api_batch_deduped)} unique companies (target was {count}, total: {len(saved_ids)})")
 
     # --- Quality check: if < 80% of target found, retry with new LLM queries (once) ---
     if len(saved_ids) < int(count * 0.8):
@@ -269,11 +318,11 @@ def run(
         if retry_batch:
             retry_deduped = llm_deduplicator.deduplicate(retry_batch)
             remaining = count - len(saved_ids)
-            retry_ids = _save_api_companies(retry_deduped, db_session, run_id)
-            saved_ids.extend(retry_ids[:remaining])
+            retry_ids = _save_api_companies(retry_deduped, db_session, run_id, max_save=remaining)
+            saved_ids.extend(retry_ids)
             _log_progress(
                 db_session, run_id,
-                f"Retry found {len(retry_ids)} more companies (total: {len(saved_ids)})"
+                f"Retry saved {len(retry_ids)} more companies (total: {len(saved_ids)})"
             )
             source_results.append({
                 "source": "retry",
@@ -360,6 +409,73 @@ def _scrape_and_save_directory(source_dict: dict[str, Any], db_session: Session,
     return valid_companies
 
 
+def _save_news_companies(
+    companies: list[dict[str, Any]],
+    db_session: Session,
+    run_id: str | None,
+    max_save: int | None = None,
+) -> list[str]:
+    """Save news-scout companies to DB with their intent_signal field.
+
+    News companies come from article extraction — no website crawl needed,
+    no industry validation required (LLM already classified them).
+    Minimum required: name + industry.
+    """
+    saved_ids: list[str] = []
+    now = datetime.now(timezone.utc)
+
+    for company in companies:
+        if max_save is not None and len(saved_ids) >= max_save:
+            break
+
+        name = str(company.get("name", "")).strip()
+        industry = str(company.get("industry", "")).strip().lower()
+        if not name or not industry or industry == "unknown":
+            continue
+
+        city = str(company.get("city") or "").strip()
+
+        # Skip if already in DB (same name + city, or same domain if website found)
+        if company_extractor.check_duplicate(
+            company.get("website"),
+            db_session,
+            name=name,
+            city=city or None,
+        ):
+            continue
+
+        try:
+            row = Company(
+                id=uuid.uuid4(),
+                name=name,
+                website=company.get("website") or None,
+                industry=industry,
+                city=city or None,
+                state=company_extractor.normalize_state(company.get("state")),
+                source=company.get("source", "news_scout"),
+                source_url=company.get("source_url") or None,
+                intent_signal=company.get("intent_signal") or None,
+                run_id=uuid.UUID(run_id) if run_id else None,
+                status="new",
+                date_found=now,
+                created_at=now,
+                updated_at=now,
+            )
+            db_session.add(row)
+            db_session.flush()
+            db_session.commit()
+            saved_ids.append(str(row.id))
+            logger.info(
+                "[news_scout] Saved: %s | signal: %s",
+                name, company.get("intent_signal", "")[:80],
+            )
+        except Exception:
+            db_session.rollback()
+            logger.exception("[news_scout] Failed to save company: %s", name)
+
+    return saved_ids
+
+
 def _validate_scraped(company: dict) -> bool:
     """Scraped companies must have name, website, known industry, and reachable site."""
     name = str(company.get("name", "")).strip()
@@ -401,17 +517,25 @@ def _save_api_companies(
     companies: list[dict[str, Any]],
     db_session: Session,
     run_id: str | None,
+    max_save: int | None = None,
 ) -> list[str]:
     """Save API-sourced companies to DB. Skips duplicates silently.
 
     API sources (Google Maps, Yelp) are considered high quality — we do NOT
     require a website to save them. Phone and email missing is normal.
     We only require: name + industry + city.
+
+    max_save: if set, stop saving after this many successful inserts.
+              Prevents saving 44 when user asked for 10.
     """
     saved_ids: list[str] = []
     now = datetime.now(timezone.utc)
 
     for company in companies:
+        # Stop early if we've hit the requested count
+        if max_save is not None and len(saved_ids) >= max_save:
+            break
+
         name = str(company.get("name", "")).strip()
         industry = str(company.get("industry", "")).strip().lower()
         city = str(company.get("city") or "").strip()

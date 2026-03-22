@@ -22,11 +22,40 @@ import { startChat, fetchChatResult, fetchRunStatus, stopChatRun } from '../serv
 // Quick-prompt suggestions shown before first message
 // ---------------------------------------------------------------------------
 const SUGGESTIONS = [
-  'Find 10 healthcare companies in Buffalo NY',
-  'Show me all high-tier leads',
+  'Find 15 schools in Buffalo NY',
+  'Find healthcare companies in Rochester NY',
+  'Show me high-tier leads with score reasons',
+  'Which companies are pending analysis?',
+  'Run the full pipeline for manufacturing in Buffalo NY',
+  'Why did [company name] score low?',
   'Which companies have we already emailed?',
   'Did anyone reply to our emails?',
-  'Run the full pipeline for healthcare in Buffalo NY',
+];
+
+// ---------------------------------------------------------------------------
+// Capability cards shown in welcome state
+// ---------------------------------------------------------------------------
+const CAPABILITIES = [
+  {
+    icon: '🔍',
+    title: 'Multi-Query Search',
+    description: 'Say "find schools in Buffalo" — I generate 5 different search angles (elementary, private, K-12, charter, universities), search all of them, then remove duplicates automatically.',
+  },
+  {
+    icon: '🧠',
+    title: 'Infer Missing Data',
+    description: 'If a company\'s industry is unknown or employee count is missing, I reason from the company name and website to infer it before scoring — instead of penalizing with a default.',
+  },
+  {
+    icon: '📊',
+    title: 'Score with Reasoning',
+    description: 'Every lead score includes a specific explanation: "250-employee healthcare company, 3 sites in deregulated NY — ~$180k annual savings potential." Not a template — written for each company.',
+  },
+  {
+    icon: '🔄',
+    title: 'Self-Correcting',
+    description: 'If Scout finds fewer companies than requested (< 80% of target), I automatically generate new search queries and retry. If data gaps remain after enrichment, I re-enrich before scoring.',
+  },
 ];
 
 // ---------------------------------------------------------------------------
@@ -94,6 +123,11 @@ function LeadCard({ lead }) {
         <span className="text-slate-700 font-medium">Score: {lead.score.toFixed(1)}</span>
         {lead.approved && <span className="text-green-600">✓ Approved</span>}
       </div>
+      {lead.score_reason && (
+        <p className="text-slate-500 mt-1.5 italic border-t border-slate-100 pt-1.5 leading-relaxed">
+          {lead.score_reason}
+        </p>
+      )}
     </div>
   );
 }
@@ -403,20 +437,64 @@ function ProgressIndicator({ steps, onStop }) {
 }
 
 // ---------------------------------------------------------------------------
+// Capability cards shown before first message
+// ---------------------------------------------------------------------------
+function CapabilityCards() {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <div className="mb-5">
+      <button
+        onClick={() => setExpanded((v) => !v)}
+        className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-slate-600 mb-2 transition-colors"
+      >
+        <span>{expanded ? '▾' : '▸'}</span>
+        <span>{expanded ? 'Hide capabilities' : 'What can I do?'}</span>
+      </button>
+
+      {expanded && (
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+          {CAPABILITIES.map((cap) => (
+            <div
+              key={cap.title}
+              className="bg-white border border-slate-200 rounded-xl p-3 text-xs shadow-sm"
+            >
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-base">{cap.icon}</span>
+                <span className="font-semibold text-slate-700">{cap.title}</span>
+              </div>
+              <p className="text-slate-500 leading-relaxed">{cap.description}</p>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Main Chat page
 // ---------------------------------------------------------------------------
+// Version stamp — bump this when welcome message changes so localStorage clears old version
+const WELCOME_VERSION = 2;
 const WELCOME_MESSAGE = {
   id: 0,
   role: 'agent',
-  content: "Hi! I'm your lead intelligence agent. Ask me to find companies, show leads, check replies, or run the full pipeline.",
+  content: "Hi — I'm your lead intelligence agent.\n\nI can find companies, score them, and explain why each one ranked the way it did. I don't just execute fixed searches — I reason about what to search for, infer missing data, and retry when results are thin.\n\nTry asking me to find companies, show leads with score reasons, check replies, or run the full pipeline.",
   data: null,
 };
 
 export default function Chat() {
   const [messages, setMessages] = useState(() => {
     try {
+      const savedVersion = parseInt(localStorage.getItem('chat_messages_version') || '0', 10);
       const saved = localStorage.getItem('chat_messages');
-      return saved ? JSON.parse(saved) : [WELCOME_MESSAGE];
+      if (saved && savedVersion >= WELCOME_VERSION) {
+        return JSON.parse(saved);
+      }
+      // Stale version — clear old history and show fresh welcome
+      localStorage.removeItem('chat_messages');
+      return [WELCOME_MESSAGE];
     } catch {
       return [WELCOME_MESSAGE];
     }
@@ -442,6 +520,7 @@ export default function Chat() {
   useEffect(() => {
     try {
       localStorage.setItem('chat_messages', JSON.stringify(messages));
+      localStorage.setItem('chat_messages_version', String(WELCOME_VERSION));
     } catch {
       // localStorage full — silently skip
     }
@@ -586,7 +665,14 @@ export default function Chat() {
     setLoading(true);
 
     try {
-      const { run_id } = await startChat(message);
+      // Send last 6 messages as history so LLM can understand context
+      // (e.g. "and low?" after "show medium leads" means get_leads tier=low)
+      const history = messages
+        .filter((m) => m.role === 'user' || m.role === 'agent')
+        .slice(-6)
+        .map((m) => ({ role: m.role, content: m.content || '' }));
+
+      const { run_id } = await startChat(message, history);
       sessionStorage.setItem('chat_active_run_id', run_id);
       activeRunIdRef.current = run_id;
       pollingRef.current = setTimeout(() => pollRun(run_id), 1000);
@@ -618,13 +704,14 @@ export default function Chat() {
       {/* Header */}
       <div className="bg-white border-b border-slate-200 px-6 py-4 flex-shrink-0 flex items-center justify-between">
         <div>
-          <h1 className="text-lg font-semibold text-slate-800">Chat Agent</h1>
-          <p className="text-sm text-slate-500">Ask in natural language — agent decides what to do</p>
+          <h1 className="text-lg font-semibold text-slate-800">Lead Intelligence Agent</h1>
+          <p className="text-sm text-slate-500">Reasons · searches · infers · scores · explains</p>
         </div>
         <button
           onClick={() => {
             stopPolling();
             localStorage.removeItem('chat_messages');
+            localStorage.removeItem('chat_messages_version');
             setMessages([WELCOME_MESSAGE]);
             setLoading(false);
             setProgressSteps([]);
@@ -648,9 +735,10 @@ export default function Chat() {
           />
         )}
 
-        {/* Quick suggestions */}
+        {/* Welcome state — capabilities + suggestions */}
         {showSuggestions && !loading && (
           <div className="mt-4">
+            <CapabilityCards />
             <p className="text-xs text-slate-400 mb-2 text-center">Try asking:</p>
             <div className="flex flex-wrap gap-2 justify-center">
               {SUGGESTIONS.map((s) => (
@@ -676,7 +764,7 @@ export default function Chat() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask me anything… e.g. find 10 healthcare companies in Buffalo NY"
+            placeholder="e.g. find schools in Buffalo NY, show high-tier leads, why did X score low…"
             rows={1}
             disabled={loading}
             className="flex-1 resize-none border border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"

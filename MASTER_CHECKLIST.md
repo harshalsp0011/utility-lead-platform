@@ -651,8 +651,9 @@ Step 1 → Phase A: Analyst LLM reasoning layer           ✅ DONE (2026-03-22)
 Step 2 → Phase B: Scout agentic query planning           ✅ DONE (2026-03-22)
          (query expansion + multi-query API calls + LLM dedup + quality retry)
 
-Step 3 → Phase C: Writer + Critic loop                   🔲 NEXT
+Step 3 → Phase C: Writer + Critic loop                   🔄 IN PROGRESS (2026-03-22)
          (context-driven generation + quality evaluation + rewrite loop)
+         Reference: docs/PHASE_C_WRITER_CRITIC.md
 
 Step 4 → Phase D: Chat dynamic filters                   🔲 PLANNED
          (already mostly done — small enhancement)
@@ -868,8 +869,11 @@ End-to-end verification that everything works together.
 | 2 | Analyst + human-in-loop leads review | ✅ Complete |
 | 2.5 | Chat resilience + live progress + UI fixes + chat intelligence | ✅ Complete |
 | **A** | **Agentic Analyst: LLM industry inference + data gap loop + score narration** | ✅ Complete |
-| **B** | **Agentic Scout: LLM query planning + deduplication + quality loop** | 🔲 Next |
-| 3 | Agentic Writer + Critic loop + human-in-loop email review | 🔲 After A+B |
+| **B** | **Agentic Scout: LLM query planning + deduplication + quality loop** | ✅ Complete |
+| **B+** | **Scout enhancements: intent signals, news scout, save-count fix, location filter** | ✅ Complete |
+| **Chat** | **LLM intent extraction + history context + confidence gating + observe→ask→act** | ✅ Complete |
+| **C** | **Agentic Writer + Critic loop + SMTP send + human-in-loop email** | 🔄 In Progress |
+| **C+** | **SerpAPI news/press release source + signal scoring boost in Analyst** | 🔲 Planned |
 | 4 | Outreach + Tracker + auto email notifications | 🔲 Not started |
 | 5 | Airflow scheduled runs with approval pauses | 🔲 Not started |
 | 6 | Learning activation (source + template selection) | 🔲 Not started |
@@ -877,51 +881,73 @@ End-to-end verification that everything works together.
 
 ---
 
-## Current State (as of Phase 2.5 complete — 2026-03-22)
+## Current State (as of 2026-03-22 — Session 3)
 
 **Running services:**
 - Frontend: http://localhost:3000 (React via nginx)
 - API: http://localhost:8001 (FastAPI + Uvicorn)
 - Database: PostgreSQL on AWS RDS (Heroku Postgres)
-- LLM: llama3.2 via Ollama at 192.168.65.254:11434 (host Mac)
+- LLM: llama3.2 via Ollama at host.docker.internal:11434 (host Mac)
+
+**Reference docs:**
+- `docs/CHATBOT_ARCHITECTURE.md` — full chat system, memory, context, agentic concepts
+- `docs/SCOUT_SOURCES_AND_SIGNALS.md` — all discovery sources, intent signals, dedup layers
+- `docs/PHASE_C_WRITER_CRITIC.md` — Phase C design, execution flow, testing plan
+
+---
 
 **What works right now:**
 
 | Feature | Status |
 |---|---|
 | Chat → Scout → find companies | ✅ Working |
-| Chat 3-tier routing (conversational / intent / agent) | ✅ Working |
-| Chat: "show me healthcare leads" → correct results | ✅ Working |
+| Chat: LLM intent extraction (replaces all keyword routing) | ✅ Working |
+| Chat: conversation history passthrough (last 6 messages) | ✅ Working |
+| Chat: confidence-gated routing (low confidence → asks user) | ✅ Working |
+| Chat: Observe→Ask→Act (asks for location/industry before searching) | ✅ Working |
+| Chat: score_reason shown per lead in LeadCard | ✅ Working |
+| Chat: direct tool dispatch (no agent loop hallucination) | ✅ Working |
 | Chat: stop button + step-by-step summary | ✅ Working |
-| Chat: view run logs panel (expandable DB logs) | ✅ Working |
+| Chat: view run logs panel | ✅ Working |
 | Chat history persists across refresh | ✅ Working |
-| Chat run survives page navigation | ✅ Working |
-| Leads page: 0.35s load (was 9.2s) | ✅ Working |
-| Leads page: scroll | ✅ Working |
-| Leads page: dynamic industry dropdown | ✅ Working |
-| Triggers page: per-company live progress table | ✅ Working |
-| Triggers page: results stay visible after completion | ✅ Working |
-| Triggers page: pending counts refresh on completion | ✅ Working |
-| Scout: Google Maps + Yelp + Tavily | ✅ Working |
-| Scout: 27-domain blocklist (no login/paywall sites) | ✅ Working |
-| Analyst: scoring + lead tiers + scored_at populated | ✅ Working |
-| Analyst: Apollo fallback for employee_count enrichment | ✅ Working |
-| Approve/reject leads via dashboard | ✅ Working |
-| Full pipeline: Scout → Analyst → Writer chain | ✅ Working |
-| Email drafting (Writer agent with Ollama) | ✅ Working |
-| Email review page | ✅ Working |
+| Leads page | ✅ Working |
+| Triggers page | ✅ Working |
+| Scout: Google Maps + Yelp + Tavily directory | ✅ Working |
+| Scout: LLM query planner (4 diverse queries) | ✅ Working |
+| Scout: LLM deduplicator (domain + name similarity) | ✅ Working |
+| Scout: location-aware directory filter (skips Buffalo sources for Rochester) | ✅ Working |
+| Scout: save-count fix (respects count limit, no more saving 44 when asked for 10) | ✅ Working |
+| Scout: news scout Phase 0 (Tavily topic=news + LLM extraction) | ✅ Working |
+| Scout: intent_signal stored on companies with buying signals | ✅ Working |
+| Analyst: scoring + lead tiers + scored_at | ✅ Working |
+| Analyst: LLM score_reason narrative | ✅ Working |
+| Approve/reject leads | ✅ Working |
+| Full pipeline: Scout → Analyst → Writer | ✅ Working |
+| Email drafting + review page | ✅ Working |
 
-**Phase A complete — what is agentic now:**
+---
 
-| Agent | Agentic behaviour | Status |
+**Agentic system — current state:**
+
+| Agent | Agentic capabilities | Status |
 |---|---|---|
-| Analyst | LLM infers industry · detects gaps · re-enriches · writes narrative reason | ✅ Live |
-| Scout | LLM query planner · multi-variant API calls · LLM dedup · quality retry | ✅ Live |
-| Writer | template fill + LLM polish (no Critic loop yet) | 🔲 Phase C next |
-| Chat | 3-tier routing, LangChain ReAct — already agentic | ✅ Live |
+| **Scout** | LLM query planner · multi-variant API calls · LLM dedup · quality retry · news intent signals | ✅ Live |
+| **Analyst** | LLM industry inference · data gap detection · re-enrichment loop · score narration | ✅ Live |
+| **Writer** | Template + LLM polish (Critic loop not yet built) | 🔄 Phase C |
+| **Chat** | LLM intent extraction · history context · confidence gating · observe→ask→act | ✅ Live |
 
-**Next to build: Phase C — Agentic Writer + Critic Loop**
+---
 
-Writer generates from company context (not template). Critic evaluates 0–10.
-Rewrite loop (max 2x). `low_confidence=true` if never reaches 7.
-Files: update `writer_agent.py`, `llm_connector.py`, new `critic_agent.py`.
+**Next to build:**
+
+**Phase C — Agentic Writer + Critic Loop** (`docs/PHASE_C_WRITER_CRITIC.md`)
+1. DB migration — add `critic_score`, `low_confidence`, `rewrite_count` to email_drafts
+2. `agents/writer/critic_agent.py` — new Critic LLM with 5-criteria rubric
+3. Update `agents/writer/writer_agent.py` — context reasoning + rewrite loop + no-contact fallback
+4. Wire SMTP send in `api/routes/emails.py`
+5. Update `EmailReview.jsx` — critic score badge + low_confidence warning
+
+**Phase C+ — SerpAPI Intent Source** (`docs/SCOUT_SOURCES_AND_SIGNALS.md`)
+1. `agents/scout/serp_client.py` — Google News + press release search
+2. Signal scoring boost in `agents/analyst/scoring_engine.py`
+3. "Hot Lead" badge in `dashboard/src/pages/Leads.jsx`

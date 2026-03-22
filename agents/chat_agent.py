@@ -73,10 +73,9 @@ _setup_tracing()
 # System prompt — personality and rules given to the LLM
 # ---------------------------------------------------------------------------
 
-SYSTEM_PROMPT = """You are Scout, the Lead Intelligence Agent for Troy & Banks, \
-a utility cost consulting firm based in Buffalo, NY.
+SYSTEM_PROMPT = """You are a Lead Intelligence Agent for a utility cost consulting firm.
 
-Your job is to help the sales team find utility companies, track outreach, and report on pipeline activity.
+Your job is to help the sales team find companies, view scored leads, track outreach, and run pipeline operations.
 
 == CRITICAL TOOL USAGE RULES ==
 
@@ -101,9 +100,9 @@ When in doubt — do NOT call a tool. Ask the user to clarify what they need.
 The get_leads tool has two optional filters: tier and industry.
 
 TIER RULES — only set tier if the user explicitly uses these words:
-- "high tier", "top leads", "best leads", "high scoring" → tier="high"
-- "medium tier", "medium leads" → tier="medium"
-- "low tier", "low leads" → tier="low"
+- "high tier", "high-tier", "high level", "top leads", "best leads", "high scoring" → tier="high"
+- "medium tier", "medium-tier", "medium level", "mid tier" → tier="medium"
+- "low tier", "low-tier", "low level", "low leads", "low scoring" → tier="low"
 - "show me leads", "all leads", "healthcare leads", "show me X leads" → tier="" (EMPTY — do NOT guess high)
 
 INDUSTRY RULES:
@@ -116,12 +115,13 @@ EXAMPLES (follow exactly):
 - "show me healthcare leads" → get_leads(tier="", industry="healthcare")
 - "show high tier leads" → get_leads(tier="high", industry="")
 - "show high tier healthcare leads" → get_leads(tier="high", industry="healthcare")
+- "can we find low level" → get_leads(tier="low", industry="")
+- "what about medium" → get_leads(tier="medium", industry="")
 
 == RESPONSE RULES ==
 
-- For greetings: say "Hi, I'm Scout, Lead Intelligence Agent for Troy & Banks. \
-I can find companies, show scored leads, check outreach history, or run the full pipeline. What do you need?"
-- For capability questions: list the 5 capabilities in plain text. No tool calls.
+- For greetings: introduce yourself as a lead intelligence agent and list what you can do.
+- For capability questions: explain you can find companies (with multi-query search), show scored leads with score reasons, check outreach history, and run the full pipeline.
 - Keep all replies short and direct.
 - Never make up company names, scores, or contact data.
 """
@@ -301,6 +301,7 @@ def _make_tools(db: Session, results: dict[str, Any], run: AgentRun) -> list[Any
                 "state": company.state or "",
                 "score": float(score.score or 0) if score else 0,
                 "tier": score.tier or "unscored" if score else "unscored",
+                "score_reason": (score.score_reason or "") if score else "",
                 "approved": bool(score.approved_human) if score else False,
                 "status": company.status or "new",
             }
@@ -466,97 +467,161 @@ def _make_tools(db: Session, results: dict[str, Any], run: AgentRun) -> list[Any
 
 
 # ---------------------------------------------------------------------------
-# Conversational message detector
+# LLM Intent Extractor — replaces all keyword/regex routing
+#
+# One LLM call per message understands what the user wants using conversation
+# history as context. No keyword lists, no regex, no manual updates needed.
+# Falls back to "unknown" (agent loop) on any LLM failure.
 # ---------------------------------------------------------------------------
 
-_CONVERSATIONAL_PATTERNS = [
-    "hi", "hello", "hey", "good morning", "good afternoon", "good evening",
-    "how are you", "what can you do", "what do you do", "how can you help",
-    "what are you", "tell me about yourself", "how does this work", "what is this",
-    "help", "thanks", "thank you", "ok", "okay", "got it", "sounds good",
-    "great", "nice", "cool", "awesome",
-]
+_INTENT_PROMPT = """You are an intent classifier for a B2B lead management system.
+{history_section}
+Latest user message: "{message}"
 
-def _is_conversational(message: str) -> bool:
-    """Return True if the message is small talk or a capability question."""
-    msg = message.lower().strip().rstrip("?!.")
-    return any(msg == p or msg.startswith(p) for p in _CONVERSATIONAL_PATTERNS)
+Classify the user's intent. Return ONLY a JSON object — no explanation, no markdown:
+{{
+  "action": "<action>",
+  "confidence": <0.0-1.0>,
+  "tier": "<tier>",
+  "industry": "<industry>",
+  "location": "<location>",
+  "count": <count>
+}}
+
+=== ACTION DEFINITIONS (understand WHAT each action does, not what words trigger it) ===
+
+"get_leads"
+  PURPOSE: Read and display companies that are ALREADY stored in our database with their scores.
+  The data already exists. No external API calls. Instant.
+  SIGNAL: User wants to see, list, count, view, review, check, filter existing pipeline data.
+
+"search_companies"
+  PURPOSE: Run an EXTERNAL discovery search (Google Maps + Tavily) to find NEW companies
+  that are NOT yet in our database. Slow, costs API calls. Adds new rows.
+  SIGNAL: User wants to find, discover, look for, get new, or add new companies from outside.
+
+"get_outreach_history"
+  PURPOSE: Show which companies we have already contacted/emailed (from outreach_events table).
+
+"get_replies"
+  PURPOSE: Show email replies received from prospects (interested leads).
+
+"run_full_pipeline"
+  PURPOSE: Trigger end-to-end Scout→Analyst→Writer for a specific industry and location.
+  Only when user explicitly wants to run the whole automated workflow.
+
+"approve_leads"
+  PURPOSE: Mark specific leads as approved so Writer can draft emails for them.
+
+"conversational"
+  PURPOSE: Greeting, thanks, capability question, chit-chat — NO data operation needed.
+
+"unknown"
+  PURPOSE: Ambiguous, multi-step, or unrecognised request — needs free-form reasoning.
+
+=== CONFIDENCE SCORING ===
+Rate your certainty 0.0–1.0:
+- 1.0 = completely certain (e.g. "find 10 healthcare companies in Buffalo")
+- 0.8 = high confidence (most clear requests)
+- 0.6 = some ambiguity (short/vague message, unclear intent)
+- 0.4 = genuinely ambiguous (could be two different actions)
+- <0.5 = you are guessing — use "unknown" instead
+
+=== CONTEXT RULES ===
+- Use conversation history to resolve follow-ups ("and low?", "what about medium?" after seeing leads → get_leads)
+- Short follow-up messages inherit context from prior turns
+
+Tier: "high", "medium", "low", or "" if not mentioned
+Industry: canonical name e.g. "healthcare", "manufacturing" or "" if not mentioned
+Location: e.g. "Buffalo NY" or "" if not mentioned
+Count: number if mentioned, default 10"""
 
 
-# ---------------------------------------------------------------------------
-# Intent pre-parser — extracts structured args for simple lead/outreach queries
-# so llama3.2 never has to guess filter values for common requests.
-# ---------------------------------------------------------------------------
-
-_KNOWN_INDUSTRIES = [
-    "healthcare", "hospitality", "manufacturing", "retail", "education",
-    "logistics", "construction", "food", "government", "public sector",
-    "real estate", "finance", "technology", "telecom",
-]
-
-_TIER_KEYWORDS = {
-    "high": ["high tier", "high-tier", "top leads", "top scoring", "best leads", "high scoring"],
-    "medium": ["medium tier", "medium-tier", "medium leads"],
-    "low": ["low tier", "low-tier", "low leads", "low scoring"],
-}
+_CONFIDENCE_THRESHOLD = 0.65  # below this → ask user to clarify instead of guessing
 
 
-def _extract_lead_intent(message: str) -> dict | None:
-    """If the message is clearly a leads query, return {tier, industry} extracted from text.
-    Returns None if this is not a simple leads query (let the agent loop handle it).
+def _extract_intent(message: str, history: list[dict], llm: Any) -> dict[str, Any]:
+    """Use LLM to classify user intent using message + conversation history.
+
+    Returns structured dict: {action, confidence, tier, industry, location, count}
+    - confidence < _CONFIDENCE_THRESHOLD signals the caller to ask for clarification.
+    - Falls back to {"action": "unknown", "confidence": 0.0} on any parsing error.
+
+    Agentic concept: Confidence-Gated Routing — the LLM rates its own certainty.
+    Low confidence triggers a disambiguation dialog instead of a wrong action.
     """
-    msg = message.lower()
-    is_leads_query = bool(re.search(r'\b(show|get|list|give|fetch|find|what are|display)\b.*\blead', msg)
-                          or re.search(r'\blead(s)?\b', msg))
-    if not is_leads_query:
-        return None
+    history_lines = []
+    for m in (history or [])[-6:]:  # last 6 messages = 3 turns of context
+        role = "User" if m.get("role") == "user" else "Agent"
+        content = str(m.get("content", ""))[:250].replace("\n", " ")
+        history_lines.append(f"{role}: {content}")
 
-    tier = ""
-    for t, keywords in _TIER_KEYWORDS.items():
-        if any(kw in msg for kw in keywords):
-            tier = t
-            break
+    history_section = (
+        "Recent conversation (use this for context):\n" + "\n".join(history_lines)
+        if history_lines else ""
+    )
 
-    industry = ""
-    for ind in _KNOWN_INDUSTRIES:
-        if ind in msg:
-            industry = ind
-            break
+    prompt = _INTENT_PROMPT.format(
+        history_section=history_section,
+        message=message,
+    )
 
-    return {"tier": tier, "industry": industry}
+    try:
+        response = llm.invoke([HumanMessage(content=prompt)])
+        text = str(response.content).strip()
+        if text.startswith("```"):
+            text = "\n".join(l for l in text.splitlines() if not l.startswith("```")).strip()
+        result = json.loads(text)
 
+        valid_actions = {
+            "get_leads", "search_companies", "get_outreach_history", "get_replies",
+            "run_full_pipeline", "approve_leads", "conversational", "unknown",
+        }
+        if result.get("action") not in valid_actions:
+            result["action"] = "unknown"
 
-def _extract_outreach_intent(message: str) -> str | None:
-    """Return 'history' or 'replies' if message matches, else None."""
-    msg = message.lower()
-    if any(kw in msg for kw in ["who did we email", "outreach", "already emailed", "contacted"]):
-        return "history"
-    if any(kw in msg for kw in ["repl", "responded", "interested", "wrote back"]):
-        return "replies"
-    return None
+        # Normalise confidence to float 0–1
+        try:
+            result["confidence"] = float(result.get("confidence", 0.8))
+        except (TypeError, ValueError):
+            result["confidence"] = 0.8
+
+        logger.info(
+            "[chat] intent: action=%s confidence=%.2f tier=%s industry=%s location=%s count=%s",
+            result.get("action"), result.get("confidence"),
+            result.get("tier"), result.get("industry"),
+            result.get("location"), result.get("count"),
+        )
+        return result
+
+    except Exception as exc:
+        logger.warning("[chat] intent extraction failed: %s — falling back to agent loop", exc)
+        return {"action": "unknown", "confidence": 0.0, "tier": "", "industry": "", "location": "", "count": 10}
 
 
 # ---------------------------------------------------------------------------
 # Main entry point
 # ---------------------------------------------------------------------------
 
-def run_chat(message: str, db: Session, run_id: str | None = None) -> dict[str, Any]:
+def run_chat(
+    message: str,
+    db: Session,
+    run_id: str | None = None,
+    history: list[dict] | None = None,
+) -> dict[str, Any]:
     """Process a natural-language message and return a reply with structured data.
 
     Args:
         message: User's natural-language input
         db: SQLAlchemy session
-        run_id: Optional pre-generated UUID string — lets the caller reserve a run_id
-                before spawning this in a background thread so the frontend can start
-                polling progress logs immediately.
+        run_id: Optional pre-generated UUID string for background polling
+        history: Recent conversation messages [{role, content}] for context carry-forward
 
     Returns:
-        {
-            "reply":  str,    # agent's text response shown in chat bubble
-            "data":   dict,   # structured results rendered as inline cards in UI
-            "run_id": str,    # UUID of the agent_run row — for polling /pipeline/run/{id}
-        }
+        {"reply": str, "data": dict, "run_id": str}
     """
+    from langchain_core.messages import SystemMessage
+
     results: dict[str, Any] = {
         "companies": [],
         "leads": [],
@@ -565,6 +630,7 @@ def run_chat(message: str, db: Session, run_id: str | None = None) -> dict[str, 
         "pipeline_summary": None,
     }
 
+    history = history or []
     parsed_run_id = uuid.UUID(run_id) if run_id else None
     run = _create_run(db, {"message": message}, run_id=parsed_run_id)
 
@@ -572,71 +638,172 @@ def run_chat(message: str, db: Session, run_id: str | None = None) -> dict[str, 
         llm = _build_llm()
         tools = _make_tools(db, results, run)
 
-        if _is_conversational(message):
-            # Tier 1: small talk / capability question — direct LLM reply, no tools
-            from langchain_core.messages import SystemMessage
+        # Single LLM call: understand what the user wants using message + history
+        intent = _extract_intent(message, history, llm)
+        action = intent.get("action", "unknown")
+
+        _log_action(db, run.id, "chat", "intent", "info",
+                    output_summary=f"action={action} tier={intent.get('tier','')} "
+                                   f"industry={intent.get('industry','')} "
+                                   f"msg={message[:80]}")
+
+        # ------------------------------------------------------------------
+        # Confidence-Gated Routing
+        # If the LLM isn't sure what the user wants, ask instead of guessing.
+        # This prevents wrong tool calls AND hallucination from wrong routing.
+        # Only non-conversational, non-unknown actions need a confidence gate —
+        # those two are always safe to proceed with.
+        # ------------------------------------------------------------------
+        confidence = intent.get("confidence", 0.8)
+        gated_actions = {"get_leads", "search_companies", "run_full_pipeline",
+                         "get_outreach_history", "get_replies", "approve_leads"}
+        if action in gated_actions and confidence < _CONFIDENCE_THRESHOLD:
+            action_labels = {
+                "get_leads": "show you scored leads from our database",
+                "search_companies": "search for new companies externally",
+                "get_outreach_history": "show outreach history",
+                "get_replies": "show email replies",
+                "run_full_pipeline": "run the full Scout→Analyst→Writer pipeline",
+                "approve_leads": "approve leads for outreach",
+            }
+            label = action_labels.get(action, action)
+            disambig_prompt = (
+                f"User said: \"{message}\"\n"
+                f"I think they want to: {label}, but I'm not fully certain (confidence={confidence:.0%}).\n\n"
+                "Ask one short clarifying question to confirm what they need. "
+                "Offer 2 clear options if helpful. Do not perform any action yet."
+            )
+            response = llm.invoke([SystemMessage(content=SYSTEM_PROMPT), HumanMessage(content=disambig_prompt)])
+            reply = response.content
+            _log_action(db, run.id, "chat", "disambiguation", "info",
+                        output_summary=f"Low confidence ({confidence:.0%}) on action={action} — asked user to clarify")
+            _finish_run(db, run, "completed")
+            return {"reply": reply, "data": results, "run_id": str(run.id)}
+
+        if action == "conversational":
             response = llm.invoke([
                 SystemMessage(content=SYSTEM_PROMPT),
                 HumanMessage(content=message),
             ])
             reply = response.content
 
-        elif (lead_intent := _extract_lead_intent(message)) is not None:
-            # Tier 2: simple leads query — extract filters in Python, call tool directly
-            # so llama3.2 never guesses wrong tier/industry values
-            tier = lead_intent["tier"]
-            industry = lead_intent["industry"]
-            _log_action(db, run.id, "chat", "intent_parse", "info",
-                        output_summary=f"Leads query detected — tier={tier or 'all'}, industry={industry or 'all'}")
-            tool_result = tools[1].invoke({"tier": tier, "industry": industry})  # tools[1] = get_leads
-            # Ask LLM to summarise the result in plain English
-            from langchain_core.messages import SystemMessage
-            filter_desc = []
-            if industry:
-                filter_desc.append(f"industry={industry}")
-            if tier:
-                filter_desc.append(f"tier={tier}")
-            filters_used = ', '.join(filter_desc) or 'none'
+        elif action == "get_leads":
+            tier = intent.get("tier", "")
+            industry = intent.get("industry", "")
+            tool_result = tools[1].invoke({"tier": tier, "industry": industry})
             parsed = json.loads(tool_result)
             count = parsed.get("count", 0)
+            filter_parts = [p for p in [tier, industry] if p]
+            filter_desc = " + ".join(filter_parts) if filter_parts else "no filters"
             summarise_prompt = (
-                f"The user asked: \"{message}\"\n"
-                f"Filters applied: {filters_used}\n"
-                f"Leads found: {count}\n\n"
-                f"Write a short 1-2 sentence reply confirming what was found. "
-                f"Do NOT greet the user. Do NOT repeat the filters verbatim. "
-                f"If count is 0, suggest the user try without a tier filter or check the Leads page."
+                f"User asked: \"{message}\"\n"
+                f"Filters: {filter_desc} | Leads found: {count}\n\n"
+                "Write a short 1-2 sentence reply confirming what was found. "
+                "Do NOT greet. If count is 0, suggest removing filters or checking the Leads page."
             )
-            response = llm.invoke([
-                SystemMessage(content=SYSTEM_PROMPT),
-                HumanMessage(content=summarise_prompt),
-            ])
+            response = llm.invoke([SystemMessage(content=SYSTEM_PROMPT), HumanMessage(content=summarise_prompt)])
             reply = response.content
 
-        elif (outreach_intent := _extract_outreach_intent(message)) is not None:
-            # Tier 2: outreach history or replies — call tool directly
-            from langchain_core.messages import SystemMessage
-            if outreach_intent == "history":
-                tool_result = tools[2].invoke({})  # get_outreach_history
-                label = "outreach records"
-            else:
-                tool_result = tools[3].invoke({})  # get_replies
-                label = "replies"
+        elif action == "get_outreach_history":
+            tool_result = tools[2].invoke({})
             parsed = json.loads(tool_result)
             count = parsed.get("count", 0)
             summarise_prompt = (
-                f"The user asked: \"{message}\"\n"
-                f"{label.title()} found: {count}\n\n"
-                f"Write a short 1-2 sentence reply confirming what was found. Do NOT greet the user."
+                f"User asked: \"{message}\"\nOutreach records found: {count}\n\n"
+                "Write a short 1-2 sentence reply. Do NOT greet."
             )
-            response = llm.invoke([
-                SystemMessage(content=SYSTEM_PROMPT),
-                HumanMessage(content=summarise_prompt),
-            ])
+            response = llm.invoke([SystemMessage(content=SYSTEM_PROMPT), HumanMessage(content=summarise_prompt)])
             reply = response.content
+
+        elif action == "get_replies":
+            tool_result = tools[3].invoke({})
+            parsed = json.loads(tool_result)
+            count = parsed.get("count", 0)
+            summarise_prompt = (
+                f"User asked: \"{message}\"\nReplies found: {count}\n\n"
+                "Write a short 1-2 sentence reply. Do NOT greet."
+            )
+            response = llm.invoke([SystemMessage(content=SYSTEM_PROMPT), HumanMessage(content=summarise_prompt)])
+            reply = response.content
+
+        elif action == "search_companies":
+            industry = intent.get("industry", "").strip()
+            location = intent.get("location", "").strip()
+            count = int(intent.get("count") or 10)
+
+            # Observe first — ask for anything missing before running Scout
+            missing = []
+            if not location:
+                missing.append("location (e.g. Buffalo NY, Rochester NY, Chicago IL)")
+            if not industry:
+                missing.append("type of companies (e.g. healthcare, schools, manufacturing)")
+
+            if missing:
+                clarify_prompt = (
+                    f"User asked: \"{message}\"\n"
+                    f"To search for companies I still need: {', '.join(missing)}.\n\n"
+                    "Ask the user for this in one short, friendly sentence. Do not run any search yet."
+                )
+                response = llm.invoke([SystemMessage(content=SYSTEM_PROMPT), HumanMessage(content=clarify_prompt)])
+                reply = response.content
+            else:
+                # Call the tool directly — never use agent loop here.
+                # The agent loop risks hallucinating company names (especially with llama3.2)
+                # because the follow-up message might be a bare location like "Rochester in NY"
+                # which gives the LLM no clear instruction to call the tool.
+                tool_result = tools[0].invoke({"industry": industry, "location": location, "count": count})
+                parsed = json.loads(tool_result)
+                if "error" in parsed:
+                    reply = (
+                        f"I ran into an error searching for {industry} companies in {location}: "
+                        f"{parsed['error']}"
+                    )
+                else:
+                    found = parsed.get("found", 0)
+                    summarise_prompt = (
+                        f"User asked to find {industry} companies in {location}. "
+                        f"Scout found {found} companies and saved them to the database.\n\n"
+                        "Write a short 1-2 sentence reply confirming what was found. "
+                        "Do NOT list company names — the UI shows them as cards. Do NOT greet."
+                    )
+                    response = llm.invoke([SystemMessage(content=SYSTEM_PROMPT), HumanMessage(content=summarise_prompt)])
+                    reply = response.content
+
+        elif action == "run_full_pipeline":
+            industry = intent.get("industry", "").strip()
+            location = intent.get("location", "").strip()
+            count = int(intent.get("count") or 10)
+
+            missing = []
+            if not location:
+                missing.append("location")
+            if not industry:
+                missing.append("industry")
+
+            if missing:
+                clarify_prompt = (
+                    f"User asked: \"{message}\"\n"
+                    f"To run the full pipeline I need: {', '.join(missing)}.\n\n"
+                    "Ask the user for this in one short sentence."
+                )
+                response = llm.invoke([SystemMessage(content=SYSTEM_PROMPT), HumanMessage(content=clarify_prompt)])
+                reply = response.content
+            else:
+                # Call tool directly — same reason as search_companies above
+                tool_result = tools[4].invoke({"industry": industry, "location": location, "count": count})
+                parsed = json.loads(tool_result)
+                if "error" in parsed:
+                    reply = f"Pipeline error: {parsed['error']}"
+                else:
+                    summarise_prompt = (
+                        f"Full pipeline completed for {industry} in {location}. Results: {parsed}\n\n"
+                        "Write a short 2-3 sentence summary of what was done. Do NOT greet."
+                    )
+                    response = llm.invoke([SystemMessage(content=SYSTEM_PROMPT), HumanMessage(content=summarise_prompt)])
+                    reply = response.content
 
         else:
-            # Tier 3: complex or multi-step request — full agent loop with tools
+            # unknown — full agent loop handles complex / multi-step requests
             agent = create_agent(llm, tools, system_prompt=SYSTEM_PROMPT)
             response = agent.invoke({"messages": [HumanMessage(content=message)]})
             reply = response["messages"][-1].content
