@@ -1,284 +1,303 @@
 # Agentic Transformation Plan
 
-## 1. Vision: What We Want To Build
+## 1. Vision
 
-Build an agentic lead-generation platform where the system decides what to do next at runtime instead of following only fixed, manual orchestration steps.
+Build an agentic lead-generation platform where agents **reason, decide, act, and evaluate**
+— not just execute fixed automation steps.
 
-Target outcome:
-- Airflow triggers runs on schedule.
-- LangGraph controls in-run decisions.
-- Agents select tools, evaluate outcomes, retry with new strategies, and stop using policy guardrails.
-- Every run is observable, auditable, and improvable.
+```
+Automation (what we had):
+  User → fixed code → fixed query → fixed formula → result
 
-## 2. What "Agentic" Means In This Project
+Agentic (what we are building):
+  User → LLM reasons about intent
+       → decides which tools to call and in what order
+       → executes tools (APIs, DB, math — deterministic)
+       → evaluates result quality
+       → loops if result is not good enough
+       → returns result
+```
 
-Agentic behavior we want:
-- Dynamic planning: choose next action based on current state.
-- Tool use: select among DB sources, Tavily, scraper, enrichment, writer, outreach.
-- Critique and correction: evaluate output quality, then retry or branch.
-- Memory: use prior run outcomes to improve future decisions.
-- Bounded autonomy: policy limits for cost, retries, and approvals.
+**LLM = decision and reasoning layer only.**
+**Tools = deterministic execution (APIs, DB queries, math formulas).**
 
-Not agentic behavior:
-- Static step chains only.
-- Hardcoded source order without runtime adaptation.
-- No runtime quality evaluator.
+---
 
-## 3. Core Technology Stack
+## 2. What "Agentic" Means Here
 
-Primary runtime stack:
-- LangGraph: orchestration brain (state machine, branching, loops, retries).
-- LangChain: model + prompt + tool abstraction and structured outputs.
-- FastAPI: trigger and status API.
-- PostgreSQL: business data + agent memory + run logs.
-- Airflow: scheduler and external trigger only.
-- Tavily + scraping stack: discovery and collection tools.
+Agentic behaviors we are building:
 
-Optional later:
-- A2A protocol for cross-service agent communication.
+| Behavior | Example |
+|---|---|
+| **Dynamic query planning** | "find schools" → LLM generates 5 search variants, not one hardcoded string |
+| **Data gap detection** | Analyst notices employee_count=0 → decides to re-enrich before scoring |
+| **Industry inference** | Company name "Buffalo Surgical" → LLM classifies as "healthcare" without exact match |
+| **Output evaluation** | Writer Critic scores draft 0–10, triggers rewrite if quality is low |
+| **Retry with feedback** | Writer sees Critic's reason → rewrites with targeted instruction |
+| **Quality loops** | Scout checks if enough results found → generates more queries if not |
+| **Context carry-forward** | Chat: "show me healthcare leads" → "filter to deregulated states" → LLM adds filter without restarting |
 
-## 4. A2A Protocol Decision
+NOT agentic (stays rule-based — intentionally):
+- Math calculations (spend, savings, scores) — LLM would hallucinate numbers
+- DB queries — deterministic SQL
+- Email sending — no reasoning needed
+- Score threshold comparisons — business rules
 
-Phase 1-2 decision:
-- Do not use A2A yet.
+---
 
-Why:
-- Agents are in one codebase and one deployment boundary.
-- LangGraph shared state is simpler and faster to implement.
-- A2A adds distributed system overhead (transport, auth, routing, schema contracts).
+## 3. Technology Stack
 
-When to adopt A2A:
-- Teams own separate agent services independently.
-- Agents need independent scaling or cross-platform federation.
-- Multi-tenant agent interoperability is needed.
+Primary approach: **LLM reasoning layer on top of existing deterministic tools**
 
-## 5. Agentic System Components
+| Layer | Technology | Role |
+|---|---|---|
+| LLM provider (default) | Ollama + llama3.2 (local) | Zero cost, runs on host Mac |
+| LLM provider (optional) | OpenAI GPT-4o-mini | ~$0.005/run, cloud fallback |
+| LLM framework | LangChain | Tool calling, prompt management |
+| Chat agent | LangChain ReAct | Already live — conversational interface |
+| API | FastAPI | Trigger endpoints, background tasks |
+| Database | PostgreSQL (AWS RDS) | Business data + agent memory |
+| Scheduler | Airflow (Phase 5) | Scheduled runs — add-on, not required |
 
-Required components:
-- Planner: creates and updates run strategy.
-- Executor nodes: Scout, Analyst, Writer, Outreach, Tracker actions.
-- Critic/Evaluator: checks quality and confidence after each major step.
-- Policy engine: budget, retry, compliance, approval rules.
-- Memory manager: short-term and long-term learning.
-- Observability layer: traces, metrics, cost, errors, decisions.
+**Note on LangGraph:** LangGraph was considered for orchestrating state machines between agents.
+Decision: not used in current phases. The LLM reasoning layer achieves agentic behavior without
+a full graph framework. LangGraph may be adopted in Phase 5+ if cross-agent state sharing becomes complex.
+
+---
+
+## 4. Agentic Architecture
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                LLM REASONING LAYER                          │
+│                                                             │
+│  Scout:    query planning · deduplication · quality check   │
+│  Analyst:  industry inference · data gap detection          │
+│            re-enrichment decision · score narration         │
+│  Writer:   context-driven generation (best angle for co.)   │
+│  Critic:   quality evaluation · rewrite instruction         │
+│  Chat:     dynamic filter building · context carry-forward  │
+└──────────────────────────┬──────────────────────────────────┘
+                           │ decides what to call
+┌──────────────────────────▼──────────────────────────────────┐
+│                TOOLS LAYER (deterministic)                  │
+│                                                             │
+│  Google Maps API  ·  Yelp API  ·  Tavily search             │
+│  Apollo org enrichment  ·  Hunter contact finder            │
+│  Website crawler (requests + BeautifulSoup)                 │
+│  Spend calculator  ·  Score formula  ·  Savings calculator  │
+│  PostgreSQL queries  ·  SendGrid email sender               │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 5. Phase-by-Phase Plan
+
+### Phase A — Agentic Analyst ✅ COMPLETE (2026-03-22)
+
+**What we have now:**
+- Industry classification: exact string match only — `"healthcare"` → 90pts, `"unknown"` → 45pts penalty
+- Data gaps: if `employee_count=0` → silently use 0, score penalized
+- Score reason: hardcoded template string filled with variables
+- No feedback loop: bad data → bad score, never retried
+
+**What changes:**
+1. `llm_inspector.py` (new) — LLM reads company name + crawled text → infers industry + detects data gaps → returns action: `score_now` or `enrich_before_scoring`
+2. `analyst_agent.gather_company_data()` — calls inspector before scoring, runs re-enrichment loop if needed (max 2 loops)
+3. `score_engine.generate_score_reason()` — replaced with LLM narrator that generates text from company context
+
+**How it works:**
+```
+Load company from DB
+  ↓
+LLM Data Inspector (~100 tokens):
+  Input:  name, website, industry, employee_count, site_count, crawled_text
+  Output: { "inferred_industry": "healthcare",
+            "data_gaps": ["employee_count"],
+            "action": "enrich_before_scoring" }
+  ↓
+If enrich_before_scoring:
+  crawl → Apollo → re-check → LLM re-evaluates
+  ↓
+score_engine.compute_score(...)   ← unchanged, deterministic
+  ↓
+LLM Score Narrator (~80 tokens):
+  "250-employee healthcare company, 3 sites in deregulated NY —
+   strong audit candidate with ~$180k annual savings potential"
+```
+
+**Files built:**
+- `agents/analyst/llm_inspector.py` — NEW: `inspect_company()` + `generate_score_narrative()` + `_call_llm()` + `_fallback_narrative()`
+- `agents/analyst/analyst_agent.py` — UPDATED: `gather_company_data()` wires inspector + re-enrichment loop; `process_one_company()` uses LLM narrator; `run()` logs inspector decisions to `agent_run_logs`
+
+**LLM calls per company:** 2 (~180 tokens). Skipped entirely if all data present.
+**Fallback:** any LLM failure falls back silently to rule-based behavior — scoring never blocked.
+
+---
+
+### Phase B — Agentic Scout ✅ COMPLETE (2026-03-22)
+
+**What we had:**
+- One fixed query per source: `"{industry} in {location}"`
+- No reasoning about what variants to try
+- Deduplication: rule-based domain/name match only
+- No quality loop: stopped regardless of how few results were found
+
+**What changed:**
+1. `llm_query_planner.py` (new) — LLM generates 3–5 search query variants from user intent
+2. Scout runs ALL variants across Google Maps + Tavily (each query → separate API call)
+3. `llm_deduplicator.py` (new) — domain dedup pass + LLM near-duplicate review (name similarity ≥ 0.75)
+4. Quality check: if results < 80% of target → `plan_retry_queries()` → 3 new queries → retry once
+5. `google_maps_client.py` — added `query_text` param so planner can override the default query
+6. `search_client.py` — added `search_with_queries()` function to accept LLM-planned query list
+
+**How it works:**
+```
+User: "find schools in Buffalo"
+  ↓
+LLM Query Planner (~80 tokens):
+  ["elementary schools Buffalo NY", "private schools Western New York",
+   "K-12 school districts Erie County", "universities Buffalo NY"]
+  ↓
+Run ALL queries → Google Maps (each query = separate Places API call) + Tavily
+  ↓
+LLM Deduplicator (~150 tokens per batch):
+  Pass 1: domain exact match → drops obvious duplicates
+  Pass 2: name-similar pairs → LLM decides: "Buffalo City School District" + "BCSD" → same
+  ↓
+Quality Check: found 12, target 20 → plan_retry_queries() → 3 more queries → retry once
+  ↓
+Save to DB
+```
+
+**Files built:**
+- `agents/scout/llm_query_planner.py` — NEW: `plan_queries()` + `plan_retry_queries()` + `_call_llm()` + `_fallback_queries()` + `_retry_fallback()`
+- `agents/scout/llm_deduplicator.py` — NEW: `deduplicate()` + `_rule_dedup()` + `_find_suspicious_pairs()` + `_ask_llm_which_are_duplicates()`
+- `agents/scout/scout_agent.py` — UPDATED: query planner wired at start of `run()`, multi-query loop for API sources, LLM dedup before DB save, quality check retry loop
+- `agents/scout/google_maps_client.py` — UPDATED: `search_companies()` accepts `query_text` param
+- `agents/scout/search_client.py` — UPDATED: added `search_with_queries()` function
+
+**LLM calls per Scout run:** up to 3 (~300 tokens). Fallback on any LLM error — Scout never blocked.
+
+---
+
+### Phase 3 — Agentic Writer + Critic Loop
+
+**What we have now:**
+- Template fill → LLM polishes the template
+- No quality evaluation of output
+- No retry — first LLM response is saved
+
+**What changes:**
+1. Writer generates from company context (not template slots) — LLM reasons about which angle works best for this company
+2. `critic_agent.py` (new) — evaluates draft on 0–10 rubric, returns score + rewrite instruction
+3. Rewrite loop: if score < 7, Writer sees the instruction and rewrites (max 2 loops)
+4. Confidence flag: if still < 7 after 2 loops, save with `low_confidence=true`
+
+**How it works:**
+```
+Writer (~400 tokens):
+  Reads company data → reasons about angle → generates full email
+  ↓
+Critic (~250 tokens):
+  Evaluates: personalized? specific number? clear CTA? sounds human?
+  Output: { score: 6, reason: "no savings figure",
+            instruction: "add $180k estimate in paragraph 2" }
+  ↓
+If score < 7: Writer rewrites with instruction → Critic re-evaluates (max 2 loops)
+If score ≥ 7: save draft → human review queue
+```
+
+**Files changed:** `writer_agent.py`, `llm_connector.py`, new `critic_agent.py`
+**LLM calls per email:** 2–6 (~1,000 tokens)
+
+---
+
+### Phase D — Chat Dynamic Filters (minor enhancement)
+
+**What we have now:**
+- Tier 2 routing uses Python string matching for `tier` and `industry` extraction
+- Tools have fixed parameter schemas
+
+**What changes:**
+- LLM builds filter combinations from natural language, including combinations Python matching misses
+- Context carry-forward: multi-turn filter refinement without restarting
+
+**LLM calls:** already in use (ReAct loop), minimal additional tokens
+
+---
 
 ## 6. Memory Model
 
-### 6.1 Short-term Memory (Run State)
+### Short-term (per run, in-process)
+- Company data accumulated during Scout
+- Enrichment results per company
+- Scores and reasoning per company
+- Critic feedback per draft
 
-Stored in LangGraph state during one run:
-- target industry/location/count
-- sources attempted and outcomes
-- lead quality metrics
-- errors and retries
-- selected next action and rationale
+### Long-term (PostgreSQL tables)
+| Table | Tracks | Used by |
+|---|---|---|
+| `source_performance` | Quality score per source per industry/location | Scout — ranks sources at run start |
+| `email_win_rate` | Reply rate per angle per industry | Writer — picks best angle |
+| `agent_run_logs` | Every decision + action per run | Observability, debugging |
+| `human_approval_requests` | Human review queue + outcomes | Orchestrator |
 
-### 6.2 Long-term Memory (Persistent)
+---
 
-Stored in PostgreSQL tables:
-- source performance by industry/location
-- successful and failed patterns
-- prompt versions and quality scores
-- run summaries and decision traces
-- outreach outcome feedback
+## 7. Token Cost Estimate
 
-### 6.3 Retrieval Policy
+Per full pipeline run (20 companies, 5 emails):
 
-At run start:
-- Load prior source performance for target context.
+| Stage | Calls | Tokens | GPT-4o-mini cost |
+|---|---|---|---|
+| Scout query planning | 3 | ~300 | $0.00045 |
+| Analyst per company ×20 | 40 | ~3,600 | $0.0054 |
+| Writer + Critic per email ×5 | 20 | ~5,000 | $0.0075 |
+| Chat per message | 1 | ~200 | $0.0003 |
+| **Total** | | **~9,100** | **~$0.013** |
 
-During run:
-- Update memory after each major node.
+With **Ollama (local)**: $0.00 per run.
 
-At run end:
-- Persist summary, costs, and learning signals.
+---
 
-## 7. End-to-End Flow (Target)
+## 8. Observability
 
-1. Airflow triggers a run (schedule or manual).
-2. FastAPI creates run context and starts LangGraph.
-3. Planner node proposes strategy.
-4. Scout strategy chooses source path:
-- DB sources first
-- Tavily fallback
-- adaptive retries based on quality
-5. Scrape/extract node collects leads.
-6. Critic evaluates lead quality and coverage.
-7. Branch:
-- if quality is enough -> Analyst
-- if quality is low -> replan and try alternate source strategy
-8. Analyst scores and estimates value.
-9. Enrichment fills contacts/signals.
-10. Writer drafts messages.
-11. Writer critic loop approves or rewrites.
-12. Outreach sends only policy-compliant approved drafts.
-13. Tracker captures replies/events.
-14. Memory update writes learned outcomes.
-15. Run completes with full trace and metrics.
+Every LLM call is logged to `agent_run_logs` with:
+- `agent` — which agent made the call
+- `action` — what the LLM was asked to do (e.g. `infer_industry`, `critique_draft`)
+- `output_summary` — what it returned (JSON output or score)
+- `duration_ms` — how long it took
 
-## 8. Startup Flow (How It Starts)
+LangSmith tracing enabled (set `LANGCHAIN_TRACING_V2=true` in `.env`) — shows full LLM trace per run.
 
-Control-plane startup:
-1. Docker services start.
-2. API validates DB connectivity.
-3. Airflow schedules DAG triggers.
+---
 
-Run startup:
-1. Trigger request hits FastAPI.
-2. API creates run record and initial state.
-3. LangGraph run starts with policy constraints.
-4. Planner selects initial tool path.
+## 9. Build Order
 
-## 9. Observability Plan
+```
+Step 1 → Phase A: Analyst LLM reasoning layer           ✅ DONE (2026-03-22)
+         LLM infers industry, detects data gaps, re-enriches, writes narrative reason
 
-### 9.1 Metrics
+Step 2 → Phase B: Scout agentic query planning           ✅ DONE (2026-03-22)
+         LLM generates 3–5 query variants, multi-query API calls, LLM dedup, quality retry
 
-Track per run and per node:
-- node latency
-- success/failure counts
-- retry counts
-- lead yield by source
-- enrichment success rate
-- draft approval rate
-- outreach and reply conversion
-- token/tool/API cost
+Step 3 → Phase 3: Writer + Critic loop                   🔲 NEXT
+         Completes the email generation pipeline with quality evaluation
 
-### 9.2 Logs and Traces
+Step 4 → Phase D: Chat dynamic filter generation         🔲 PLANNED
+         Already mostly working — small enhancement to filter combinations
+```
 
-Capture:
-- decision rationale at each branch
-- input/output summaries per node
-- error class and fallback decision
-- policy gate outcomes
+---
 
-### 9.3 Dashboards and Alerts
+## 10. Success Criteria
 
-Dashboards:
-- run timeline and node outcomes
-- source quality heatmap by industry/location
-- cost per qualified lead
-
-Alerts:
-- repeated run failures
-- quality below threshold
-- abnormal cost spikes
-- blocked approval queue
-
-## 10. Phases We Will Work On
-
-### Phase 0: Baseline and Guardrails
-
-Goals:
-- Define run state schema.
-- Define policy limits (max retries, cost caps, approval gates).
-- Add run and decision audit table(s).
-
-Deliverables:
-- documented state contract
-- policy config
-- baseline observability fields
-
-### Phase 1: Agentic Scout
-
-Goals:
-- Convert Scout into multi-node graph (planner, execute, critic, replan).
-- Use DB source memory + Tavily fallback adaptively.
-
-Deliverables:
-- dynamic source strategy
-- quality-based retry loop
-- source performance writeback
-
-### Phase 2: Agentic Writer
-
-Goals:
-- Add writer planner/critic/rewrite loop.
-- Use structured quality rubric for email outputs.
-
-Deliverables:
-- confidence-scored drafts
-- rewrite loop with max attempts
-
-### Phase 3: Cross-Stage Replanning
-
-Goals:
-- Add run-level replanning across Scout/Analyst/Writer.
-- Introduce branch-on-failure pathways.
-
-Deliverables:
-- master graph with conditional edges
-- failure recovery policies
-
-### Phase 4: Learning and Optimization
-
-Goals:
-- Use long-term memory to improve source/prompt selection.
-- Add outcome-based strategy tuning.
-
-Deliverables:
-- memory-driven strategy ranking
-- prompt/source win-rate analytics
-
-### Phase 5: Optional Distributed Agents (A2A)
-
-Goals:
-- adopt A2A only if separate deployable agent services are required.
-
-Deliverables:
-- inter-agent contracts
-- service auth/routing/monitoring plan
-
-## 11. What We Will Learn
-
-Technical learning:
-- how to design bounded autonomous workflows
-- how to combine deterministic tools with LLM decisions
-- how to evaluate and improve agent quality over time
-- how to observe and debug agent behavior
-
-Business learning:
-- which sources produce highest-quality leads by context
-- which outreach patterns convert best
-- true cost per qualified lead and per meeting
-
-## 12. What Becomes Unnecessary In Agentic World
-
-Reduced/removed over time:
-- hardcoded source ordering logic in multiple places
-- fixed static step chaining for every run
-- manual source list maintenance as primary mechanism
-- brittle if/else orchestration spread across modules
-
-Still necessary:
-- policy controls and approval gates
-- deterministic data validation
-- compliance and audit logging
-
-## 13. Success Criteria
-
-System-level:
-- higher qualified lead yield per run
-- lower manual intervention per run
-- stable run completion under failures
-- explainable and auditable decisions
-
-Ops-level:
-- full run trace visibility
-- measurable cost and quality metrics
-- clear rollback and safe-mode behavior
-
-## 14. Final Operating Model (End State)
-
-End-state architecture:
-- Airflow schedules and triggers.
-- FastAPI hosts control-plane API.
-- LangGraph runs the agentic workflow.
-- LangChain standardizes LLM/tool interactions.
-- PostgreSQL stores business data and agent memory.
-- Observability stack shows decision traces, costs, and quality.
-
-In short:
-- Airflow says when to run.
-- Agentic graph decides how to run.
-- Tools execute real work.
-- Memory improves each next run.
+| Metric | Target |
+|---|---|
+| Industry correctly classified | > 90% of companies (vs ~60% with exact string match) |
+| Companies scored with real employee_count | > 70% (vs ~30% today) |
+| Email draft quality (Critic score) | Average ≥ 7 after at most 1 rewrite |
+| Scout query coverage | User intent matched by at least 3 query variants |
+| Chat filter accuracy | Correct filters extracted from natural language ≥ 95% |

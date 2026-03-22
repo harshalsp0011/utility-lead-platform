@@ -9,6 +9,10 @@ Never remove a remaining item — mark it done instead.
 
 ## Agent Flow Reference
 
+> **Note:** The flows below describe the current rule-based implementation.
+> The agentic redesign (LLM reasoning layer) is documented in the "Agentic Intelligence Layer" section below.
+> Each phase there states exactly what changes and how.
+
 ### Where does company data come from?
 
 All company data originates from the **Scout agent**. The Analyst never discovers companies — it only scores companies Scout already saved.
@@ -66,7 +70,7 @@ For each company found:
 
 ---
 
-### Analyst Agent Flow
+### Analyst Agent Flow (Phase A — Agentic, current)
 
 Analyst is triggered with: list of `company_ids` (status = `new` or `enriched`)
 
@@ -78,69 +82,82 @@ Step 1: Load company from DB
     │   Gets: name, website, industry, state, employee_count, site_count
     │
     ▼
-Step 2: Gather/enrich data (website crawl — conditional)
-    │
-    ├─ IF website exists AND site_count = 0:
-    │       crawl website (requests + BeautifulSoup fallback if no Playwright)
-    │       → scan homepage + locations page for patterns like "50 locations", "200 employees"
-    │       → update site_count and employee_count for this scoring session
-    │
-    └─ IF no website OR site_count already set:
-            skip crawl — use existing DB values as-is
+Step 2: Website crawl (conditional)
+    │   IF website exists AND (site_count=0 OR employee_count=0):
+    │       crawl with requests + BeautifulSoup
+    │       → extracts location count + employee signals
     │
     ▼
-Step 3: Calculate utility spend
-    │   Look up industry_benchmarks.json for:
+Step 3: Apollo API fallback
+    │   IF employee_count still 0 AND website exists:
+    │       POST /api/v1/organizations/enrich → fills employee_count, state, city
+    │
+    ▼
+Step 4: LLM Inspector  [agents/analyst/llm_inspector.py → inspect_company()]
+    │   SKIPPED if: industry known AND employee_count>0 AND site_count>0
+    │
+    │   Input:  name, website, industry, employee_count, site_count, crawled_text
+    │   Output: { inferred_industry, data_gaps, action, confidence }
+    │
+    │   → If inferred_industry set AND DB industry="unknown": update industry
+    │   → If action="enrich_before_scoring": run re-enrichment loop (Step 4b)
+    │
+    ▼
+Step 4b: Re-enrichment loop (only if LLM requested it, max 2 loops)
+    │   → re-crawl website → re-call Apollo
+    │   → stop early if employee_count found
+    │   → log result to agent_run_logs
+    │
+    ▼
+Step 5: Calculate utility spend  [spend_calculator.py — deterministic]
+    │   Look up industry_benchmarks.json:
     │       avg_sqft_per_site × kwh_per_sqft × electricity_rate_by_state
     │   + telecom_per_employee × employee_count
-    │   → total_spend ($/year estimate)
-    │
+    │   → total_spend ($/year)
     │   Unknown industry → falls back to 'default' benchmark (never crashes)
     │
     ▼
-Step 4: Calculate savings potential
+Step 6: Calculate savings potential  [savings_calculator.py — deterministic]
     │   total_spend × 8%  → savings_low
     │   total_spend × 15% → savings_mid   ← used for scoring
     │   total_spend × 24% → savings_high
     │
     ▼
-Step 5: Data quality score (0–10)
-    │   +points: has_website, has_locations_page, site_count > 1,
-    │            employee_count > 0, contact found in DB
+Step 7: Data quality score (0–10)  [score_engine.assess_data_quality()]
+    │   +2 pts each: has_website, has_locations_page, site_count>0,
+    │                employee_count>0, contact_found
     │
     ▼
-Step 6: Compute score (0–100)
-    │   Weighted formula:
-    │       savings_mid     → bigger savings = higher score
-    │       industry_fit    → healthcare/hospitality/manufacturing = 10
-    │                          office/public_sector = 7
-    │                          others = 5
-    │       site_count      → more sites = more spend = better lead
-    │       data_quality    → penalizes companies with missing data
+Step 8: Compute score (0–100)  [score_engine.compute_score() — deterministic]
+    │   Score = (Recovery×0.40) + (Industry×0.25) + (Multisite×0.20) + (DataQuality×0.15)
+    │   Tier: ≥70=high  ≥40=medium  <40=low
     │
     ▼
-Step 7: Assign tier
-    │   score ≥ 70 → high
-    │   score ≥ 40 → medium
-    │   score < 40 → low
+Step 9: LLM Score Narrator  [llm_inspector.generate_score_narrative()]
+    │   Generates specific sentence from company context
+    │   Falls back to rule-based template if LLM fails
+    │   Example: "250-employee healthcare company, 3 sites in deregulated NY —
+    │             strong audit candidate with ~$180k annual savings potential"
     │
     ▼
-Step 8: Save to DB
-        company_features row  → spend/savings/quality numbers
-        lead_scores row       → score + tier + reason text
-        company.status        → 'scored'
+Step 10: Save to DB
+    │   company_features row  → spend/savings/quality numbers
+    │   lead_scores row       → score + tier + narrative reason + scored_at timestamp
+    │   company.status        → 'scored'
+    │   agent_run_logs row    → "healthcare | score=68 tier=medium | llm: inferred=healthcare action=score_now"
 ```
 
 **What happens if data is missing:**
 
-| Missing data | Impact | Does it crash? |
+| Missing data | Phase A behaviour | Does it crash? |
 |---|---|---|
-| No website | No crawl, data_quality score drops | No |
-| No employee_count | telecom_spend = 0, lower total | No |
-| No site_count | defaults to 1 site in calculations | No |
-| No state | uses national average electricity rate | No |
-| Unknown industry | falls back to 'default' benchmark | No |
-| All missing | still scores — gets low score + low tier | No |
+| `industry = unknown` | LLM infers from name + website text | No |
+| `employee_count = 0` + website exists | LLM triggers re-enrichment loop (max 2x) | No |
+| `employee_count = 0` + no website | Scores with 0 — no enrichment possible | No |
+| `site_count = 0` | Defaults to 1 in calculations | No |
+| `state` missing | Uses national average electricity rate | No |
+| LLM fails/times out | Falls back to rule-based silently | No |
+| All data missing | Still scores — low tier, logged | No |
 
 ---
 
@@ -335,23 +352,342 @@ Bugs fixed and reliability improvements after Phase 2 deployment.
 
 ---
 
-## Phase 3 — Writer + Critic Loop + Human-in-Loop (Email Review)
-Writer drafts emails. Critic checks quality. Human reviews drafts before Outreach sends.
+## Agentic Intelligence Layer — Design Reference
 
-### 3A — Writer Critic Loop
-- [ ] Writer Critic evaluates each draft on a 0–10 quality rubric:
-  - [ ] Has savings estimate/number
-  - [ ] Personalized to company name and industry
-  - [ ] Correct tone (professional, not generic)
-  - [ ] Subject line is specific
-- [ ] If quality score < 7: Writer rewrites (up to 3 attempts)
-- [ ] If score >= 7 after any attempt: draft saved, moves to human review
-- [ ] If 3 attempts fail: draft saved with flag `low_confidence = true`
-- [ ] All rewrite attempts logged to `agent_run_logs`
+This section defines the agentic redesign across all agents.
+"Agentic" means the system **reasons, decides, acts, and evaluates** — not just executes fixed rules.
 
-### 3B — Writer reads email_win_rate
-- [ ] Before generating draft, Writer queries `email_win_rate` for best template per industry
-- [ ] If no history: falls back to default template for that industry
+### What agentic means here
+
+```
+Automation (what we had):
+  User → fixed code → fixed query → fixed formula → result
+
+Agentic (what we are building):
+  User → LLM reasons about intent
+       → decides what tools to call + in what order
+       → executes tools
+       → evaluates result quality
+       → loops if result is not good enough
+       → returns result
+```
+
+**LLM = decision + reasoning layer only**
+**APIs / DB / math = tools it calls (deterministic, never LLM)**
+
+LLM never does math. LLM never calls external APIs directly.
+LLM only: classifies, infers, decides, evaluates, generates text.
+
+---
+
+### Phase A — Agentic Analyst: LLM Reasoning Layer ✅ COMPLETE
+
+#### What was there before (rule-based)
+- Industry classification: exact string match only — `"healthcare"` → 90 pts; `"unknown"` → 45 pts penalty
+- Data gaps: if `employee_count=0` → silently used 0, score penalized, never retried
+- Score reason: hardcoded template — `"1-site healthcare organization. Estimated $45k in recoverable savings."`
+- No feedback loop: bad data always produced a bad score
+
+#### What was built
+- [x] `agents/analyst/llm_inspector.py` — new file, two public functions:
+  - [x] `inspect_company()` — LLM reads name + website + crawled text → infers industry, detects gaps, returns action
+  - [x] `generate_score_narrative()` — LLM writes a specific one-sentence score reason from company context
+  - [x] `_call_llm()` — handles Ollama and OpenAI transparently (provider from `.env`)
+  - [x] `_fallback_narrative()` — rule-based fallback if LLM fails (identical to old template)
+- [x] `agents/analyst/analyst_agent.py` updated:
+  - [x] `gather_company_data()` — calls `inspect_company()` after initial enrichment
+  - [x] Industry inference applied when DB value is `"unknown"` or empty
+  - [x] Re-enrichment loop (max 2x) runs when LLM returns `action="enrich_before_scoring"`
+  - [x] `_inspection_log` string carried through to `run()` for DB logging
+  - [x] `process_one_company()` — replaces `score_engine.generate_score_reason()` with `generate_score_narrative()`
+  - [x] `run()` — logs LLM inspector decision per company to `agent_run_logs` table
+- [x] LLM skipped entirely when industry known AND `employee_count > 0` AND `site_count > 0`
+- [x] Full fallback safety — any LLM failure falls back silently, scoring never blocked
+
+#### How it works (actual implementation)
+```
+Load company from DB
+        ↓
+Step 1: Website crawl (if site_count=0 OR employee_count=0)
+        ↓
+Step 2: Apollo API fallback (if employee_count still 0 after crawl)
+        ↓
+Step 3: LLM Inspector  [SKIP if all data present]
+  agents/analyst/llm_inspector.py → inspect_company()
+  Input:  name, website, industry, employee_count, site_count, crawled_text
+  Output: {
+    "inferred_industry": "healthcare",    ← null if already known
+    "data_gaps": ["employee_count"],
+    "action": "enrich_before_scoring",   ← or "score_now"
+    "confidence": "high"
+  }
+  → If inferred_industry set AND DB industry was "unknown": update enriched["industry"]
+        ↓
+Step 4: Re-enrichment loop (only if action="enrich_before_scoring")
+  → re-crawl website
+  → re-call Apollo
+  → stop early if employee_count found
+  → max 2 loops, logs result
+        ↓
+Step 5: score_engine.compute_score()  ← UNCHANGED deterministic math
+  Score = (Recovery×0.40) + (Industry×0.25) + (Multisite×0.20) + (DataQuality×0.15)
+        ↓
+Step 6: LLM Score Narrator
+  agents/analyst/llm_inspector.py → generate_score_narrative()
+  Old output: "1-site healthcare organization. Estimated $45k in recoverable savings."
+  New output: "250-employee healthcare company, 3 sites in deregulated NY —
+               strong audit candidate with ~$180k annual savings potential"
+        ↓
+Step 7: Save to DB
+  company_features row + lead_scores row (with scored_at timestamp)
+  company.status = "scored"
+  agent_run_logs: "healthcare company | score=68 tier=medium | llm: inferred=healthcare action=score_now"
+```
+
+#### Where results appear in UI
+| Result | Where to see it |
+|---|---|
+| Inferred industry (was unknown → healthcare) | Leads page → Industry column |
+| LLM score narrative | LeadDetail page → Score reason field |
+| LLM inspector decision per company | Chat → "View run logs" panel after analyst run |
+| All inspector logs | Docker logs: `[inspector] CompanyName — ...` |
+
+#### Fallback behaviour
+| Failure scenario | What happens |
+|---|---|
+| LLM returns bad JSON | `inspect_company()` catches exception → returns `action="score_now"`, no industry change |
+| LLM times out | Same — silent fallback, warning logged |
+| LLM narrator fails | `generate_score_narrative()` returns old template string via `_fallback_narrative()` |
+| Ollama not running | Both functions catch the connection error and fall back |
+| Re-enrichment finds nothing | Scores with whatever data is available, logs "exhausted" |
+
+#### Token cost
+| Scenario | LLM calls | Tokens |
+|---|---|---|
+| All data present (skip inspector) | 1 (narrator only) | ~80 |
+| Industry unknown OR employee_count=0 | 2 (inspector + narrator) | ~180 |
+| Re-enrichment triggered | 2 (inspector + narrator) | ~200 |
+| LLM provider | Ollama (local) = $0 · GPT-4o-mini = ~$0.0003/company | |
+
+---
+
+### Phase B — Scout: Agentic Query Planning ✅ COMPLETE (2026-03-22)
+
+#### What we had
+- Fixed query: `"{industry} in {location}"` — one string per source
+- No reasoning about what variants to try
+- Deduplication: domain match OR name+city match (rule-based only)
+- No quality check: if 5 companies found for target of 20, still stops
+
+#### What was built
+
+**New files:**
+- `agents/scout/llm_query_planner.py` — `plan_queries()` + `plan_retry_queries()` + `_call_llm()` + `_fallback_queries()` + `_retry_fallback()`
+- `agents/scout/llm_deduplicator.py` — `deduplicate()` + `_rule_dedup()` + `_find_suspicious_pairs()` + `_ask_llm_which_are_duplicates()`
+
+**Updated files:**
+- `agents/scout/scout_agent.py` — `run()` wires: query planner → multi-query API calls → LLM dedup → quality retry
+- `agents/scout/google_maps_client.py` — `search_companies()` accepts `query_text` param
+- `agents/scout/search_client.py` — added `search_with_queries()` for planned queries
+
+#### How it works now
+```
+User: "find schools in Buffalo"
+        ↓
+LLM Query Planner (~80 tokens):
+  Output: ["elementary schools Buffalo NY", "private schools Western New York",
+           "K-12 school districts Erie County NY", "universities Buffalo NY"]
+        ↓
+Run ALL queries → Google Maps (separate Places API call per query) + Tavily
+        ↓
+LLM Deduplicator (~150 tokens):
+  Pass 1: exact domain dedup (fast, handles ~80%)
+  Pass 2: name-similar pairs (similarity ≥ 0.75) → LLM decides which are same company
+  "Buffalo City School District" + "BCSD" → same, drop BCSD
+        ↓
+Quality Check:
+  found=12, target=20 → plan_retry_queries() → 3 new queries → retry once
+  found=17, target=20 → ≥ 80%, accept and save
+        ↓
+Save to DB, update source_performance
+```
+
+**Fallback:** any LLM failure → falls back to 3 static queries. Scout never blocked by LLM.
+
+**LLM calls per Scout run:** up to 3 (~300 tokens). Free with Ollama.
+
+**Checkboxes:**
+- [x] `llm_query_planner.py` created with `plan_queries()` and `plan_retry_queries()`
+- [x] `llm_deduplicator.py` created with domain dedup + LLM name-pair review
+- [x] `scout_agent.py` updated — planner at start of `run()`, multi-query API loop
+- [x] `google_maps_client.py` updated — accepts `query_text` param
+- [x] `search_client.py` updated — added `search_with_queries()` function
+- [x] Fallback on any LLM failure (static queries / domain-only dedup)
+- [x] Quality check retry loop (< 80% of target → generate 3 more queries → retry once)
+- [x] All decisions logged to `agent_run_logs` via `_log_progress()`
+
+---
+
+### Phase C — Writer + Critic Loop
+
+#### What we have now
+- Writer loads industry template, fills placeholders, calls LLM to polish body + generate subject
+- No evaluation of output quality
+- No retry — whatever LLM returns first is saved
+
+#### What we will change
+1. **Writer generates from context, not template** — LLM reads company data + score reason and writes the email reasoning about what angle will work best for this specific company
+2. **Critic Agent** — separate LLM call evaluates the draft on a 0–10 rubric
+3. **Rewrite loop** — if Critic scores < 7, Writer sees the feedback and rewrites. Max 2 loops.
+4. **Confidence flag** — if after 2 rewrites still < 7, draft saved with `low_confidence = true`
+
+#### How it will work
+```
+Approved company selected for outreach
+        ↓
+Writer Agent (~400 tokens):
+  Input:  company name, industry, site_count, savings_mid, contact name, score_reason
+  Reasons: "3-site healthcare company, deregulated state, $180k savings →
+            I should lead with electricity cost angle and mention audit process"
+  Output: full email draft (subject + body)
+        ↓
+Critic Agent (~250 tokens):
+  Input:  the draft
+  Evaluates:
+    - Personalized to company? (not generic)
+    - Mentions specific savings number?
+    - Has clear ask / CTA?
+    - Sounds human (not template)?
+    - Subject line specific?
+  Output: { "score": 6, "reason": "no specific savings figure mentioned",
+            "instruction": "add the $180k annual savings estimate in paragraph 2" }
+        ↓
+If score < 7:
+  Writer rewrites with Critic instruction → new draft
+  Critic re-evaluates
+  Max 2 loops
+        ↓
+If score >= 7 (any loop):
+  Save draft → move to human review queue
+        ↓
+If still < 7 after 2 rewrites:
+  Save draft with low_confidence=true → human review flags it
+```
+
+**LLM calls per email:** 2–6 (1 write + 1–2 critic + 0–2 rewrites). ~1,000 tokens. Cheap with Ollama.
+
+---
+
+### Phase D — Chat: Dynamic Filter Generation
+
+#### What we have now
+- 3-tier routing: conversational / intent pre-parser / agent loop
+- Intent pre-parser uses Python string matching to extract `tier` and `industry`
+- Tools have fixed schemas — always the same parameters
+
+#### What we will change (small, already mostly agentic)
+1. **LLM builds filter combinations dynamically** — "show me large schools that haven't been contacted" → LLM extracts `{industry: education, min_employees: 100, status: new}`
+2. **Context carry-forward** — "now filter those to deregulated states only" → LLM adds to previous filter, doesn't start over
+
+#### How it will work
+```
+User: "how many schools do we have right now?"
+        ↓
+LLM reasons:
+  "schools" → industry = education
+  "right now" → current DB state
+  "how many" → count query
+        ↓
+Calls: get_leads(industry="education")
+Returns: "You have 14 education companies — 3 high, 8 medium, 3 low tier"
+
+User: "show me the ones in deregulated states only"
+        ↓
+LLM reasons: continue previous context + add state filter
+Calls: get_leads(industry="education", deregulated_only=True)
+```
+
+---
+
+### Agentic Architecture Summary
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                LLM REASONING LAYER                          │
+│  Scout: query planning, deduplication, quality check        │
+│  Analyst: industry inference, data gap detection, narration │
+│  Writer: context-driven draft generation                    │
+│  Critic: quality evaluation + rewrite instruction           │
+│  Chat: dynamic filter extraction, context carry-forward     │
+└──────────────────────────┬──────────────────────────────────┘
+                           │ decides what to call
+┌──────────────────────────▼──────────────────────────────────┐
+│                TOOLS LAYER (deterministic)                  │
+│  Google Maps API  ·  Yelp API  ·  Tavily API               │
+│  Apollo/Hunter    ·  Website crawler                        │
+│  Spend calculator ·  Score formula (math only)              │
+│  DB queries       ·  Email sender                           │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Token cost per full pipeline run (Ollama = $0, GPT-4o-mini ≈ $0.005):**
+
+| Phase | LLM calls | Tokens |
+|---|---|---|
+| Scout query planning | 3 | ~300 |
+| Analyst per company (×20) | 2×20 | ~3,600 |
+| Writer + Critic per email (×5) | 4×5 | ~5,000 |
+| Chat per message | 1 | ~200 |
+| **Total per run** | | **~9,100** |
+
+---
+
+### Build Order
+
+```
+Step 1 → Phase A: Analyst LLM reasoning layer           ✅ DONE (2026-03-22)
+         (industry inference + data gap loop + score narration)
+
+Step 2 → Phase B: Scout agentic query planning           ✅ DONE (2026-03-22)
+         (query expansion + multi-query API calls + LLM dedup + quality retry)
+
+Step 3 → Phase C: Writer + Critic loop                   🔲 NEXT
+         (context-driven generation + quality evaluation + rewrite loop)
+
+Step 4 → Phase D: Chat dynamic filters                   🔲 PLANNED
+         (already mostly done — small enhancement)
+```
+
+---
+
+## Phase 3 — Agentic Writer + Critic Loop + Human-in-Loop (Email Review)
+Writer generates context-driven emails. Critic evaluates and triggers rewrites. Human reviews before Outreach sends.
+
+### 3A — Agentic Writer: Context-Driven Generation (replaces template fill)
+- [ ] Writer reads: company name, industry, site_count, savings_mid, contact name, score_reason, state
+- [ ] LLM reasons about which angle to take (cost savings / audit process / risk reduction) based on company profile
+- [ ] LLM generates full email (subject + body) — not template substitution
+- [ ] `agents/writer/llm_connector.py` updated to pass full company context, not template slots
+- [ ] `agents/writer/writer_agent.py` updated to call context-driven generator
+
+### 3B — Critic Agent: Quality Evaluation Loop
+- [ ] Critic evaluates each draft on 0–10 rubric (separate LLM call):
+  - [ ] Personalized to this specific company (not generic)
+  - [ ] Mentions specific savings number
+  - [ ] Has clear CTA (call to action)
+  - [ ] Subject line specific (not "reduce your costs")
+  - [ ] Sounds human (not template-like)
+- [ ] Critic returns: `{ score, reason, rewrite_instruction }`
+- [ ] If score < 7: Writer rewrites using Critic instruction → re-evaluate
+- [ ] Max 2 rewrite loops per draft
+- [ ] If still < 7 after 2 rewrites: save with `low_confidence = true`
+- [ ] All rewrite attempts + scores logged to `agent_run_logs`
+- [ ] `agents/writer/critic_agent.py` — new file, Critic LLM call
+
+### 3C — Writer reads email_win_rate (learning layer)
+- [ ] Before generating, Writer queries `email_win_rate` for best-performing angle per industry
+- [ ] If no history: LLM picks angle freely
+- [ ] If history exists: LLM is told which angle has highest reply rate and reasons whether to use it
 - [ ] Template selection logged to `agent_run_logs`
 
 ### 3C — Writer connects to run tracking
@@ -531,7 +867,9 @@ End-to-end verification that everything works together.
 | 1 | Chat agent + Scout expansion + UI visuals | ✅ Complete |
 | 2 | Analyst + human-in-loop leads review | ✅ Complete |
 | 2.5 | Chat resilience + live progress + UI fixes + chat intelligence | ✅ Complete |
-| 3 | Writer critic loop + human-in-loop email review | 🔲 Next |
+| **A** | **Agentic Analyst: LLM industry inference + data gap loop + score narration** | ✅ Complete |
+| **B** | **Agentic Scout: LLM query planning + deduplication + quality loop** | 🔲 Next |
+| 3 | Agentic Writer + Critic loop + human-in-loop email review | 🔲 After A+B |
 | 4 | Outreach + Tracker + auto email notifications | 🔲 Not started |
 | 5 | Airflow scheduled runs with approval pauses | 🔲 Not started |
 | 6 | Learning activation (source + template selection) | 🔲 Not started |
@@ -539,7 +877,7 @@ End-to-end verification that everything works together.
 
 ---
 
-## Current State (as of Phase 2.5 complete — 2026-03-20)
+## Current State (as of Phase 2.5 complete — 2026-03-22)
 
 **Running services:**
 - Frontend: http://localhost:3000 (React via nginx)
@@ -561,19 +899,29 @@ End-to-end verification that everything works together.
 | Leads page: 0.35s load (was 9.2s) | ✅ Working |
 | Leads page: scroll | ✅ Working |
 | Leads page: dynamic industry dropdown | ✅ Working |
-| Triggers page: free-type industry + run status | ✅ Working |
+| Triggers page: per-company live progress table | ✅ Working |
+| Triggers page: results stay visible after completion | ✅ Working |
+| Triggers page: pending counts refresh on completion | ✅ Working |
 | Scout: Google Maps + Yelp + Tavily | ✅ Working |
 | Scout: 27-domain blocklist (no login/paywall sites) | ✅ Working |
-| Analyst: scoring + lead tiers | ✅ Working |
+| Analyst: scoring + lead tiers + scored_at populated | ✅ Working |
+| Analyst: Apollo fallback for employee_count enrichment | ✅ Working |
 | Approve/reject leads via dashboard | ✅ Working |
 | Full pipeline: Scout → Analyst → Writer chain | ✅ Working |
-| Email drafting (Writer agent) | ✅ Working |
+| Email drafting (Writer agent with Ollama) | ✅ Working |
 | Email review page | ✅ Working |
 
-**Next phase to build: Phase 3 — Writer Critic Loop + Email Human Review**
+**Phase A complete — what is agentic now:**
 
-- Writer Critic evaluates draft quality (0–10 rubric), rewrites if score < 7 (up to 3 attempts)
-- Writer reads `email_win_rate` table to pick best-performing template per industry
-- Email review page: inline edit + approve/reject per draft
-- `POST /approvals/emails` API route
-- `approve_emails` and `draft_email` tools added to chat agent
+| Agent | Agentic behaviour | Status |
+|---|---|---|
+| Analyst | LLM infers industry · detects gaps · re-enriches · writes narrative reason | ✅ Live |
+| Scout | LLM query planner · multi-variant API calls · LLM dedup · quality retry | ✅ Live |
+| Writer | template fill + LLM polish (no Critic loop yet) | 🔲 Phase C next |
+| Chat | 3-tier routing, LangChain ReAct — already agentic | ✅ Live |
+
+**Next to build: Phase C — Agentic Writer + Critic Loop**
+
+Writer generates from company context (not template). Critic evaluates 0–10.
+Rewrite loop (max 2x). `low_confidence=true` if never reaches 7.
+Files: update `writer_agent.py`, `llm_connector.py`, new `critic_agent.py`.

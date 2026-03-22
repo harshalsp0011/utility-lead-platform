@@ -14,7 +14,7 @@ from typing import Any
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from agents.analyst import enrichment_client, savings_calculator, score_engine, spend_calculator
+from agents.analyst import enrichment_client, llm_inspector, savings_calculator, score_engine, spend_calculator
 from agents.scout import website_crawler
 from database.orm_models import AgentRun, AgentRunLog, Company, CompanyFeature, Contact, LeadScore
 
@@ -131,9 +131,14 @@ def run(
                 if agent_run:
                     agent_run.companies_scored = len(processed_ids)
                     db_session.commit()
+                inspection_summary = result.get("_inspection_log") or ""
                 _log_action(
                     db_session, run_id, "score_company", "success",
-                    output_summary=f"Scored company {company_id}",
+                    output_summary=(
+                        f"Scored {result.get('industry','?')} company | "
+                        f"score={result.get('score',0):.0f} tier={result.get('tier','?')} | "
+                        f"llm: {inspection_summary}"
+                    ),
                     duration_ms=duration_ms,
                 )
         except Exception as exc:
@@ -184,6 +189,8 @@ def process_one_company(company_id: str, db_session: Session) -> dict[str, Any]:
         "site_count": company_obj.site_count,
     }
     enriched = gather_company_data(company, db_session)
+    # Capture LLM inspection summary for run logging
+    _inspection_log = enriched.pop("_inspection_log", None)
 
     site_count = int(enriched.get("site_count") or 1)
     employee_count = int(enriched.get("employee_count") or 0)
@@ -215,12 +222,18 @@ def process_one_company(company_id: str, db_session: Session) -> dict[str, Any]:
         data_quality_score=data_quality_score,
     )
     tier = score_engine.assign_tier(score)
-    score_reason = score_engine.generate_score_reason(
+
+    # LLM narrator: generates a specific, context-aware reason (falls back to template on failure)
+    score_reason = llm_inspector.generate_score_narrative(
+        name=str(company.get("name") or ""),
         industry=industry,
+        employee_count=employee_count,
         site_count=site_count,
+        state=str(enriched.get("state") or ""),
+        deregulated=bool(enriched.get("deregulated_state")),
+        score=score,
+        tier=tier,
         savings_mid=savings_mid,
-        data_quality_score=data_quality_score,
-        deregulated_state=bool(enriched.get("deregulated_state")),
     )
 
     features_dict = {
@@ -257,15 +270,21 @@ def process_one_company(company_id: str, db_session: Session) -> dict[str, Any]:
         "savings_mid": savings_mid,
         "employee_count": enriched.get("employee_count") or 0,
         "site_count": enriched.get("site_count") or 1,
+        "industry": industry,
+        "score_reason": score_reason,
+        "_inspection_log": _inspection_log,
     }
 
 
 def gather_company_data(company: dict[str, Any], db_session: Session) -> dict[str, Any]:
     """Return company dict enriched with site/page/state scoring signals.
 
-    Enrichment order:
-    1. Website crawl — if website present and site_count OR employee_count missing
-    2. Clearbit API  — if employee_count still missing after crawl (uses domain)
+    Agentic enrichment order (Phase A):
+    1. Website crawl    — if website present and site_count OR employee_count missing
+    2. Apollo fallback  — if employee_count still missing after crawl
+    3. LLM Inspector    — infers industry if unknown; decides if re-enrichment needed
+    4. Re-enrichment    — crawl + Apollo again if LLM says data still insufficient (max 2 loops)
+    5. LLM is skipped   — if industry already known AND employee_count > 0 AND site_count > 0
     """
     enriched = dict(company)
 
@@ -280,7 +299,7 @@ def gather_company_data(company: dict[str, Any], db_session: Session) -> dict[st
         "employee_signal": current_employee_count,
     }
 
-    # Crawl if EITHER count is missing — not just site_count
+    # --- Step 1: Initial crawl ---
     needs_crawl = website and (current_site_count <= 0 or current_employee_count <= 0)
     if needs_crawl:
         crawl_result = website_crawler.crawl_company_site(website)
@@ -289,7 +308,7 @@ def gather_company_data(company: dict[str, Any], db_session: Session) -> dict[st
         if current_employee_count <= 0:
             enriched["employee_count"] = int(crawl_result.get("employee_signal") or 0)
 
-    # Clearbit fallback — fill employee_count (and state/city if missing) via API
+    # --- Step 2: Apollo fallback for employee_count ---
     if not int(enriched.get("employee_count") or 0) and website:
         cb = enrichment_client.enrich_company_data(website)
         if cb.get("employee_count"):
@@ -299,9 +318,76 @@ def gather_company_data(company: dict[str, Any], db_session: Session) -> dict[st
         if not enriched.get("city") and cb.get("city"):
             enriched["city"] = cb["city"]
 
+    # --- Step 3: LLM Inspector — infer industry + detect gaps + decide action ---
+    crawled_text = str(crawl_result.get("raw_text") or "")
+    inspection = llm_inspector.inspect_company(
+        name=str(enriched.get("name") or ""),
+        website=website,
+        industry=str(enriched.get("industry") or ""),
+        employee_count=int(enriched.get("employee_count") or 0),
+        site_count=int(enriched.get("site_count") or 0),
+        crawled_text=crawled_text,
+    )
+
+    # Apply inferred industry if DB value was unknown
+    inferred_industry = inspection.get("inferred_industry")
+    if inferred_industry:
+        current_industry = (enriched.get("industry") or "").strip().lower()
+        if current_industry in ("", "unknown"):
+            enriched["industry"] = inferred_industry
+            logger.info(
+                "[analyst] Industry inferred by LLM: '%s' → '%s'",
+                current_industry or "unknown",
+                inferred_industry,
+            )
+
+    # --- Step 4: Re-enrichment loop if LLM says data is insufficient ---
+    if inspection.get("action") == "enrich_before_scoring" and website:
+        logger.info(
+            "[analyst] LLM requested re-enrichment for %s (gaps: %s)",
+            enriched.get("name"),
+            inspection.get("data_gaps"),
+        )
+        for attempt in range(2):  # max 2 loops
+            # Re-crawl
+            recrawl = website_crawler.crawl_company_site(website)
+            if not int(enriched.get("site_count") or 0):
+                enriched["site_count"] = int(recrawl.get("location_count") or 1)
+            if not int(enriched.get("employee_count") or 0):
+                enriched["employee_count"] = int(recrawl.get("employee_signal") or 0)
+
+            # Re-Apollo if still missing employee_count
+            if not int(enriched.get("employee_count") or 0):
+                cb = enrichment_client.enrich_company_data(website)
+                if cb.get("employee_count"):
+                    enriched["employee_count"] = cb["employee_count"]
+
+            # Re-evaluate: if we now have employee_count, stop looping
+            if int(enriched.get("employee_count") or 0) > 0:
+                logger.info(
+                    "[analyst] Re-enrichment succeeded on attempt %d — employee_count=%s",
+                    attempt + 1,
+                    enriched["employee_count"],
+                )
+                break
+        else:
+            logger.info(
+                "[analyst] Re-enrichment exhausted for %s — scoring with available data",
+                enriched.get("name"),
+            )
+
     enriched["has_website"] = bool(website)
     enriched["has_locations_page"] = bool(crawl_result.get("has_locations_page"))
     enriched["deregulated_state"] = check_deregulated_state(str(enriched.get("state") or ""))
+
+    # Carry inspection summary so run() can log it to agent_run_logs
+    enriched["_inspection_log"] = (
+        f"industry={enriched.get('industry')} "
+        f"inferred={inspection.get('inferred_industry') or 'no'} "
+        f"action={inspection.get('action')} "
+        f"confidence={inspection.get('confidence')} "
+        f"gaps={inspection.get('data_gaps')}"
+    )
 
     return enriched
 
@@ -350,6 +436,7 @@ def save_score(
         tier=tier,
         score_reason=score_reason,
         approved_human=False,
+        scored_at=datetime.now(timezone.utc),
     )
     db_session.add(lead_score)
     db_session.flush()

@@ -23,7 +23,7 @@ from typing import Any
 
 from sqlalchemy.orm import Session
 
-from agents.scout import company_extractor, directory_scraper, search_client, website_crawler
+from agents.scout import company_extractor, directory_scraper, llm_deduplicator, llm_query_planner, search_client, website_crawler
 from agents.scout.scout_critic import (
     evaluate_quality,
     is_quality_sufficient,
@@ -91,6 +91,12 @@ def run(
 
     _log_progress(db_session, run_id, f"Starting Scout — looking for {count} {industry} companies in {location}")
 
+    # --- Agentic query planning: LLM generates 3–5 diverse search queries ---
+    _log_progress(db_session, run_id, "Planning search queries...")
+    planned_queries = llm_query_planner.plan_queries(industry, location)
+    _log_progress(db_session, run_id, f"LLM generated {len(planned_queries)} search variants: {planned_queries[0]!r}...")
+    logger.info("[scout] Planned queries: %s", planned_queries)
+
     # Rank API sources by past performance for this context
     ranked_api_sources = rank_sources(industry, location, _API_SOURCES, db_session)
 
@@ -129,10 +135,15 @@ def run(
         logger.info("Directory source %s: found=%d score=%.1f total_saved=%d",
                     source_name, len(batch), score, len(saved_ids))
 
-    # --- Phase 2: Tavily dynamic search ---
+    # --- Phase 2: Tavily — use LLM-planned queries instead of hardcoded strings ---
     if len(saved_ids) < count:
-        _log_progress(db_session, run_id, f"Searching Tavily for {industry} directories in {location}...")
-        tavily_sources = search_client.search_directory_sources(industry, location, db_session)
+        _log_progress(db_session, run_id, f"Searching Tavily with {len(planned_queries)} query variants...")
+        tavily_sources = search_client.search_with_queries(planned_queries, location, db_session)
+
+        if not tavily_sources:
+            # Fallback to old behavior if search_with_queries returns nothing (e.g. Tavily not configured)
+            tavily_sources = search_client.search_directory_sources(industry, location, db_session)
+
         for source in tavily_sources:
             if len(saved_ids) >= count:
                 break
@@ -162,7 +173,9 @@ def run(
             logger.info("Tavily source %s: found=%d score=%.1f total_saved=%d",
                         source_name, len(batch), score, len(saved_ids))
 
-    # --- Phase 3: API sources (Google Maps, Yelp) in ranked order ---
+    # --- Phase 3: API sources — run ALL planned query variants per source ---
+    api_batch_all: list[dict] = []  # collected across all variants before dedup
+
     for api_source in ranked_api_sources:
         if len(saved_ids) >= count:
             break
@@ -170,34 +183,104 @@ def run(
             continue
 
         source_label = "Google Maps" if api_source == "google_maps" else "Yelp"
-        _log_progress(db_session, run_id, f"Trying {source_label} for {industry} in {location}...")
         used_sources.append(api_source)
         remaining = count - len(saved_ids)
+        per_query_limit = max((remaining + 5) // len(planned_queries), 10)
 
-        try:
-            batch = _fetch_from_api_source(api_source, industry, location, limit=max(remaining + 5, 20))
-        except Exception:
-            logger.exception("API source failed: %s", api_source)
-            _log_progress(db_session, run_id, f"{source_label} failed — skipping")
-            source_results.append({"source": api_source, "found": 0, "passed": 0, "score": 0.0})
-            continue
-
-        if not batch:
-            _log_progress(db_session, run_id, f"{source_label} returned 0 results")
-            source_results.append({"source": api_source, "found": 0, "passed": 0, "score": 0.0})
-            continue
-
-        score = evaluate_quality(batch)
-        new_ids = _save_api_companies(batch, db_session, run_id)
-        source_results.append({"source": api_source, "found": len(batch), "passed": len(new_ids), "score": score})
-        saved_ids.extend(new_ids[:remaining])
-
-        _log_progress(db_session, run_id, f"Found {len(new_ids)} companies from {source_label} (total: {len(saved_ids)})")
-        sufficient = is_quality_sufficient(score)
-        logger.info(
-            "API source %s: found=%d saved=%d score=%.1f sufficient=%s total_saved=%d",
-            api_source, len(batch), len(new_ids), score, sufficient, len(saved_ids),
+        _log_progress(
+            db_session, run_id,
+            f"Searching {source_label} with {len(planned_queries)} query variants..."
         )
+
+        source_found = 0
+        for q_idx, query_text in enumerate(planned_queries):
+            try:
+                batch = _fetch_from_api_source(
+                    api_source, industry, location,
+                    limit=per_query_limit,
+                    query_text=query_text,
+                )
+                if batch:
+                    api_batch_all.extend(batch)
+                    source_found += len(batch)
+                    logger.info(
+                        "[scout] %s query %d/%d '%s': %d results",
+                        source_label, q_idx + 1, len(planned_queries), query_text, len(batch),
+                    )
+            except Exception:
+                logger.exception("API source failed: %s query=%s", api_source, query_text)
+
+        _log_progress(
+            db_session, run_id,
+            f"{source_label}: collected {source_found} raw results across {len(planned_queries)} queries"
+        )
+        source_results.append({
+            "source": api_source,
+            "found": source_found,
+            "passed": source_found,
+            "score": evaluate_quality(api_batch_all) if api_batch_all else 0.0,
+        })
+
+    # --- LLM Deduplication: remove near-duplicates from the API batch ---
+    if api_batch_all:
+        _log_progress(db_session, run_id, f"Deduplicating {len(api_batch_all)} collected companies...")
+        api_batch_deduped = llm_deduplicator.deduplicate(api_batch_all)
+        removed = len(api_batch_all) - len(api_batch_deduped)
+        if removed:
+            _log_progress(db_session, run_id, f"Removed {removed} duplicate(s) — {len(api_batch_deduped)} unique companies")
+        logger.info("[scout] Dedup: %d → %d companies", len(api_batch_all), len(api_batch_deduped))
+
+        remaining = count - len(saved_ids)
+        new_ids = _save_api_companies(api_batch_deduped, db_session, run_id)
+        saved_ids.extend(new_ids[:remaining])
+        _log_progress(db_session, run_id, f"Saved {len(new_ids)} companies from API sources (total: {len(saved_ids)})")
+
+    # --- Quality check: if < 80% of target found, retry with new LLM queries (once) ---
+    if len(saved_ids) < int(count * 0.8):
+        _log_progress(
+            db_session, run_id,
+            f"Quality check: only {len(saved_ids)}/{count} found — generating retry queries..."
+        )
+        retry_queries = llm_query_planner.plan_retry_queries(
+            industry=industry,
+            location=location,
+            results_found=len(saved_ids),
+            target=count,
+            used_queries=planned_queries,
+        )
+        _log_progress(db_session, run_id, f"Retry: trying {len(retry_queries)} new query variants...")
+        logger.info("[scout] Retry queries: %s", retry_queries)
+
+        retry_batch: list[dict] = []
+        for api_source in ranked_api_sources:
+            per_query_limit = max(count - len(saved_ids) + 5, 10)
+            for query_text in retry_queries:
+                try:
+                    batch = _fetch_from_api_source(
+                        api_source, industry, location,
+                        limit=per_query_limit,
+                        query_text=query_text,
+                    )
+                    if batch:
+                        retry_batch.extend(batch)
+                except Exception:
+                    logger.exception("Retry API source failed: %s query=%s", api_source, query_text)
+
+        if retry_batch:
+            retry_deduped = llm_deduplicator.deduplicate(retry_batch)
+            remaining = count - len(saved_ids)
+            retry_ids = _save_api_companies(retry_deduped, db_session, run_id)
+            saved_ids.extend(retry_ids[:remaining])
+            _log_progress(
+                db_session, run_id,
+                f"Retry found {len(retry_ids)} more companies (total: {len(saved_ids)})"
+            )
+            source_results.append({
+                "source": "retry",
+                "found": len(retry_batch),
+                "passed": len(retry_ids),
+                "score": evaluate_quality(retry_deduped),
+            })
 
     # --- Write source_performance for every source tried ---
     for result in source_results:
@@ -292,13 +375,24 @@ def _validate_scraped(company: dict) -> bool:
 # API source helpers
 # ---------------------------------------------------------------------------
 
-def _fetch_from_api_source(source: str, industry: str, location: str, limit: int) -> list[dict]:
-    """Dispatch to the right API client based on source name."""
+def _fetch_from_api_source(
+    source: str,
+    industry: str,
+    location: str,
+    limit: int,
+    query_text: str | None = None,
+) -> list[dict]:
+    """Dispatch to the right API client based on source name.
+
+    query_text: optional LLM-planned query string. When provided, overrides
+    the default query built inside each client.
+    """
     if source == "google_maps":
         from agents.scout.google_maps_client import search_companies
-        return search_companies(industry, location, limit=limit)
+        return search_companies(industry, location, limit=limit, query_text=query_text)
     if source == "yelp":
         from agents.scout.yelp_client import search_companies
+        # Yelp uses term/category — query_text used as term override when provided
         return search_companies(industry, location, limit=limit)
     return []
 

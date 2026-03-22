@@ -158,3 +158,83 @@ def search_directory_sources(
             logger.warning("Could not save Tavily sources to DB: %s", exc)
 
     return discovered
+
+
+def search_with_queries(
+    queries: list[str],
+    location: str,
+    db_session: Session | None = None,
+) -> list[dict[str, Any]]:
+    """Run a custom list of Tavily queries (from LLM query planner) and return discovered sources.
+
+    Unlike search_directory_sources(), this function uses the provided queries directly
+    instead of building hardcoded query strings from industry+location.
+    Falls back silently if Tavily is not configured.
+    """
+    settings = get_settings()
+    provider = str(settings.SEARCH_PROVIDER or "").strip().lower()
+    api_key = str(settings.TAVILY_API_KEY or "").strip()
+
+    if provider != "tavily" or not api_key or not queries:
+        return []
+
+    seen_urls: set[str] = set()
+    discovered: list[dict[str, Any]] = []
+
+    for query in queries:
+        payload = {
+            "api_key": api_key,
+            "query": query,
+            "search_depth": "basic",
+            "max_results": 10,
+        }
+        try:
+            response = requests.post(
+                _TAVILY_SEARCH_URL,
+                json=payload,
+                timeout=settings.SCRAPER_REQUEST_TIMEOUT_SECONDS,
+            )
+            response.raise_for_status()
+            body = response.json()
+        except requests.RequestException as exc:
+            logger.warning("Tavily search request failed for query '%s': %s", query, exc)
+            continue
+
+        for item in body.get("results", []):
+            url = str(item.get("url", "")).strip()
+            title = str(item.get("title", "")).strip()
+            if not url or not url.startswith(("http://", "https://")):
+                continue
+
+            parsed = urlparse(url)
+            if not parsed.netloc:
+                continue
+
+            normalized_url = url.rstrip("/")
+            if normalized_url in seen_urls:
+                continue
+            seen_urls.add(normalized_url)
+
+            host = parsed.netloc.lower().removeprefix("www.")
+            if any(host.endswith(blocked) for blocked in _UNSCRAPPABLE_DOMAINS):
+                logger.debug("Skipping blocked domain: %s", host)
+                continue
+
+            source_name = f"tavily:{host}:{len(discovered) + 1}"
+            discovered.append({
+                "name": source_name,
+                "url": normalized_url,
+                "category": location,  # category used for industry context downstream
+                "location": location,
+                "active": True,
+                "notes": title,
+            })
+
+    if db_session is not None and discovered:
+        try:
+            directory_scraper.save_directory_sources(discovered, db_session, discovered_via="tavily")
+        except Exception as exc:
+            logger.warning("Could not save Tavily sources to DB: %s", exc)
+
+    logger.info("Tavily search_with_queries: %d sources from %d queries", len(discovered), len(queries))
+    return discovered

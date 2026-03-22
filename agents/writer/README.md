@@ -1,73 +1,138 @@
-# Writer Agent Files
+# Writer Agent
 
-This folder contains the email writing helpers used after a lead is scored and a contact is selected.
+Generates personalized outreach email drafts for approved high-tier companies.
+
+---
+
+## Current Behavior (template + LLM polish)
+
+```
+writer_agent.run(company_ids)
+  ↓
+For each approved company:
+  1. Load company, features, score, contact from DB
+  2. template_engine.load_template(industry) → loads industry-specific template file
+  3. template_engine.fill_static_fields() → fills {{company_name}}, {{savings}}, etc.
+  4. llm_connector: LLM polishes subject line and body text
+  5. tone_validator: rule-based spam/length/CTA check
+  6. If tone fails: regenerate body once
+  7. Save draft to email_drafts table
+```
+
+No quality evaluation of the output — whatever LLM returns is saved.
+
+---
+
+## Agentic Upgrade — Phase 3
+
+### 1. Context-Driven Generation (replaces template slot-fill)
+
+Instead of filling a template, Writer LLM reads company context and **reasons about the best angle**:
+
+```
+Input: company name, industry, site_count, savings_mid, contact name,
+       score_reason, state, deregulated (yes/no)
+
+LLM reasons:
+  "3-site healthcare company, deregulated NY, $180k savings →
+   lead with electricity cost angle + mention audit process"
+  OR
+  "single-site hospitality, national average rates →
+   lead with telecom savings, softer ask"
+
+Output: full email (subject + body) — not a template, reasoned for this company
+```
+
+### 2. Critic Agent (new: `critic_agent.py`)
+
+After Writer generates a draft, Critic evaluates it on a 0–10 rubric:
+
+| Criterion | What it checks |
+|---|---|
+| Personalized | Mentions company name and something specific to them |
+| Specific number | Has a dollar figure (e.g. "$180k") not just "significant savings" |
+| Clear CTA | Has a specific ask — call, meeting, reply |
+| Sounds human | Not template-like, reads naturally |
+| Subject line | Specific and relevant, not generic ("reduce your costs") |
+
+Critic returns:
+```json
+{
+  "score": 6,
+  "reason": "savings mentioned but no specific dollar figure",
+  "instruction": "add the $180k annual savings estimate in paragraph 2"
+}
+```
+
+### 3. Rewrite Loop
+
+```
+Writer generates draft
+  ↓
+Critic evaluates → score = 6 (< 7)
+  ↓
+Writer rewrites using Critic's instruction
+  ↓
+Critic re-evaluates → score = 8 (≥ 7)
+  ↓
+Save draft → move to human review queue
+
+Max 2 rewrite loops.
+If still < 7 after 2 loops: save with low_confidence=true → flagged in UI.
+All attempts logged to agent_run_logs.
+```
+
+---
 
 ## Files
 
-`template_engine.py`
-Loads template files from `data/templates/`, builds placeholder context values from company/features/score/contact records, and fills `{{placeholders}}` with real data.
+| File | Purpose |
+|---|---|
+| `writer_agent.py` | Main entry point — coordinates generation, validation, persistence |
+| `llm_connector.py` | LLM API calls — Ollama or OpenAI, context-driven generation |
+| `critic_agent.py` | **NEW (Phase 3)** — evaluates draft quality 0–10, returns instruction |
+| `template_engine.py` | Loads templates, fills static placeholders (still used as base context) |
+| `tone_validator.py` | Rule-based spam/length/CTA validation (still runs after Critic approves) |
 
-Main functions:
-- `load_template(industry)`: Load industry email template text.
-- `load_followup_template(follow_up_number)`: Load day 3/7/14 follow-up template text.
-- `fill_static_fields(template_string, context_dict)`: Replace known placeholders.
-- `build_context(company, features, score, contact, settings)`: Build values used in templates.
-- `get_template_for_industry(industry)`: Return template file path.
+---
 
-`llm_connector.py`
-Handles provider selection and calls to LLM APIs for generating or polishing final email content.
+## Learning: email_win_rate
 
-Main functions:
-- `select_provider()`: Validate and return `ollama` or `openai` from settings.
-- `call_ollama(prompt)`: Send prompt to local Ollama model and return text.
-- `call_openai(prompt)`: Send prompt to OpenAI chat completions and return text.
+Before generating, Writer queries `email_win_rate` for best-performing angle per industry:
 
-`tone_validator.py`
-Validates subject/body quality and spam risk before final send.
+```sql
+SELECT angle, reply_rate
+FROM email_win_rate
+WHERE industry = :industry
+ORDER BY reply_rate DESC
+LIMIT 1
+```
 
-Main functions:
-- `validate_tone(email_subject, email_body)`: Run full validation and return `{passed, issues, score}`.
-- `check_spam_words(text)`: Detect flagged spam words/phrases.
-- `check_length(email_body)`: Enforce 50-250 word body range.
-- `check_cta_present(email_body)`: Ensure a CTA keyword exists.
-- `check_caps_usage(text)`: Flag too many all-caps words.
-- `check_savings_claim(email_body)`: Flag unrealistic dollar claims over 50M.
+If history exists: LLM is told which angle has the highest reply rate and reasons whether to use it.
+If no history: LLM picks angle freely based on company context.
 
-`writer_agent.py`
-Main Writer entry point. Coordinates contact selection, template rendering,
-LLM generation, tone validation, and draft persistence.
+After each reply/open event, Tracker updates `email_win_rate` counters.
+After 3+ email cycles, Writer automatically favors angles that have worked before.
 
-Main functions:
-- `run(company_ids, db_session)`: Process approved companies and return created draft IDs.
-- `process_one_company(company_id, db_session)`: Build one full draft for one company.
-- `save_draft(company_id, contact_id, subject, body, template_used, savings_estimate, db_session)`: Insert into `email_drafts`.
-- `build_context(company, features, score, contact, settings)`: Build complete placeholder context.
-- `format_savings_for_display(amount)`: Format compact savings values (for example, `$1.2M`, `$950k`).
+---
 
-## Required Settings
+## Data Contract
 
-From `config/settings.py`:
-- `LLM_PROVIDER`
-- `LLM_MODEL`
-- `OPENAI_API_KEY` (if using OpenAI)
-- `TB_SENDER_NAME`
-- `TB_SENDER_TITLE`
-- `TB_PHONE`
+Input: companies with `lead_scores.approved_human = true` and `tier = 'high'` and no existing draft.
 
-## How It Works Together
+Output: `email_drafts` row per company with:
+- `subject_line` — specific, non-generic
+- `body` — personalized, with savings figure, clear CTA
+- `template_used` — which industry angle was used
+- `low_confidence` — true if Critic score never reached 7 after 2 rewrites
+- `company.status` updated to `'draft_created'`
 
-1. `writer_agent.run()` receives approved company IDs and checks score approval.
-2. `writer_agent.process_one_company()` loads company, feature, and score records.
-3. The agent gets the best outreach contact from `agents.analyst.enrichment_client`.
-4. `template_engine.build_context()` and `writer_agent.build_context()` prepare mergeable template values.
-5. `template_engine.load_template()` loads the correct industry file from `data/templates`.
-6. `template_engine.fill_static_fields()` renders the draft with static placeholders.
-7. `llm_connector` generates subject/body text.
-8. `tone_validator.validate_tone()` checks spam-risk and professionalism; the agent retries body generation once if needed.
-9. `writer_agent.save_draft()` stores the result in `email_drafts` and updates company status to `draft_created`.
+---
 
-## Container
+## LLM Usage (Phase 3)
 
-- Dockerfile: `agents/writer/Dockerfile`
-- Service name in compose: `writer`
-- Container command: `python agents/writer/writer_agent.py`
+- **Provider:** Ollama llama3.2 (local, free) or OpenAI GPT-4o-mini
+- **Calls per email:** 2–6 (1 write + 1–2 Critic evaluations + 0–2 rewrites)
+- **Tokens per email:** ~1,000
+- **Cost with Ollama:** $0
+- **Cost with GPT-4o-mini:** ~$0.0015 per email

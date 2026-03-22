@@ -1,83 +1,126 @@
-# Analyst Agent Files
+# Analyst Agent
 
-This folder holds helper code used by the Analyst workflow to calculate company-level estimates and scoring inputs.
+Scores companies found by Scout and assigns high/medium/low lead tiers.
 
-`benchmarks_loader.py`
-Loads benchmark data from `database/seed_data/industry_benchmarks.json`, caches it in memory, and provides lookup helpers.
+---
 
-`spend_calculator.py`
-Uses benchmark values to estimate annual utility spend, telecom spend, and total spend.
-It also exposes helper lookups for `avg_sqft_per_site`, `kwh_per_sqft_per_year`, and electricity rate.
+## Current Behavior (rule-based)
 
-`savings_calculator.py`
-Converts total spend into low/mid/high savings ranges, calculates expected Troy & Banks revenue,
-and formats savings for display in reports.
+```
+Load company from DB
+  ↓
+gather_company_data():
+  - crawl website if site_count=0 or employee_count=0
+  - Apollo org enrichment if employee_count still 0
+  ↓
+spend_calculator: site_count × industry benchmark → utility_spend
+                  employee_count × rate → telecom_spend
+  ↓
+savings_calculator: total_spend × 8/15/24% → low/mid/high savings
+  ↓
+score_engine.compute_score():
+  Score = (Recovery×0.40) + (Industry×0.25) + (Multisite×0.20) + (DataQuality×0.15)
+  ↓
+assign_tier(): ≥70=high, 40–69=medium, <40=low
+  ↓
+Save: company_features row + lead_scores row
+      company.status = "scored"
+```
 
-`score_engine.py`
-Calculates score components (multisite and data quality), assigns lead tier,
-builds a human-readable score reason, and computes a 0-10 data quality signal.
+---
 
-`enrichment_client.py`
-Finds decision-maker contacts through Hunter.io or Apollo.io based on
-`ENRICHMENT_PROVIDER`, saves unique contacts in `contacts`, and picks the best
-priority contact for outreach.
+## Agentic Upgrade — Phase A
 
-`analyst_agent.py`
-Main Analyst entry point. Processes one company at a time, coordinates spend,
-savings, quality, scoring, and writes results into `company_features` and `lead_scores`.
+Three LLM reasoning steps added to the pipeline:
 
-Main functions:
+### 1. LLM Data Inspector (new: `llm_inspector.py`)
 
-1. `load_benchmarks()`
-Reads and caches the full benchmark JSON so repeated lookups are fast.
+Before scoring, LLM reads all available company data and decides what to do next.
 
-2. `get_benchmark(industry, state)`
-Returns combined values for one industry bucket and one state:
-`avg_sqft_per_site`, `kwh_per_sqft_per_year`, `telecom_per_employee`, and `electricity_rate`.
+```
+Input:  name, website, industry, employee_count, site_count, crawled_text
+Output: {
+  "inferred_industry": "healthcare",    ← null if industry already known
+  "data_gaps": ["employee_count"],      ← what's missing that matters
+  "action": "enrich_before_scoring"     ← or "score_now"
+}
+```
 
-3. `get_electricity_rate(state)`
-Returns state electricity rate, falling back to the default value if missing.
+If `action = enrich_before_scoring`:
+- Runs re-enrichment (crawl → Apollo → Hunter)
+- LLM re-evaluates: "enough now?" → `score_now` or `score_with_low_confidence`
+- Max 2 enrichment loops
 
-4. `refresh_benchmarks()`
-Clears in-memory cache so the next `load_benchmarks()` call reloads from disk.
+### 2. Industry Inference
 
-How it is used:
+Before this upgrade: `"healthcare"` → 90 pts; `"unknown"` → 45 pts penalty (exact match only).
 
-1. Analyst code calls `spend_calculator.py` functions during feature estimation.
-2. `spend_calculator.py` reads benchmark values via `benchmarks_loader.py`.
-3. The returned values feed utility spend, telecom spend, and total spend calculations.
-4. Analyst code calls `savings_calculator.py` to generate low/mid/high savings outputs.
-5. The mid savings value can be converted into expected Troy & Banks revenue.
-6. Analyst code calls `score_engine.py` to score multisite fit, data quality, and assign lead tier.
-7. `score_engine.py` also generates a plain-language reason string for explainability.
-8. `analyst_agent.py` stores derived features in `company_features`.
-9. `analyst_agent.py` stores final score + tier in `lead_scores` and marks company status as `scored`.
-10. If seed data changes, call `refresh_benchmarks()` to pick up new values without restarting the process.
+After: LLM classifies from company name + website text:
+- `"Buffalo Surgical Associates"` → `"healthcare"` ✓
+- `"WNY Emergency Services"` → `"healthcare"` ✓
+- `"Canal Side Hotel"` → `"hospitality"` ✓
 
-Enrichment functions:
+Falls back to existing industry if already set and non-unknown.
 
-1. `find_contacts(company_name, website_domain, db_session)`
-Loads `ENRICHMENT_PROVIDER`, calls Hunter or Apollo, resolves company ID,
-saves each contact in `contacts`, and returns saved contact dictionaries.
+### 3. LLM Score Narrator (replaces template string)
 
-2. `find_via_hunter(domain)`
-Calls Hunter domain-search API, filters to target titles, and returns matching
-raw contact dictionaries.
+Before: `"1-site healthcare organization. Estimated $45k in recoverable savings."`
 
-3. `find_via_apollo(company_name, domain)`
-Calls Apollo people search API with domain and seniority filters, applies the
-same target-title filter, and returns matching raw contact dictionaries.
+After: LLM generates contextual narrative:
+- `"250-employee healthcare company, 3 sites in deregulated NY — strong audit candidate with ~$180k annual savings potential"`
+- `"Single-site hospitality business, limited data — moderate audit fit, manual verification recommended"`
 
-4. `save_contact(contact_dict, company_id, db_session)`
-Checks for duplicate email first. If found, returns existing contact ID.
-Otherwise inserts a new row into `contacts` with provider source and returns the new ID.
+---
 
-5. `get_priority_contact(company_id, db_session)`
-Returns the highest-priority contact using title order:
-CFO -> VP/Director Finance -> Facilities -> Operations/Energy -> other verified.
+## Files
 
-## Container
+| File | Purpose |
+|---|---|
+| `analyst_agent.py` | Main entry point — orchestrates the full scoring pipeline per company |
+| `llm_inspector.py` | **NEW (Phase A)** — LLM-based data inspection, industry inference, gap detection |
+| `enrichment_client.py` | Apollo org enrichment (employee_count, state) + Hunter/Apollo contact finding |
+| `spend_calculator.py` | Rule-based utility + telecom spend estimates from benchmarks |
+| `savings_calculator.py` | Converts total spend to low/mid/high savings ranges |
+| `score_engine.py` | Weighted score formula (0–100), tier assignment, data quality scoring |
+| `benchmarks_loader.py` | Loads/caches `industry_benchmarks.json`, falls back to `default` |
 
-- Dockerfile: `agents/analyst/Dockerfile`
-- Service name in compose: `analyst`
-- Container command: `python agents/analyst/analyst_agent.py`
+---
+
+## Score Formula (deterministic — not changed by agentic upgrade)
+
+```
+Score = (Recovery × 0.40) + (Industry × 0.25) + (Multisite × 0.20) + (Data Quality × 0.15)
+```
+
+| Component | What it measures | Points |
+|---|---|---|
+| Recovery | Savings potential (utility + telecom spend × 15%) | 0–100 scaled |
+| Industry fit | Healthcare/hospitality/manufacturing = best | 45–90 |
+| Multisite | More locations = more spend to recover | 3–20 |
+| Data quality | Website present, employee count known, contacts found | 1–15 |
+
+---
+
+## Data Contract
+
+Analyst expects companies with `status = 'new'` or `'enriched'`.
+Writes: `company_features` row, `lead_scores` row (with `scored_at` timestamp), `company.status = 'scored'`.
+
+If data is missing:
+| Missing | Handled by |
+|---|---|
+| `industry = unknown` | Phase A: LLM infers from name/text |
+| `employee_count = 0` | Phase A: LLM triggers re-enrichment loop |
+| `site_count = 0` | defaults to 1 in calculations |
+| `state` missing | uses national average electricity rate |
+| All missing | still scores — low tier, low confidence |
+
+---
+
+## LLM Usage (Phase A)
+
+- **Provider:** Ollama llama3.2 (local, free) or OpenAI GPT-4o-mini (optional)
+- **Calls per company:** 2 (inspector + narrator)
+- **Tokens per company:** ~180
+- **Cost with Ollama:** $0
+- **Cost with GPT-4o-mini:** ~$0.00027 per company

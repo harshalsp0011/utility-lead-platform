@@ -62,7 +62,12 @@ _TYPE_MAP = {
 }
 
 
-def search_companies(industry: str, location: str, limit: int = 20) -> list[dict[str, Any]]:
+def search_companies(
+    industry: str,
+    location: str,
+    limit: int = 20,
+    query_text: str | None = None,
+) -> list[dict[str, Any]]:
     """Search Google Places for businesses in an industry and location.
 
     Returns a list of normalized company dicts. Phone and website may be None
@@ -72,6 +77,8 @@ def search_companies(industry: str, location: str, limit: int = 20) -> list[dict
         industry: e.g. 'healthcare', 'hospitality', 'manufacturing'
         location: e.g. 'Buffalo NY', 'Chicago IL'
         limit: max results to return (Google max is 20 per request)
+        query_text: optional custom search query (from LLM query planner).
+                    When provided, overrides the default "{industry} businesses in {location}".
     """
     settings = get_settings()
     api_key = getattr(settings, "GOOGLE_MAPS_API_KEY", "")
@@ -79,7 +86,7 @@ def search_companies(industry: str, location: str, limit: int = 20) -> list[dict
         logger.warning("GOOGLE_MAPS_API_KEY not set — skipping Google Maps source")
         return []
 
-    query = f"{industry} businesses in {location}"
+    query = query_text if query_text else f"{industry} businesses in {location}"
     payload = {
         "textQuery": query,
         "maxResultCount": min(limit, 20),

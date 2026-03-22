@@ -520,10 +520,21 @@ export default function Triggers() {
   const [isLoading, setIsLoading] = useState(false);
   const [isPageLoading, setIsPageLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeTrigger, setActiveTrigger] = useState(null);
+  const [activeTrigger, setActiveTrigger] = useState(null); // trigger_id to show results for
+  const [isRunning, setIsRunning] = useState(false);        // disables all buttons while pipeline runs
   const [triggerStatus, setTriggerStatus] = useState(null);
   const [pendingCounts, setPendingCounts] = useState({ analyst: 0, writer: 0 });
   const [knownIndustries, setKnownIndustries] = useState([]);
+
+  const refreshPendingCounts = () => {
+    fetchPipelineStatus()
+      .then((data) => {
+        const pendingAnalyst = (data['new'] || 0) + (data['enriched'] || 0);
+        const pendingWriter = data['approved'] || 0;
+        setPendingCounts({ analyst: pendingAnalyst, writer: pendingWriter });
+      })
+      .catch((err) => console.warn('Pipeline status fetch failed:', err));
+  };
 
   useEffect(() => {
     Promise.allSettled([
@@ -543,6 +554,8 @@ export default function Triggers() {
    */
   const handleTrigger = async (mode, params) => {
     setIsLoading(true);
+    setIsRunning(true);
+    setActiveTrigger(null); // clear any previous results
     setError(null);
     setTriggerStatus({ mode, status: 'starting', progress: '' });
 
@@ -582,6 +595,7 @@ export default function Triggers() {
       });
     } catch (err) {
       console.error('Trigger failed:', err);
+      setIsRunning(false);
       setError(`Failed to trigger ${mode} run: ${err.message}`);
       setTriggerStatus({
         mode,
@@ -591,6 +605,13 @@ export default function Triggers() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Called by ActiveRunStatus when polling detects completed/failed
+  const handleRunComplete = () => {
+    setIsRunning(false);      // re-enable all buttons
+    refreshPendingCounts();   // update "X companies pending" counts
+    // activeTrigger stays set so results remain visible
   };
 
   return (
@@ -608,41 +629,41 @@ export default function Triggers() {
         <RunFullPipelineCard
           onTrigger={handleTrigger}
           isLoading={isLoading && triggerStatus?.mode === 'full'}
-          disabled={!!activeTrigger}
+          disabled={isRunning}
           knownIndustries={knownIndustries}
         />
         {activeTrigger && triggerStatus?.mode === 'full' && (
-          <ActiveRunStatus triggerId={activeTrigger} navigate={navigate} onComplete={() => setActiveTrigger(null)} />
+          <ActiveRunStatus triggerId={activeTrigger} navigate={navigate} onComplete={handleRunComplete} />
         )}
 
         <RunScoutOnlyCard
           onTrigger={handleTrigger}
           isLoading={isLoading && triggerStatus?.mode === 'scout'}
-          disabled={!!activeTrigger}
+          disabled={isRunning}
           knownIndustries={knownIndustries}
         />
         {activeTrigger && triggerStatus?.mode === 'scout' && (
-          <ActiveRunStatus triggerId={activeTrigger} navigate={navigate} onComplete={() => setActiveTrigger(null)} />
+          <ActiveRunStatus triggerId={activeTrigger} navigate={navigate} onComplete={handleRunComplete} />
         )}
 
         <RunAnalystOnlyCard
           onTrigger={handleTrigger}
           isLoading={isLoading && triggerStatus?.mode === 'analyst'}
-          disabled={!!activeTrigger}
+          disabled={isRunning}
           pendingAnalystCount={pendingCounts.analyst}
         />
         {activeTrigger && triggerStatus?.mode === 'analyst' && (
-          <ActiveRunStatus triggerId={activeTrigger} navigate={navigate} onComplete={() => setActiveTrigger(null)} />
+          <ActiveRunStatus triggerId={activeTrigger} navigate={navigate} onComplete={handleRunComplete} />
         )}
 
         <RunWriterOnlyCard
           onTrigger={handleTrigger}
           isLoading={isLoading && triggerStatus?.mode === 'writer'}
-          disabled={!!activeTrigger}
+          disabled={isRunning}
           pendingWriterCount={pendingCounts.writer}
         />
         {activeTrigger && triggerStatus?.mode === 'writer' && (
-          <ActiveRunStatus triggerId={activeTrigger} navigate={navigate} onComplete={() => setActiveTrigger(null)} />
+          <ActiveRunStatus triggerId={activeTrigger} navigate={navigate} onComplete={handleRunComplete} />
         )}
       </div>
     </div>

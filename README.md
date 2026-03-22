@@ -138,34 +138,48 @@ Tracker monitors replies → auto email alert to sales team  (Phase 4)
 
 ## 3. Agent System
 
+### Agentic Design Principle
+
+```
+Automation (old):   User → fixed code → fixed query → fixed formula → result
+
+Agentic (current):  User → LLM reasons about intent
+                         → decides what tools to call and in what order
+                         → executes tools (APIs, DB, math)
+                         → evaluates result quality
+                         → loops if not good enough
+                         → returns result
+```
+
+**LLM = decision and reasoning layer only.**
+**APIs / DB / math = deterministic tools it calls.**
+LLM never does math. LLM never calls APIs directly. LLM classifies, infers, decides, evaluates, generates text.
+
+---
+
 ### How the Chat Agent Decides What To Do
 
-The chat agent uses LangChain's `create_agent` with a **system prompt** and **5 tools**.
-The LLM reads the system prompt (its personality + rules) and each tool's docstring,
-then decides which tool to call and what parameters to pass — no hardcoded if/else.
+The chat agent uses LangChain's `create_agent` with a **system prompt** and tools.
+Three-tier routing decides how to handle each message:
 
 ```
-User: "find 5 healthcare companies in Buffalo NY"
-  │
-  ▼
-LLM reads tool docstrings:
-  - search_companies  → "use when user asks to find/discover companies"  ← MATCH
-  - get_leads         → "use when user asks for leads/scores"
-  - get_replies       → "use when user asks about replies"
-  - ...
-  │
-  ▼
-LLM calls: search_companies(industry="healthcare", location="Buffalo NY", count=5)
-  │
-  ▼
-Tool runs Scout agent → external APIs → saves to DB → returns company list
-  │
-  ▼
-LLM writes reply: "Found 5 healthcare companies in Buffalo NY: ..."
-  │
-  ▼
-UI renders: text bubble + 5 CompanyCards inline
+Tier 1 — Conversational:  greetings, small talk → direct LLM reply, no tools called
+Tier 2 — Intent parser:   simple data queries → Python extracts filters, calls tool directly
+Tier 3 — Agent loop:      complex/multi-step → full LangChain ReAct with tools
+
+User: "how many schools do we have right now?"
+  ↓
+LLM reasons:
+  "schools" → industry = education
+  "right now" → current DB count
+  "how many" → count query
+  ↓
+Calls: get_leads(industry="education")
+  ↓
+Returns: "You have 14 education companies — 3 high, 8 medium, 3 low tier"
 ```
+
+LLM builds filter parameters dynamically from conversation context — not hardcoded route matching.
 
 ### Chat Agent Tools
 
@@ -178,61 +192,97 @@ UI renders: text bubble + 5 CompanyCards inline
 | `run_full_pipeline` | "run full pipeline", "start everything" | Scout → Analyst → Writer chain |
 | `approve_leads` | "approve these leads", "approve company X" | Updates lead_scores.approved_human=True, status=approved |
 
-### Scout Agent — Company Discovery
+---
 
-Scout tries 4 sources in quality-ranked order, stopping when target count is reached:
+### Scout Agent — Agentic Company Discovery (Phase B)
 
+**Current (rule-based):** one fixed query per source, e.g. `"healthcare in Buffalo NY"`
+
+**Being upgraded to (Phase B):** LLM Query Planner generates multiple variants, runs them all, deduplicates, checks quality, and retries if target not met.
+
+```
+User: "find schools in Buffalo"
+  ↓
+LLM Query Planner generates:
+  ["elementary schools Buffalo NY", "private schools Western New York",
+   "K-12 school districts Erie County", "universities Buffalo NY"]
+  ↓
+Run ALL queries in parallel across Google Maps + Tavily
+  ↓
+LLM Deduplicator: merges near-duplicate results
+  ↓
+LLM Quality Check: "found 12, target 20 — generate 3 more queries or accept?"
+  ↓
+Save companies to DB
+```
+
+Current sources (still used, just with smarter queries):
 ```
 1. Directory Scraper  — configured sources in DB (Yellow Pages, local dirs)
-2. Tavily             — AI-powered web search fallback
-3. Google Maps        — Places API (free $200/month credit)
-4. Yelp               — Business Search API (free, 500 calls/day)
+2. Tavily             — AI-powered web search
+3. Google Maps        — Places API
+4. Yelp               — Business Search API
 ```
 
-After each source, **Scout Critic** scores quality 0–10:
-- Website present: 5 pts
-- City present: 3 pts
-- Phone present: 2 pts
+---
 
-If score < 6 and target not met → try next source.
-After every run, `source_performance` table is updated — Scout learns which sources
-perform best per industry/location and tries the best one first next time.
+### Analyst Agent — Agentic Scoring (Phase A)
 
-Duplicate check per company: domain normalization match → name+city fallback.
+**Current (rule-based):** exact string match for industry, silently uses 0 for missing data, template score reason.
 
-### Analyst Agent — Company Scoring
+**Being upgraded to (Phase A):** LLM reasons about available data, infers missing values, decides whether to re-enrich before scoring, generates narrative score reason.
 
-After Scout finds companies, Analyst scores each one 0–100 using 4 weighted factors:
+```
+Load company from DB
+  ↓
+LLM Data Inspector:
+  "industry=unknown but name says 'Surgical Associates' → healthcare"
+  "employee_count=0, site_count=0 → need more data before scoring"
+  → action: enrich_before_scoring
+  ↓
+Re-enrichment loop (if needed): crawl → Apollo → Hunter
+  ↓
+score_engine.compute_score(...)   ← math stays deterministic
+  ↓
+LLM Score Narrator:
+  "250-employee healthcare company, 3 sites in deregulated NY —
+   strong audit candidate with ~$180k annual savings potential"
+```
 
+Score formula (unchanged — deterministic):
 ```
 Score = (Recovery × 0.40) + (Industry × 0.25) + (Multisite × 0.20) + (Data Quality × 0.15)
 ```
 
-| Factor | What it measures | Max contribution |
-|---|---|---|
-| Recovery | Estimated savings Troy & Banks can recover (utility + telecom spend × 24% fee) | 40 pts |
-| Industry fit | Energy intensity of the industry (healthcare/hospitality = best) | 25 pts |
-| Multisite | More locations = more spend to recover | 20 pts |
-| Data quality | Website present, contacts found, employee count known | 15 pts |
+Tier: **≥70 = high**, **40–69 = medium**, **<40 = low**
 
-Tier assignment: **≥70 = high**, **40–69 = medium**, **<40 = low**.
-Writer only generates emails for **high + human-approved** companies.
+---
 
-After scoring, the system:
-1. Creates a `human_approval_requests` row in DB
-2. Sends a SendGrid email to `ALERT_EMAIL` listing all scored companies
-3. Sets `agent_runs.status = analyst_awaiting_approval`
+### Writer Agent — Agentic Draft Generation (Phase 3)
 
-Reviewer opens the **Leads page** (`/leads`), checks the score/tier/savings table, and clicks Approve or Reject.
+**Current:** template fill → LLM polish → done (no quality check)
 
-Full details: `docs/PHASE2_ANALYST_APPROVAL.md`
+**Being upgraded to (Phase 3):** LLM reasons about company context to pick the right angle, Critic agent evaluates the draft, rewrite loop if quality < 7.
+
+```
+Writer: reads company data, reasons about best angle → generates full email
+  ↓
+Critic: evaluates 0–10 (personalized? specific number? clear CTA? sounds human?)
+  → score=6, reason="no savings figure", instruction="add $180k estimate"
+  ↓
+If score < 7: Writer rewrites with Critic feedback → re-evaluate (max 2 loops)
+If score ≥ 7: save draft → human review queue
+If still < 7 after 2 rewrites: save with low_confidence=true
+```
+
+---
 
 ### Agent Learning Tables
 
 | Table | What it tracks | Who writes it | Who reads it |
 |---|---|---|---|
-| `source_performance` | Quality score per source per industry/location | Scout after each run | Scout at next run start (ranks sources) |
-| `email_win_rate` | Open/reply rate per template per industry | Tracker after reply events | Writer before drafting (picks best template) |
+| `source_performance` | Quality score per source per industry/location | Scout after each run | Scout at next run (ranks sources best-first) |
+| `email_win_rate` | Open/reply rate per angle per industry | Tracker after reply events | Writer before drafting (picks best angle) |
 
 ### Run Tracking
 
@@ -279,25 +329,37 @@ Every tool call appends one `agent_run_logs` row — full audit trail of every a
 | **0** | Database schema — run tracking, learning, approval tables | ✅ Complete |
 | **1** | Chat agent + Scout (4 sources) + full React dashboard + Docker | ✅ Complete |
 | **2** | Analyst scoring + human lead review + approval notifications | ✅ Complete |
-| **3** | Writer + email quality critic + human email review checkpoint | 🔲 Next |
+| **2.5** | Chat resilience, live progress, UI fixes, chat intelligence | ✅ Complete |
+| **A** | Agentic Analyst — LLM industry inference, data gap loop, score narration | 🔲 Next |
+| **B** | Agentic Scout — LLM query planning, deduplication, quality loop | 🔲 Next |
+| **3** | Agentic Writer + Critic loop + human email review checkpoint | 🔲 Planned |
 | **4** | Outreach sending + Tracker + auto reply email alerts | 🔲 Planned |
 | **5** | Airflow scheduled runs with approval pause points | 🔲 Planned |
-| **6** | Learning activation (source ranking + template selection) | 🔲 Planned |
+| **6** | Learning activation (source ranking + angle selection) | 🔲 Planned |
 | **7** | Full end-to-end system test | 🔲 Planned |
 
 See `MASTER_CHECKLIST.md` for detailed item-by-item progress.
+See `AGENTIC_TRANSFORMATION_PLAN.md` for the full agentic reasoning design.
 
-**What works right now (Phase 1 + 2):**
-- Chat → Ollama → tool routing → DB queries or Scout run
-- Chat: `"approve these leads"` → `approve_leads` tool → marks leads approved in DB
+**What works right now:**
+- Chat → Ollama → 3-tier routing → DB queries or Scout run
+- Chat: `"show me healthcare leads"` → correct filtered results
+- Chat: `"approve these leads"` → marks leads approved in DB
 - Scout Live page — trigger a search, watch companies appear in real time
-- Leads page — filter, review, approve/reject leads with correct score + savings data
-- Analyst scoring — runs after Scout, scores each company 0–100, assigns high/medium/low tier
+- Leads page — 0.35s load, filter/review/approve leads with correct score + savings
+- Analyst scoring — runs after Scout, scores 0–100, tiers, correct `scored_at` timestamp
+- Analyst: Apollo fallback for `employee_count` enrichment when crawl fails
+- Triggers page — per-company live progress table, results stay after completion
 - Approval email — SendGrid notification sent to `ALERT_EMAIL` after Analyst finishes
-- `POST /approvals/leads` — bulk approve/reject via API, pipeline continues to Writer
 - Email Review page — approve/reject/edit drafted emails
-- Pipeline page — health dashboard for all services
-- Reports page — weekly summary and top leads chart
+
+**What is NOT agentic yet (being upgraded in Phases A + B):**
+
+| Agent | Current behavior | Agentic upgrade |
+|---|---|---|
+| Analyst | exact string match for industry, silently uses 0 for missing data | Phase A: LLM infers industry, detects gaps, re-enriches |
+| Scout | one fixed query per source | Phase B: LLM generates query variants, parallel, quality loop |
+| Writer | template fill + LLM polish, no evaluation | Phase 3: context-driven + Critic loop |
 
 ---
 
