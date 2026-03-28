@@ -40,18 +40,42 @@ function getTierColor(tier) {
   return 'bg-gray-100 text-gray-800';
 }
 
+const STATUS_LABELS = {
+  new:           'New',
+  enriched:      'Enriched',
+  scored:        'Scored',
+  approved:      'Approved',
+  draft_created: 'Draft Ready',
+  contacted:     'Contacted',
+  replied:       'Replied',
+  meeting_booked:'Meeting Booked',
+  won:           'Won',
+  lost:          'Lost',
+  no_response:   'No Response',
+  archived:      'Archived',
+};
+
+function getStatusLabel(status) {
+  return STATUS_LABELS[status] || (status ? status.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : '—');
+}
+
 /**
  * Get badge color by status
  */
 function getStatusColor(status) {
   const colors = {
-    new: 'bg-gray-100 text-gray-800',
-    scored: 'bg-purple-100 text-purple-800',
-    approved: 'bg-blue-100 text-blue-800',
-    contacted: 'bg-yellow-100 text-yellow-800',
-    replied: 'bg-red-100 text-red-800',
-    won: 'bg-green-100 text-green-800',
-    lost: 'bg-gray-100 text-gray-800',
+    new:           'bg-gray-100 text-gray-700',
+    enriched:      'bg-cyan-100 text-cyan-800',
+    scored:        'bg-purple-100 text-purple-800',
+    approved:      'bg-blue-100 text-blue-800',
+    draft_created: 'bg-indigo-100 text-indigo-800',
+    contacted:     'bg-yellow-100 text-yellow-800',
+    replied:       'bg-orange-100 text-orange-800',
+    meeting_booked:'bg-teal-100 text-teal-800',
+    won:           'bg-green-100 text-green-800',
+    lost:          'bg-red-100 text-red-800',
+    no_response:   'bg-gray-100 text-gray-500',
+    archived:      'bg-gray-100 text-gray-400',
   };
   return colors[status] || 'bg-gray-100 text-gray-800';
 }
@@ -159,12 +183,16 @@ function FilterBar({ filters, onFilterChange, industries }) {
   const statuses = [
     { value: '', label: 'All Statuses' },
     { value: 'new', label: 'New' },
+    { value: 'enriched', label: 'Enriched' },
     { value: 'scored', label: 'Scored' },
     { value: 'approved', label: 'Approved' },
+    { value: 'draft_created', label: 'Draft Ready' },
     { value: 'contacted', label: 'Contacted' },
     { value: 'replied', label: 'Replied' },
+    { value: 'meeting_booked', label: 'Meeting Booked' },
     { value: 'won', label: 'Won' },
     { value: 'lost', label: 'Lost' },
+    { value: 'no_response', label: 'No Response' },
   ];
 
   const handleChange = (e) => {
@@ -438,7 +466,7 @@ function LeadsTable({
                   <span
                     className={`px-2 py-1 rounded text-xs font-semibold ${getStatusColor(lead.status)}`}
                   >
-                    {lead.status || '—'}
+                    {getStatusLabel(lead.status)}
                   </span>
                 </td>
                 <td className="px-4 py-3 text-sm text-center">
