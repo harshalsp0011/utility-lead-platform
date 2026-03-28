@@ -302,9 +302,9 @@ Pipeline stages update automatically at every step.
 | Dashboard: Leads, Pipeline, Triggers, Email Review | ✅ Done |
 | Follow-up actual sending via Airflow | ⚠️ Code exists, Airflow not live |
 | Reply detection (webhook) | ❌ Not built |
-| HubSpot CRM sync | ❌ Not built |
+| CRM sync (e.g., HubSpot) | ❌ Not built |
 | Manual lead add form | ❌ Not built |
-| HubSpot import | ❌ Not built |
+| CRM import (e.g., HubSpot) | ❌ Not built |
 | Reply inbox page | ❌ Not built |
 
 See `docs/BUILD_STATUS.md` for full details, priority order, and what to build next.
@@ -313,8 +313,8 @@ See `docs/BUILD_STATUS.md` for full details, priority order, and what to build n
 
 ```
 1. Reply detection webhook        ← closes biggest gap in pipeline
-2. HubSpot push sync              ← CRM visibility for sales team
-3. Manual add + HubSpot import    ← unlocks existing contacts as lead source
+2. CRM push sync                  ← CRM visibility for sales team (e.g., HubSpot)
+3. Manual add + CRM import        ← unlocks existing contacts as lead source
 4. Reply inbox page               ← makes replies visible in dashboard
 5. Airflow live scheduling        ← makes follow-ups actually send
 ```
@@ -617,4 +617,11 @@ docker-compose build frontend && docker-compose up -d frontend  # after UI chang
 | `docs/BUILD_STATUS.md` | Exact status of every feature — what's done, what's wired live, what's missing, build priority order |
 | `docs/HOW_IT_WORKS.md` | Plain-English guide for business stakeholders — the journey of a lead from discovery to reply |
 | `docs/SYSTEM_ARCHITECTURE.md` | Full technical architecture — every agent, every API, every data flow, database schema |
-| `MASTER_CHECKLIST.md` | Item-by-item build checklist used during development |
+| `docs/MASTER_CHECKLIST.md` | Item-by-item build checklist used during development |
+| `docs/AGENTIC_TRANSFORMATION_PLAN.md` | Design plan for agentic upgrades to Scout and Analyst |
+| `docs/DOCKER_DEPLOYMENT_GUIDE.md` | Full Docker setup and deployment instructions |
+| `docs/DOCKER_QUICK_REFERENCE.md` | Quick reference for common Docker commands |
+| `docs/AGENTIC_DESIGN.md` | Agentic reasoning patterns used across agents |
+| `docs/CONTACT_ENRICHMENT_STRATEGY.md` | Contact enrichment waterfall — sources, fallbacks, quality gates |
+| `docs/ENRICHMENT_API_GUIDE.md` | API-by-API guide for enrichment integrations |
+| `docs/SCOUT_SOURCES_AND_SIGNALS.md` | Scout news signals and source configuration |

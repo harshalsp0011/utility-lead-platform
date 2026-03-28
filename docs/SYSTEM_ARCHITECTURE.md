@@ -450,9 +450,11 @@ When contact books:
 
 ---
 
-## 11. HubSpot Integration Layer
+## 11. CRM Integration Layer
 
-HubSpot acts as the **CRM face** of the platform — the sales team sees their pipeline there. The platform remains the **intelligence layer** — discovery, scoring, writing, and scheduling all stay here.
+The platform is **CRM-agnostic** — it integrates with any CRM that supports a REST API and outgoing webhooks. HubSpot is used as the reference implementation here, but the same pattern applies to Salesforce, Pipedrive, Zoho, or any comparable CRM.
+
+The CRM acts as the **face** of the platform — the sales team sees their pipeline there. The platform remains the **intelligence layer** — discovery, scoring, writing, and scheduling all stay here.
 
 ### Data Flow
 

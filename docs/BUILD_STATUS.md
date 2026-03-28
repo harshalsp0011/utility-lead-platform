@@ -9,7 +9,7 @@
 | Stage | Feature | Status |
 |---|---|---|
 | Lead Discovery | Scout finds companies from news | ✅ Done |
-| Lead Discovery | HubSpot import | ❌ Not built |
+| Lead Discovery | CRM import (e.g., HubSpot) | ❌ Not built |
 | Lead Discovery | Manual add form | ❌ Not built |
 | Enrichment | Apollo contact lookup | ✅ Done |
 | Scoring | LLM scoring + narrative | ✅ Done |
@@ -21,8 +21,8 @@
 | Follow-ups | Actually send follow-ups via Airflow | ⚠️ Code exists, not running live |
 | Reply Detection | Detect when prospect replies | ❌ Not built (biggest gap) |
 | Meeting Booking | Detect when meeting is booked | ❌ Not built |
-| HubSpot Sync | Push deal to HubSpot after send | ❌ Not built |
-| HubSpot Webhook | Receive reply/meeting events | ❌ Not built |
+| CRM Sync | Push deal to CRM after send (e.g., HubSpot) | ❌ Not built |
+| CRM Webhook | Receive reply/meeting events from CRM | ❌ Not built |
 | Notifications | Email alerts for replies, pipeline events | ⚠️ Partially built |
 | Tracker | Background reply/open monitoring | ⚠️ Code exists, not wired live |
 | Airflow Schedule | Full pipeline on a cron schedule | ⚠️ DAG exists, not configured |
@@ -69,7 +69,7 @@ These features have working code but are not actively running:
 
 ### Tracker Agent
 - **What exists:** `agents/tracker/tracker_agent.py`, `status_updater.py`, reply/open event handling
-- **What's missing:** Not running as a background process. No webhook endpoint to receive events from SendGrid or HubSpot.
+- **What's missing:** Not running as a background process. No webhook endpoint to receive events from SendGrid or a connected CRM (e.g., HubSpot).
 - **To fix:** Wire Tracker to run continuously, add webhook handler endpoints.
 
 ### Email Win-Rate Learning
@@ -89,30 +89,32 @@ These features have working code but are not actively running:
 When a prospect replies to an email, nothing in the system knows about it. Follow-ups keep going out even if they already responded. Status stays at "Contacted" forever.
 
 **What needs to be built:**
-- HubSpot webhook endpoint: `POST /api/webhooks/hubspot/reply`
+- CRM webhook endpoint: `POST /api/webhooks/crm/reply` (e.g., HubSpot fires this when a reply arrives)
 - OR SendGrid Inbound Parse webhook: `POST /api/webhooks/sendgrid/inbound`
 - Handler: match contact email → log reply event → cancel follow-ups → set status = "replied" → alert sales team
 
 ### Meeting Booking Detection
-No automatic detection when a prospect books a meeting through the HubSpot calendar link.
+No automatic detection when a prospect books a meeting through a CRM calendar link (e.g., HubSpot Meetings).
 
 **What needs to be built:**
-- HubSpot meeting webhook: `POST /api/webhooks/hubspot/meeting`
+- CRM meeting webhook: `POST /api/webhooks/crm/meeting` (e.g., HubSpot fires this on booking)
 - Handler: set status = "meeting_booked", cancel remaining follow-ups
 
-### HubSpot Sync (Push)
-After an email is sent, the company and contact are not pushed to HubSpot. The sales team has no CRM view of the pipeline.
+### CRM Sync (Push)
+After an email is sent, the company and contact are not pushed to the connected CRM. The sales team has no CRM view of the pipeline.
 
 **What needs to be built:**
-- After `send_email()` succeeds → create HubSpot Contact + Deal via HubSpot API
-- As status changes (replied, meeting_booked, won) → update HubSpot deal stage
+- After `send_email()` succeeds → create Contact + Deal in CRM via CRM API (e.g., HubSpot CRM v3)
+- As status changes (replied, meeting_booked, won) → update CRM deal stage
+- The platform is CRM-agnostic — the same pattern works for any CRM with a REST API
 
-### HubSpot Import (Pull)
-No way to bring existing contacts from HubSpot into this platform.
+### CRM Import (Pull)
+No way to bring existing contacts from a CRM into this platform.
 
 **What needs to be built:**
-- Import page in dashboard with "Import from HubSpot" button
-- Backend: fetch HubSpot contacts → map to companies + contacts tables → enter scoring pipeline
+- Import page in dashboard with "Import from CRM" button
+- Backend: fetch contacts from CRM API (e.g., HubSpot Contacts API) → map to companies + contacts tables → enter scoring pipeline
+- CRM-configurable: the import adapter can be swapped for any CRM's API format
 
 ### Manual Lead Add
 No form to add a company manually.
@@ -163,12 +165,13 @@ If starting work now, this is the order that makes the most sense:
 
 ```
 1. Reply detection webhook        ← closes the biggest gap in the pipeline
-   (HubSpot or SendGrid inbound)
+   (CRM webhook or SendGrid inbound — e.g., HubSpot)
 
-2. HubSpot push sync              ← gives sales team CRM visibility immediately
-   (create deal after send)
+2. CRM push sync                  ← gives sales team CRM visibility immediately
+   (create deal after send — e.g., HubSpot CRM API)
 
-3. Manual add + HubSpot import    ← unlocks existing contacts as lead source
+3. Manual add + CRM import        ← unlocks existing contacts as lead source
+   (e.g., import from HubSpot, Salesforce, or any CRM with a contacts API)
 
 4. Reply inbox page               ← makes replies visible in dashboard
 
