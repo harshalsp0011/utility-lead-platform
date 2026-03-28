@@ -53,34 +53,34 @@ Find companies  →  Enrich contacts  →  Score as leads
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                    Browser (localhost:3000)               │
-│                  React + Vite + Tailwind                  │
-│                                                          │
-│  Leads  │  Email Review  │  Pipeline  │  Triggers  │ ... │
+│                    Browser (localhost:3000)             │
+│                  React + Vite + Tailwind                │
+│                                                         │
+│  Leads  │  Email Review  │  Pipeline  │  Triggers  │ ...│
 └─────────────────────────┬───────────────────────────────┘
                           │  HTTP (fetch)
                           ▼
-┌─────────────────────────────────────────────────────────┐
-│                   API Layer (localhost:8001)              │
-│                    FastAPI + Uvicorn                      │
+┌──────────────────────────────────────────────────────────┐
+│                   API Layer (localhost:8001)             │
+│                    FastAPI + Uvicorn                     │
 │                                                          │
 │  GET /leads   GET /emails   POST /trigger   GET /pipeline│
-└──────┬──────────────────────────────────────────────────┘
+└──────┬───────────────────────────────────────────────────┘
        │
        ▼
 ┌──────────────────────────────────────────────────────────┐
-│                       Agents                              │
+│                       Agents                             │
 │                                                          │
-│  Scout Agent         Analyst Agent    Writer Agent        │
+│  Scout Agent         Analyst Agent    Writer Agent       |
 │  (news → companies)  (score + enrich) (draft + critic)   │
 │                                                          │
-│  Outreach Agent      Tracker Agent    Orchestrator        │
-│  (send + followup)   (reply monitor)  (chain runner)      │
+│  Outreach Agent      Tracker Agent    Orchestrator       │
+│  (send + followup)   (reply monitor)  (chain runner)     │
 └──────┬──────────────────────────────────────┬────────────┘
        │                                      │
        ▼                                      ▼
-┌─────────────────────┐         ┌─────────────────────────┐
-│   External APIs      │         │       PostgreSQL          │
+┌──────────────────────┐         ┌─────────────────────────┐
+│   External APIs      │         │       PostgreSQL        │
 │                      │         │                         │
 │  Tavily (search)     │         │  companies              │
 │  Apollo (contacts)   │         │  contacts               │
@@ -89,7 +89,7 @@ Find companies  →  Enrich contacts  →  Score as leads
 │  Yelp Business       │         │  outreach_events        │
 │  SendGrid (email)    │         │  followup_schedules     │
 │  Ollama / OpenAI     │         │  agent_runs             │
-└─────────────────────┘         │  email_win_rate         │
+└──────────────────────┘         │  email_win_rate         │
                                  └─────────────────────────┘
 ```
 
@@ -107,7 +107,7 @@ Database is external PostgreSQL — not in Docker.
 ### Human-in-Loop Checkpoints
 
 ```
-Scout finds companies from news
+Scout finds companies from the news
         │
         ▼
 Analyst enriches contacts + scores 0–100
@@ -119,10 +119,10 @@ Analyst enriches contacts + scores 0–100
 Writer drafts personalized email → Critic reviews → rewrites if needed
         │
         ▼
-  [HUMAN REVIEW #2]  ← Email Review page: approve / edit / reject
+  [HUMAN REVIEW #2]  ← Email Review page: approve/edit/reject
         │
         ▼
-SendGrid sends email with open + click tracking
+SendGrid sends an email with open + click tracking
         │
         ▼
 Follow-ups scheduled at Day 3 / 7 / 14 (cancelled if reply received)
@@ -196,7 +196,7 @@ score_engine.compute_score(...)   ← deterministic math
   Score = (Recovery × 0.40) + (Industry × 0.25) + (Multisite × 0.20) + (Data × 0.15)
   ↓
 LLM Score Narrator:
-  Generates plain-English explanation of why this company scores this way
+  Generates a plain-English explanation of why this company scores this way
 ```
 
 Tier: **≥70 = high**, **40–69 = medium**, **<40 = low**
@@ -207,7 +207,7 @@ Tier: **≥70 = high**, **40–69 = medium**, **<40 = low**
 
 ```
 Writer:
-  Reads email_win_rate for best-performing angle in this industry
+  Reads email_win_rate for the best-performing angle in this industry
   Reads company data + score narrative
   Generates full email: subject line + body (personalized, with savings figure, clear CTA)
   ↓
