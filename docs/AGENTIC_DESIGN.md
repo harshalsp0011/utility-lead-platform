@@ -55,7 +55,7 @@ infers, decides, evaluates, and generates text. Everything else is deterministic
 ```
 Scout
   │  [Tool Use] — Chat LLM picks search_companies tool from user intent
-  │  [Dynamic Query] — LLM builds query variants (partial — Phase B will complete)
+  │  [Dynamic Query] — LLM builds 3–5 query variants + quality retry loop ✅
   ▼
 companies table
 
@@ -97,14 +97,16 @@ email_drafts table
     │  Regenerate → new Writer+Critic cycle                    │
     └──────────────────────────────────────────────────────────┘
 
-Outreach (Phase 4)
-  │  Send approved emails + follow-ups
+Outreach ✅
+  │  Send approved first emails + 3-touch follow-up sequence (Day 3/7/14)
+  │  [Guardrails] — unsubscribe block, daily send cap, no double-send
   ▼
 outreach_events table
 
-Tracker (Phase 4)
-  │  [Learning Write] — updates email_win_rate on reply events
-  │  [Alert] — SendGrid notification to sales team on positive reply
+Tracker ✅
+  │  [Reply Classification] — LLM intent + rule-based fallback (wants_meeting / wants_info / unsubscribe)
+  │  [Alert] — SendGrid hot-lead notification to sales team on positive reply
+  │  [Learning Write] — win rate update on reply → pending (process_event wiring incomplete)
   ▼
 email_win_rate  (feeds back to Writer on next run)
 ```
@@ -322,7 +324,7 @@ history to bias future email generation toward what has worked.
 
 **Implementation:**
 - `agents/writer/writer_agent.py` — `get_best_angle(industry, db_session)`
-- `agents/tracker/tracker_agent.py` — updates `email_win_rate` on reply (Phase 4)
+- `agents/tracker/tracker_agent.py` — `process_event()` dispatch wiring pending; win rate update not yet connected
 - `database/orm_models.py` — `EmailWinRate` ORM model
 
 **The feedback loop:**
@@ -426,7 +428,7 @@ Use deterministic code where correctness and auditability matter more than flexi
 | **Chat** | Full ReAct loop, tool use, multi-turn context | — |
 | **Writer** | Context-aware generation, Critic loop, learning, uncertainty flagging | — |
 | **Enrichment** | Waterfall with graceful degradation, quality gates | — |
-| **Analyst** | LLM score narration, Apollo data gap fallback | Phase A: LLM industry inference, full data gap detection loop |
-| **Scout** | LLM intent extraction for search query | Phase B: LLM query planning, parallel search, quality loop, deduplication |
-| **Tracker** | Rule-based reply detection | Phase 4: sentiment classification, win rate updates |
-| **Outreach** | Rule-based send + followup scheduling | Phase 4: send + followup logic |
+| **Analyst** | LLM industry inference, data gap detection, re-enrichment loop (max 2), score narration ✅ | — |
+| **Scout** | LLM query planning (3–5 variants), multi-source search, LLM dedup, quality retry loop ✅ | — |
+| **Tracker** | LLM + rule-based reply classification, sales alerts, daily health checks ✅ | win rate write on reply (process_event wiring pending) |
+| **Outreach** | 3-touch follow-up sequence, daily cap, unsubscribe guard, LLM follow-up polish ✅ | CRM push after send |

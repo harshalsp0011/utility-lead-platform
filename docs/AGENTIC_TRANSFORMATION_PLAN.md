@@ -185,14 +185,14 @@ Save to DB
 
 ---
 
-### Phase 3 — Agentic Writer + Critic Loop
+### Phase 3 — Agentic Writer + Critic Loop ✅ COMPLETE (2026-03-22)
 
-**What we have now:**
+**What we had:**
 - Template fill → LLM polishes the template
 - No quality evaluation of output
 - No retry — first LLM response is saved
 
-**What changes:**
+**What changed:**
 1. Writer generates from company context (not template slots) — LLM reasons about which angle works best for this company
 2. `critic_agent.py` (new) — evaluates draft on 0–10 rubric, returns score + rewrite instruction
 3. Rewrite loop: if score < 7, Writer sees the instruction and rewrites (max 2 loops)
@@ -286,8 +286,8 @@ Step 1 → Phase A: Analyst LLM reasoning layer           ✅ DONE (2026-03-22)
 Step 2 → Phase B: Scout agentic query planning           ✅ DONE (2026-03-22)
          LLM generates 3–5 query variants, multi-query API calls, LLM dedup, quality retry
 
-Step 3 → Phase 3: Writer + Critic loop                   🔲 NEXT
-         Completes the email generation pipeline with quality evaluation
+Step 3 → Phase 3: Writer + Critic loop                   ✅ DONE (2026-03-22)
+         Context-aware generation, Critic rubric (0–10), rewrite loop (max 2), low_confidence flag
 
 Step 4 → Phase D: Chat dynamic filter generation         🔲 PLANNED
          Already mostly working — small enhancement to filter combinations

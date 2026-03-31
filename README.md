@@ -372,6 +372,9 @@ docker-compose up --build
 # View API logs (see agent steps, errors)
 docker-compose logs api -f
 
+# Check which containers are running
+docker-compose ps
+
 # Rebuild API after code changes
 docker-compose build api && docker-compose up -d api
 
@@ -380,6 +383,9 @@ docker-compose build frontend && docker-compose up -d frontend
 
 # Stop everything
 docker-compose down
+
+# Clean restart (removes orphan containers)
+docker-compose down --remove-orphans && docker-compose up -d
 ```
 
 > **Important:** Always rebuild the relevant container after code changes. Running containers do not pick up file changes automatically.
@@ -617,10 +623,7 @@ docker-compose build frontend && docker-compose up -d frontend  # after UI chang
 | `docs/BUILD_STATUS.md` | Exact status of every feature — what's done, what's wired live, what's missing, build priority order |
 | `docs/HOW_IT_WORKS.md` | Plain-English guide for business stakeholders — the journey of a lead from discovery to reply |
 | `docs/SYSTEM_ARCHITECTURE.md` | Full technical architecture — every agent, every API, every data flow, database schema |
-| `docs/MASTER_CHECKLIST.md` | Item-by-item build checklist used during development |
-| `docs/AGENTIC_TRANSFORMATION_PLAN.md` | Design plan for agentic upgrades to Scout and Analyst |
-| `docs/DOCKER_DEPLOYMENT_GUIDE.md` | Full Docker setup and deployment instructions |
-| `docs/DOCKER_QUICK_REFERENCE.md` | Quick reference for common Docker commands |
+| `docs/AGENTIC_TRANSFORMATION_PLAN.md` | Design plan for agentic upgrades — all phases now complete |
 | `docs/AGENTIC_DESIGN.md` | Agentic reasoning patterns used across agents |
 | `docs/CONTACT_ENRICHMENT_STRATEGY.md` | Contact enrichment waterfall — sources, fallbacks, quality gates |
 | `docs/ENRICHMENT_API_GUIDE.md` | API-by-API guide for enrichment integrations |
