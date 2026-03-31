@@ -1,0 +1,848 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Orchestrator Agent &#8212; Utility Lead Intelligence Platform</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'chapters/Agents/orchestrator_deep_dive';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Chat Agent" href="chat_agent_deep_dive.html" />
+    <link rel="prev" title="Tracker Agent" href="tracker_deep_dive.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Utility Lead Intelligence Platform</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../../index.html">
+                    Utility Lead Intelligence Platform
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../system_architecture.html">System Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../agentic_design.html">Agentic Design</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Agents: Deep Technical Walkthrough</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="scout_deep_dive.html">Scout Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analyst_deep_dive.html">Analyst Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="writer_deep_dive.html">Writer Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="outreach_deep_dive.html">Outreach Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tracker_deep_dive.html">Tracker Agent</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Orchestrator Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="chat_agent_deep_dive.html">Chat Agent</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/chapters/Agents/orchestrator_deep_dive.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Orchestrator Agent</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tech-stack-used">Tech Stack Used</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#agentic-concepts-used">Agentic Concepts Used</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#file-by-file-breakdown">File-by-File Breakdown</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-orchestrator-orchestrator-py-pipeline-entry-point">1. <code class="docutils literal notranslate"><span class="pre">agents/orchestrator/orchestrator.py</span></code> — Pipeline Entry Point</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-orchestrator-task-manager-py-task-dispatch-audit-log">2. <code class="docutils literal notranslate"><span class="pre">agents/orchestrator/task_manager.py</span></code> — Task Dispatch + Audit Log</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-orchestrator-pipeline-monitor-py-health-status-dashboard">3. <code class="docutils literal notranslate"><span class="pre">agents/orchestrator/pipeline_monitor.py</span></code> — Health + Status Dashboard</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-orchestrator-report-generator-py-weekly-report">4. <code class="docutils literal notranslate"><span class="pre">agents/orchestrator/report_generator.py</span></code> — Weekly Report</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#human-in-the-loop-gates">Human-in-the-Loop Gates</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#full-data-flow">Full Data Flow</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="orchestrator-agent">
+<h1>Orchestrator Agent<a class="headerlink" href="#orchestrator-agent" title="Permalink to this heading">#</a></h1>
+<section id="tech-stack-used">
+<h2>Tech Stack Used<a class="headerlink" href="#tech-stack-used" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Tech</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>SQLAlchemy ORM</strong></p></td>
+<td><p>All DB reads/writes — <code class="docutils literal notranslate"><span class="pre">AgentRun</span></code>, <code class="docutils literal notranslate"><span class="pre">Company</span></code>, <code class="docutils literal notranslate"><span class="pre">LeadScore</span></code>, <code class="docutils literal notranslate"><span class="pre">CompanyFeature</span></code>, <code class="docutils literal notranslate"><span class="pre">HumanApprovalRequest</span></code>, <code class="docutils literal notranslate"><span class="pre">EmailDraft</span></code>, <code class="docutils literal notranslate"><span class="pre">OutreachEvent</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Python <code class="docutils literal notranslate"><span class="pre">requests</span></code></strong></p></td>
+<td><p>Service health probes in <code class="docutils literal notranslate"><span class="pre">pipeline_monitor.py</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong><code class="docutils literal notranslate"><span class="pre">database.connection.check_connection</span></code></strong></p></td>
+<td><p>PostgreSQL health check</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong><code class="docutils literal notranslate"><span class="pre">email_notifier</span></code></strong></p></td>
+<td><p>Sends approval request emails after analyst + writer stages</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Plain text log file</strong> (<code class="docutils literal notranslate"><span class="pre">logs/task_log.txt</span></code>)</p></td>
+<td><p>Structured audit trail written by <code class="docutils literal notranslate"><span class="pre">task_manager</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Lazy imports</strong> (<code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">agents.X</span> <span class="pre">import</span> <span class="pre">Y</span></code> inside functions)</p></td>
+<td><p>All agents imported at dispatch time — avoids circular imports</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="agentic-concepts-used">
+<h2>Agentic Concepts Used<a class="headerlink" href="#agentic-concepts-used" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Concept</p></th>
+<th class="head"><p>Tool / Tech</p></th>
+<th class="head"><p>Where</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Pipeline Orchestration</p></td>
+<td><p>Sequential stage functions</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">orchestrator.run_full_pipeline()</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Task Dispatch + Retry</p></td>
+<td><p>In-process <code class="docutils literal notranslate"><span class="pre">_TASK_LOG</span></code> dict + <code class="docutils literal notranslate"><span class="pre">retry_failed_task()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">task_manager.assign_task()</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Human-in-the-Loop</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">HumanApprovalRequest</span></code> DB table + <code class="docutils literal notranslate"><span class="pre">email_notifier</span></code></p></td>
+<td><p>After analyst + writer stages</p></td>
+</tr>
+<tr class="row-odd"><td><p>Auto-Approval</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">score_row.approved_human</span> <span class="pre">=</span> <span class="pre">True</span></code> on contact found</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">run_contact_enrichment()</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Pipeline Health Monitor</p></td>
+<td><p>SQLAlchemy COUNT queries + <code class="docutils literal notranslate"><span class="pre">requests.get</span></code> health probes</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">pipeline_monitor.py</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Stuck Condition Detection</p></td>
+<td><p>Time-based thresholds on pipeline status</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">detect_stuck_pipeline()</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Weekly Reporting</p></td>
+<td><p>SQLAlchemy aggregations across 6 tables</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">report_generator.generate_weekly_report()</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="file-by-file-breakdown">
+<h2>File-by-File Breakdown<a class="headerlink" href="#file-by-file-breakdown" title="Permalink to this heading">#</a></h2>
+<section id="agents-orchestrator-orchestrator-py-pipeline-entry-point">
+<h3>1. <code class="docutils literal notranslate"><span class="pre">agents/orchestrator/orchestrator.py</span></code> — Pipeline Entry Point<a class="headerlink" href="#agents-orchestrator-orchestrator-py-pipeline-entry-point" title="Permalink to this heading">#</a></h3>
+<p><strong><code class="docutils literal notranslate"><span class="pre">run_full_pipeline(industry,</span> <span class="pre">location,</span> <span class="pre">count,</span> <span class="pre">db_session)</span></code> at line 54:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Step 1: run_scout()              → task_manager dispatches scout_agent.run()
+Step 2: run_analyst()            → task_manager dispatches analyst_agent.run()
+                                   → creates HumanApprovalRequest + sends email
+Step 3: run_contact_enrichment() → enrichment_client.find_contacts() per high-tier company
+                                   → auto-approves lead if contact found
+Step 4: run_writer()             → task_manager dispatches writer_agent.run()
+                                   → creates HumanApprovalRequest + sends email
+Step 5: generate_run_summary()   → combines all stage results into one dict
+</pre></div>
+</div>
+<p>Each stage function calls <code class="docutils literal notranslate"><span class="pre">task_manager.assign_task()</span></code> — a uniform dispatch layer that handles logging and retry.</p>
+<hr class="docutils" />
+<p><strong><code class="docutils literal notranslate"><span class="pre">run_analyst()</span></code> at line 119</strong> — after scoring:</p>
+<ul class="simple">
+<li><p>Reads latest <code class="docutils literal notranslate"><span class="pre">LeadScore</span></code> per company, counts <code class="docutils literal notranslate"><span class="pre">high/medium/low</span></code></p></li>
+<li><p>Creates <code class="docutils literal notranslate"><span class="pre">HumanApprovalRequest(approval_type=&quot;leads&quot;,</span> <span class="pre">status=&quot;pending&quot;)</span></code> in DB</p></li>
+<li><p>Calls <code class="docutils literal notranslate"><span class="pre">email_notifier.send_lead_approval_request()</span></code> with full scored lead list to <code class="docutils literal notranslate"><span class="pre">ALERT_EMAIL</span></code></p></li>
+</ul>
+<p><strong><code class="docutils literal notranslate"><span class="pre">run_contact_enrichment()</span></code> at line 221</strong> — 3-source phone lookup per company:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>1. enrichment_client.lookup_phone_google_places(name, city, state)
+2. enrichment_client.lookup_phone_yelp(name, city, state)         ← if (1) fails
+3. enrichment_client.scrape_phone_from_website(website)           ← if (2) fails
+</pre></div>
+</div>
+<p>Then calls <code class="docutils literal notranslate"><span class="pre">enrichment_client.find_contacts()</span></code> (Hunter/Apollo). If contacts found → <strong>auto-approves</strong> the <code class="docutils literal notranslate"><span class="pre">LeadScore</span></code> row: <code class="docutils literal notranslate"><span class="pre">approved_human=True</span></code>, <code class="docutils literal notranslate"><span class="pre">approved_by=&quot;system</span> <span class="pre">(contact</span> <span class="pre">found)&quot;</span></code>.</p>
+<p><strong><code class="docutils literal notranslate"><span class="pre">run_writer()</span></code> at line 330:</strong></p>
+<ul class="simple">
+<li><p>Queries <code class="docutils literal notranslate"><span class="pre">Company.status</span> <span class="pre">==</span> <span class="pre">&quot;approved&quot;</span></code> with no existing <code class="docutils literal notranslate"><span class="pre">EmailDraft</span></code></p></li>
+<li><p>Creates <code class="docutils literal notranslate"><span class="pre">AgentRun</span></code> row (<code class="docutils literal notranslate"><span class="pre">status=&quot;writer_running&quot;</span></code>)</p></li>
+<li><p>After drafts created: updates <code class="docutils literal notranslate"><span class="pre">AgentRun.status</span> <span class="pre">=</span> <span class="pre">&quot;writer_awaiting_approval&quot;</span></code></p></li>
+<li><p>Creates <code class="docutils literal notranslate"><span class="pre">HumanApprovalRequest(approval_type=&quot;emails&quot;)</span></code> + sends <code class="docutils literal notranslate"><span class="pre">email_notifier.send_draft_approval_request()</span></code></p></li>
+</ul>
+<p><strong><code class="docutils literal notranslate"><span class="pre">handle_agent_failure()</span></code> at line 521</strong> — retry chain:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>1. task_manager.assign_task()      ← first retry
+2. task_manager.retry_failed_task() ← second retry (increments retry_count)
+3. If both fail: log error → returns &quot;failed_after_retry&quot;
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="agents-orchestrator-task-manager-py-task-dispatch-audit-log">
+<h3>2. <code class="docutils literal notranslate"><span class="pre">agents/orchestrator/task_manager.py</span></code> — Task Dispatch + Audit Log<a class="headerlink" href="#agents-orchestrator-task-manager-py-task-dispatch-audit-log" title="Permalink to this heading">#</a></h3>
+<p><strong><code class="docutils literal notranslate"><span class="pre">assign_task(agent_name,</span> <span class="pre">task_params,</span> <span class="pre">db_session)</span></code> at line 51:</strong></p>
+<ul class="simple">
+<li><p>Registers task in <code class="docutils literal notranslate"><span class="pre">_TASK_LOG</span></code> dict (in-process, keyed by UUID)</p></li>
+<li><p>Calls <code class="docutils literal notranslate"><span class="pre">_dispatch()</span></code> which lazy-imports and calls each agent’s <code class="docutils literal notranslate"><span class="pre">run()</span></code> entry point</p></li>
+<li><p>Records <code class="docutils literal notranslate"><span class="pre">started_at</span></code>, <code class="docutils literal notranslate"><span class="pre">ended_at</span></code>, <code class="docutils literal notranslate"><span class="pre">duration_seconds</span></code></p></li>
+<li><p>Calls <code class="docutils literal notranslate"><span class="pre">log_task_result()</span></code> → prints + appends to <code class="docutils literal notranslate"><span class="pre">logs/task_log.txt</span></code></p></li>
+<li><p>Returns <code class="docutils literal notranslate"><span class="pre">{task_id,</span> <span class="pre">status,</span> <span class="pre">result}</span></code></p></li>
+</ul>
+<p><strong><code class="docutils literal notranslate"><span class="pre">_dispatch()</span></code> at line 171</strong> — agent routing table:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Agent</p></th>
+<th class="head"><p>Import</p></th>
+<th class="head"><p>Call</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">scout</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">agents.scout.scout_agent</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">scout_agent.run(industry,</span> <span class="pre">location,</span> <span class="pre">count,</span> <span class="pre">db_session)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">analyst</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">agents.analyst.analyst_agent</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">analyst_agent.run(company_ids,</span> <span class="pre">db_session,</span> <span class="pre">on_progress)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">writer</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">agents.writer.writer_agent</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">writer_agent.run(company_ids,</span> <span class="pre">db_session,</span> <span class="pre">run_id,</span> <span class="pre">on_progress)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">outreach</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">agents.outreach.outreach_agent</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">outreach_agent.process_followup_queue(db_session)</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tracker</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">agents.tracker.tracker_agent</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">tracker_agent.run_daily_checks(db_session)</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>All imports are <strong>lazy</strong> (inside the function) — avoids circular import issues at module load time.</p>
+<p><strong><code class="docutils literal notranslate"><span class="pre">retry_failed_task(task_id,</span> <span class="pre">db_session)</span></code> at line 110:</strong></p>
+<ul class="simple">
+<li><p>Max 3 retries enforced via <code class="docutils literal notranslate"><span class="pre">retry_count</span></code> in <code class="docutils literal notranslate"><span class="pre">_TASK_LOG</span></code></p></li>
+<li><p>Calls <code class="docutils literal notranslate"><span class="pre">assign_task()</span></code> again with original params</p></li>
+<li><p>Updates original log entry status so <code class="docutils literal notranslate"><span class="pre">check_task_status()</span></code> reflects latest outcome</p></li>
+</ul>
+<p><strong><code class="docutils literal notranslate"><span class="pre">log_task_result()</span></code> at line 141</strong> — structured log line format:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="mi">2025</span><span class="o">-</span><span class="mi">04</span><span class="o">-</span><span class="mi">01</span><span class="n">T12</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="n">Z</span><span class="p">]</span> <span class="n">TASK</span><span class="p">:</span> <span class="n">scout</span> <span class="n">params</span><span class="p">:</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span> <span class="n">result</span><span class="p">:</span> <span class="p">{</span><span class="o">...</span><span class="p">}</span> <span class="n">duration</span><span class="p">:</span> <span class="mi">42</span><span class="n">s</span>
+</pre></div>
+</div>
+<p>Written to <code class="docutils literal notranslate"><span class="pre">logs/task_log.txt</span></code> (creates directory if missing).</p>
+</section>
+<hr class="docutils" />
+<section id="agents-orchestrator-pipeline-monitor-py-health-status-dashboard">
+<h3>3. <code class="docutils literal notranslate"><span class="pre">agents/orchestrator/pipeline_monitor.py</span></code> — Health + Status Dashboard<a class="headerlink" href="#agents-orchestrator-pipeline-monitor-py-health-status-dashboard" title="Permalink to this heading">#</a></h3>
+<p><strong><code class="docutils literal notranslate"><span class="pre">get_pipeline_counts(db_session)</span></code> at line 46:</strong></p>
+<ul class="simple">
+<li><p>SQLAlchemy query: all <code class="docutils literal notranslate"><span class="pre">Company.status</span></code> values</p></li>
+<li><p>Returns dict with zero-filled counts for all 11 statuses: <code class="docutils literal notranslate"><span class="pre">new</span> <span class="pre">→</span> <span class="pre">enriched</span> <span class="pre">→</span> <span class="pre">scored</span> <span class="pre">→</span> <span class="pre">approved</span> <span class="pre">→</span> <span class="pre">contacted</span> <span class="pre">→</span> <span class="pre">replied</span> <span class="pre">→</span> <span class="pre">meeting_booked</span> <span class="pre">→</span> <span class="pre">won</span> <span class="pre">→</span> <span class="pre">lost</span> <span class="pre">→</span> <span class="pre">no_response</span> <span class="pre">→</span> <span class="pre">archived</span></code></p></li>
+</ul>
+<p><strong><code class="docutils literal notranslate"><span class="pre">get_pipeline_value(db_session)</span></code> at line 61:</strong></p>
+<ul class="simple">
+<li><p>Loops active companies (not <code class="docutils literal notranslate"><span class="pre">lost/archived/no_response</span></code>)</p></li>
+<li><p>For each <code class="docutils literal notranslate"><span class="pre">high</span></code> tier company: sums <code class="docutils literal notranslate"><span class="pre">savings_low/mid/high</span></code> from <code class="docutils literal notranslate"><span class="pre">CompanyFeature</span></code></p></li>
+<li><p>Calculates <code class="docutils literal notranslate"><span class="pre">TB_CONTINGENCY_FEE</span> <span class="pre">×</span> <span class="pre">savings_mid</span></code> = estimated Troy &amp; Banks revenue</p></li>
+</ul>
+<p><strong><code class="docutils literal notranslate"><span class="pre">check_agent_health()</span></code> at line 107</strong> — probes 7 services:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Service</p></th>
+<th class="head"><p>Check</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">postgres</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">database.connection.check_connection()</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ollama</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">{OLLAMA_BASE_URL}</span></code> (5s timeout)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">api</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">http://localhost:8001/health</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">airflow</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">http://host.docker.internal:8080/health</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">sendgrid</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">SENDGRID_API_KEY</span></code> set?</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tavily</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">TAVILY_API_KEY</span></code> set?</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">slack</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ALERT_EMAIL</span></code> set?</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Returns <code class="docutils literal notranslate"><span class="pre">{status:</span> <span class="pre">&quot;ok&quot;/&quot;warning&quot;/&quot;error&quot;,</span> <span class="pre">message:</span> <span class="pre">&quot;...&quot;}</span></code> per service.</p>
+<p><strong><code class="docutils literal notranslate"><span class="pre">detect_stuck_pipeline(db_session)</span></code> at line 125</strong> — 4 time-based checks:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Check</p></th>
+<th class="head"><p>Threshold</p></th>
+<th class="head"><p>Issue</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Companies in <code class="docutils literal notranslate"><span class="pre">new</span></code> status</p></td>
+<td><p>&gt; 24 hours</p></td>
+<td><p>“N companies found but not yet analyzed”</p></td>
+</tr>
+<tr class="row-odd"><td><p>High-tier leads unapproved</p></td>
+<td><p>&gt; 48 hours</p></td>
+<td><p>“N high-score leads waiting approval”</p></td>
+</tr>
+<tr class="row-even"><td><p>Approved drafts unsent</p></td>
+<td><p>&gt; 6 hours</p></td>
+<td><p>“N approved emails not yet sent”</p></td>
+</tr>
+<tr class="row-odd"><td><p>No emails sent today</p></td>
+<td><p>Weekday only</p></td>
+<td><p>“No emails sent today — check outreach agent”</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong><code class="docutils literal notranslate"><span class="pre">get_recent_activity(db_session,</span> <span class="pre">limit=10)</span></code> at line 188:</strong></p>
+<ul class="simple">
+<li><p>Queries <code class="docutils literal notranslate"><span class="pre">OutreachEvent</span></code> ordered by <code class="docutils literal notranslate"><span class="pre">event_at</span> <span class="pre">DESC</span></code>, joins Company + Contact names</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="agents-orchestrator-report-generator-py-weekly-report">
+<h3>4. <code class="docutils literal notranslate"><span class="pre">agents/orchestrator/report_generator.py</span></code> — Weekly Report<a class="headerlink" href="#agents-orchestrator-report-generator-py-weekly-report" title="Permalink to this heading">#</a></h3>
+<p><strong><code class="docutils literal notranslate"><span class="pre">generate_weekly_report(start_date,</span> <span class="pre">end_date,</span> <span class="pre">db_session)</span></code> at line 29:</strong></p>
+<p>Combines 6 sub-metrics into one report dict:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Key</p></th>
+<th class="head"><p>Function</p></th>
+<th class="head"><p>What it queries</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">companies_found</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">count_companies_found()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Company.date_found</span></code> in range, grouped by industry + state</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">leads_by_tier</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">count_leads_by_tier()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">LeadScore.scored_at</span></code> in range, grouped by tier</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">emails</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">count_emails_sent()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">OutreachEvent</span></code> — sent/followup_sent/opened/clicked counts + rates</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">replies</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">count_replies_received()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">OutreachEvent(event_type=&quot;replied&quot;)</span></code> — grouped by <code class="docutils literal notranslate"><span class="pre">reply_sentiment</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pipeline_value</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">calculate_pipeline_value()</span></code></p></td>
+<td><p>Delegates to <code class="docutils literal notranslate"><span class="pre">pipeline_monitor.get_pipeline_value()</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">top_leads</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">get_top_leads(limit=10)</span></code></p></td>
+<td><p>Top high-tier companies by score, with savings range</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong><code class="docutils literal notranslate"><span class="pre">count_emails_sent()</span></code> at line 117</strong> — derived metrics:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>open_rate_pct  = opened / total_sent × 100
+click_rate_pct = clicked / total_sent × 100
+</pre></div>
+</div>
+<p><strong><code class="docutils literal notranslate"><span class="pre">count_replies_received()</span></code> at line 158:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>reply_rate_pct = total_replies / sent_count × 100
+</pre></div>
+</div>
+<p>Also counts unsubscribes separately.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="human-in-the-loop-gates">
+<h2>Human-in-the-Loop Gates<a class="headerlink" href="#human-in-the-loop-gates" title="Permalink to this heading">#</a></h2>
+<p>Two mandatory human checkpoints managed by the Orchestrator:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>After Analyst:
+  HumanApprovalRequest(approval_type=&quot;leads&quot;, status=&quot;pending&quot;)
+  email_notifier.send_lead_approval_request()   → email to ALERT_EMAIL
+  Human reviews leads on dashboard → clicks Approve
+  → LeadScore.approved_human = True
+  (OR auto-approved if contact found during enrichment)
+
+After Writer:
+  HumanApprovalRequest(approval_type=&quot;emails&quot;, status=&quot;pending&quot;)
+  email_notifier.send_draft_approval_request()  → email to ALERT_EMAIL
+  Human reviews drafts on dashboard → clicks Approve
+  → EmailDraft.approved_human = True
+  → Outreach agent picks up approved drafts
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="full-data-flow">
+<h2>Full Data Flow<a class="headerlink" href="#full-data-flow" title="Permalink to this heading">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>run_full_pipeline(industry, location, count)
+  │
+  ├─ task_manager.assign_task(&quot;scout&quot;)
+  │    └─ scout_agent.run()           → saves companies → returns company_ids
+  │
+  ├─ task_manager.assign_task(&quot;analyst&quot;)
+  │    └─ analyst_agent.run()         → scores companies → LeadScore rows
+  │    → HumanApprovalRequest(leads)  → email_notifier → ALERT_EMAIL
+  │
+  ├─ run_contact_enrichment(high_ids)
+  │    ├─ lookup_phone (Google → Yelp → website scrape)
+  │    ├─ enrichment_client.find_contacts() (Hunter/Apollo)
+  │    └─ auto-approve LeadScore if contact found
+  │
+  ├─ task_manager.assign_task(&quot;writer&quot;)
+  │    └─ writer_agent.run()          → drafts created → EmailDraft rows
+  │    → HumanApprovalRequest(emails) → email_notifier → ALERT_EMAIL
+  │
+  └─ generate_run_summary()           → combined dict printed + returned
+
+--- Daily Jobs (separate from pipeline) ---
+task_manager.assign_task(&quot;outreach&quot;)
+  └─ outreach_agent.process_followup_queue()  → send due follow-ups
+
+task_manager.assign_task(&quot;tracker&quot;)
+  └─ tracker_agent.run_daily_checks()         → resolve stuck leads
+
+pipeline_monitor.detect_stuck_pipeline()      → surface blocking issues
+report_generator.generate_weekly_report()     → weekly metrics snapshot
+</pre></div>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./chapters/Agents"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="tracker_deep_dive.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Tracker Agent</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="chat_agent_deep_dive.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Chat Agent</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tech-stack-used">Tech Stack Used</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#agentic-concepts-used">Agentic Concepts Used</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#file-by-file-breakdown">File-by-File Breakdown</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-orchestrator-orchestrator-py-pipeline-entry-point">1. <code class="docutils literal notranslate"><span class="pre">agents/orchestrator/orchestrator.py</span></code> — Pipeline Entry Point</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-orchestrator-task-manager-py-task-dispatch-audit-log">2. <code class="docutils literal notranslate"><span class="pre">agents/orchestrator/task_manager.py</span></code> — Task Dispatch + Audit Log</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-orchestrator-pipeline-monitor-py-health-status-dashboard">3. <code class="docutils literal notranslate"><span class="pre">agents/orchestrator/pipeline_monitor.py</span></code> — Health + Status Dashboard</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-orchestrator-report-generator-py-weekly-report">4. <code class="docutils literal notranslate"><span class="pre">agents/orchestrator/report_generator.py</span></code> — Weekly Report</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#human-in-the-loop-gates">Human-in-the-Loop Gates</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#full-data-flow">Full Data Flow</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Harshal Patil
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2022.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

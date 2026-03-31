@@ -1,0 +1,855 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Chat Agent &#8212; Utility Lead Intelligence Platform</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'chapters/Agents/chat_agent_deep_dive';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="Orchestrator Agent" href="orchestrator_deep_dive.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Utility Lead Intelligence Platform</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../../index.html">
+                    Utility Lead Intelligence Platform
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../system_architecture.html">System Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../agentic_design.html">Agentic Design</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Agents: Deep Technical Walkthrough</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="scout_deep_dive.html">Scout Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analyst_deep_dive.html">Analyst Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="writer_deep_dive.html">Writer Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="outreach_deep_dive.html">Outreach Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tracker_deep_dive.html">Tracker Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="orchestrator_deep_dive.html">Orchestrator Agent</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Chat Agent</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/chapters/Agents/chat_agent_deep_dive.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Chat Agent</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tech-stack-used">Tech Stack Used</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#agentic-concepts-used">Agentic Concepts Used</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#file-breakdown">File Breakdown</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-chat-agent-py-single-file-agent"><code class="docutils literal notranslate"><span class="pre">agents/chat_agent.py</span></code> — Single-File Agent</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#system-prompt-system-prompt-at-line-76">System Prompt (<code class="docutils literal notranslate"><span class="pre">SYSTEM_PROMPT</span></code> at line 76)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#llm-factory-build-llm-at-line-134">LLM Factory (<code class="docutils literal notranslate"><span class="pre">_build_llm()</span></code> at line 134)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#langsmith-tracing-setup-tracing-at-line-53">LangSmith Tracing (<code class="docutils literal notranslate"><span class="pre">_setup_tracing()</span></code> at line 53)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#intent-classifier-extract-intent-at-line-543">Intent Classifier (<code class="docutils literal notranslate"><span class="pre">_extract_intent()</span></code> at line 543)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#confidence-gated-routing-in-run-chat-at-line-657">Confidence-Gated Routing (in <code class="docutils literal notranslate"><span class="pre">run_chat()</span></code> at line 657)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tools-make-tools-at-line-212">Tools (<code class="docutils literal notranslate"><span class="pre">_make_tools()</span></code> at line 212)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#action-routing-run-chat-at-line-606">Action Routing (<code class="docutils literal notranslate"><span class="pre">run_chat()</span></code> at line 606)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#run-tracking">Run Tracking</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#full-data-flow">Full Data Flow</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-gets-written-to-db">What Gets Written to DB</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="chat-agent">
+<h1>Chat Agent<a class="headerlink" href="#chat-agent" title="Permalink to this heading">#</a></h1>
+<section id="tech-stack-used">
+<h2>Tech Stack Used<a class="headerlink" href="#tech-stack-used" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Tech</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>LangChain</strong> (<code class="docutils literal notranslate"><span class="pre">create_agent</span></code>, <code class="docutils literal notranslate"><span class="pre">&#64;tool</span></code>, <code class="docutils literal notranslate"><span class="pre">AgentExecutor</span></code>)</p></td>
+<td><p>Builds the ReAct agent loop for complex/unknown requests</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong><code class="docutils literal notranslate"><span class="pre">langchain_ollama.ChatOllama</span></code></strong></p></td>
+<td><p>Local LLM via Ollama (e.g. <code class="docutils literal notranslate"><span class="pre">llama3.2</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p><strong><code class="docutils literal notranslate"><span class="pre">langchain_openai.ChatOpenAI</span></code></strong></p></td>
+<td><p>Cloud LLM via OpenAI (e.g. <code class="docutils literal notranslate"><span class="pre">gpt-4o-mini</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong><code class="docutils literal notranslate"><span class="pre">langchain_core.messages</span></code></strong> (<code class="docutils literal notranslate"><span class="pre">HumanMessage</span></code>, <code class="docutils literal notranslate"><span class="pre">SystemMessage</span></code>)</p></td>
+<td><p>Wraps all LLM calls — intent classification, summarisation, disambiguation</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>LangSmith</strong> (<code class="docutils literal notranslate"><span class="pre">LANGCHAIN_TRACING_V2</span></code>)</p></td>
+<td><p>Distributed tracing — every <code class="docutils literal notranslate"><span class="pre">run_chat()</span></code> call logged to LangSmith project</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>SQLAlchemy ORM</strong></p></td>
+<td><p>Reads <code class="docutils literal notranslate"><span class="pre">Company</span></code>, <code class="docutils literal notranslate"><span class="pre">LeadScore</span></code>, <code class="docutils literal notranslate"><span class="pre">OutreachEvent</span></code>; writes <code class="docutils literal notranslate"><span class="pre">AgentRun</span></code>, <code class="docutils literal notranslate"><span class="pre">AgentRunLog</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Python <code class="docutils literal notranslate"><span class="pre">json</span></code></strong></p></td>
+<td><p>Parses LLM intent output + tool return values</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong><code class="docutils literal notranslate"><span class="pre">uuid</span></code></strong></p></td>
+<td><p>Generates <code class="docutils literal notranslate"><span class="pre">run_id</span></code> for <code class="docutils literal notranslate"><span class="pre">AgentRun</span></code> rows</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="agentic-concepts-used">
+<h2>Agentic Concepts Used<a class="headerlink" href="#agentic-concepts-used" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Concept</p></th>
+<th class="head"><p>Tool / Tech</p></th>
+<th class="head"><p>Where</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>LLM Intent Classification</p></td>
+<td><p>LangChain LLM + <code class="docutils literal notranslate"><span class="pre">_INTENT_PROMPT</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">_extract_intent()</span></code> — one LLM call classifies every user message</p></td>
+</tr>
+<tr class="row-odd"><td><p>Confidence-Gated Routing</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">_CONFIDENCE_THRESHOLD</span> <span class="pre">=</span> <span class="pre">0.65</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">run_chat()</span></code> — low confidence triggers disambiguation instead of wrong action</p></td>
+</tr>
+<tr class="row-even"><td><p>Context Carry-Forward</p></td>
+<td><p>Last 6 messages passed to intent LLM</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">_extract_intent()</span></code> — resolves follow-ups like “what about medium?”</p></td>
+</tr>
+<tr class="row-odd"><td><p>Clarification Before Action</p></td>
+<td><p>Missing param check → ask user</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">search_companies</span></code> and <code class="docutils literal notranslate"><span class="pre">run_full_pipeline</span></code> branches</p></td>
+</tr>
+<tr class="row-even"><td><p>Tool Calling</p></td>
+<td><p>LangChain <code class="docutils literal notranslate"><span class="pre">&#64;tool</span></code> decorator</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">_make_tools()</span></code> — 6 tools with docstrings the LLM reads to decide which to call</p></td>
+</tr>
+<tr class="row-odd"><td><p>Full Agent Loop Fallback</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">create_agent()</span></code> ReAct loop</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">action</span> <span class="pre">==</span> <span class="pre">&quot;unknown&quot;</span></code> branch — handles complex multi-step requests</p></td>
+</tr>
+<tr class="row-even"><td><p>Run Tracing</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">AgentRun</span></code> + <code class="docutils literal notranslate"><span class="pre">AgentRunLog</span></code> + LangSmith</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">_create_run()</span></code>, <code class="docutils literal notranslate"><span class="pre">_log_action()</span></code>, <code class="docutils literal notranslate"><span class="pre">_finish_run()</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="file-breakdown">
+<h2>File Breakdown<a class="headerlink" href="#file-breakdown" title="Permalink to this heading">#</a></h2>
+<section id="agents-chat-agent-py-single-file-agent">
+<h3><code class="docutils literal notranslate"><span class="pre">agents/chat_agent.py</span></code> — Single-File Agent<a class="headerlink" href="#agents-chat-agent-py-single-file-agent" title="Permalink to this heading">#</a></h3>
+<p>The Chat Agent lives in one file: <code class="docutils literal notranslate"><span class="pre">agents/chat_agent.py</span></code>. The public entry point is <code class="docutils literal notranslate"><span class="pre">run_chat()</span></code>.</p>
+</section>
+<hr class="docutils" />
+<section id="system-prompt-system-prompt-at-line-76">
+<h3>System Prompt (<code class="docutils literal notranslate"><span class="pre">SYSTEM_PROMPT</span></code> at line 76)<a class="headerlink" href="#system-prompt-system-prompt-at-line-76" title="Permalink to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">SYSTEM_PROMPT</span></code> gives the LLM its personality and hard routing rules:</p>
+<ul class="simple">
+<li><p><strong>Role</strong>: Lead Intelligence Agent for a utility cost consulting firm</p></li>
+<li><p><strong>Critical tool rules</strong>: Greetings, capability questions, confirmations → NO tool call, reply conversationally only</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">get_leads</span></code> argument rules</strong>: Explicit tier words required (<code class="docutils literal notranslate"><span class="pre">&quot;high</span> <span class="pre">tier&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;top</span> <span class="pre">leads&quot;</span></code>) — never guess <code class="docutils literal notranslate"><span class="pre">tier=&quot;high&quot;</span></code> for generic requests</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">search_companies</span></code> rules</strong>: Only trigger on explicit external discovery requests</p></li>
+<li><p><strong>Response rules</strong>: Short and direct; never invent company names, scores, or contacts</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="llm-factory-build-llm-at-line-134">
+<h3>LLM Factory (<code class="docutils literal notranslate"><span class="pre">_build_llm()</span></code> at line 134)<a class="headerlink" href="#llm-factory-build-llm-at-line-134" title="Permalink to this heading">#</a></h3>
+<p>Returns a LangChain chat model based on <code class="docutils literal notranslate"><span class="pre">LLM_PROVIDER</span></code> setting:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Setting</p></th>
+<th class="head"><p>Model</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;openai&quot;</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ChatOpenAI(model=LLM_MODEL,</span> <span class="pre">api_key=OPENAI_API_KEY,</span> <span class="pre">temperature=0)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;ollama&quot;</span></code> (default)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ChatOllama(model=LLM_MODEL,</span> <span class="pre">base_url=OLLAMA_BASE_URL,</span> <span class="pre">temperature=0)</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">temperature=0</span></code> is set on both — deterministic output for tool routing.</p>
+</section>
+<hr class="docutils" />
+<section id="langsmith-tracing-setup-tracing-at-line-53">
+<h3>LangSmith Tracing (<code class="docutils literal notranslate"><span class="pre">_setup_tracing()</span></code> at line 53)<a class="headerlink" href="#langsmith-tracing-setup-tracing-at-line-53" title="Permalink to this heading">#</a></h3>
+<p>Called at module load time (line 69) before any LangChain import initialises its tracer:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;LANGCHAIN_TRACING_V2&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;true&quot;</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;LANGCHAIN_API_KEY&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">LANGCHAIN_API_KEY</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s2">&quot;LANGCHAIN_PROJECT&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">LANGCHAIN_PROJECT</span>
+</pre></div>
+</div>
+<p>If <code class="docutils literal notranslate"><span class="pre">LANGCHAIN_API_KEY</span></code> is not set, tracing is silently skipped.</p>
+</section>
+<hr class="docutils" />
+<section id="intent-classifier-extract-intent-at-line-543">
+<h3>Intent Classifier (<code class="docutils literal notranslate"><span class="pre">_extract_intent()</span></code> at line 543)<a class="headerlink" href="#intent-classifier-extract-intent-at-line-543" title="Permalink to this heading">#</a></h3>
+<p><strong>Agentic concept: LLM Intent Classification + Context Carry-Forward</strong></p>
+<p>One LLM call per user message. The <code class="docutils literal notranslate"><span class="pre">_INTENT_PROMPT</span></code> at line 477 instructs the LLM to return <strong>only a JSON object</strong>:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;get_leads&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;confidence&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.92</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;tier&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;high&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;industry&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;healthcare&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;location&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;count&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Context carry-forward</strong>: Last 6 messages (3 turns) from <code class="docutils literal notranslate"><span class="pre">history</span></code> are injected into the prompt:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>User: show me leads
+Agent: Found 12 leads with no filters.
+User: what about medium?
+</pre></div>
+</div>
+<p>The LLM reads this and correctly routes “what about medium?” → <code class="docutils literal notranslate"><span class="pre">get_leads(tier=&quot;medium&quot;)</span></code>.</p>
+<p><strong>Action definitions in the prompt</strong>: Each action has a PURPOSE description (not just keyword triggers), so the LLM understands semantic meaning:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">get_leads</span></code> = read ALREADY stored data (instant, no API calls)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">search_companies</span></code> = external discovery (slow, costs API credits)</p></li>
+</ul>
+<p><strong>Fallback</strong>: Any JSON parse failure → <code class="docutils literal notranslate"><span class="pre">{&quot;action&quot;:</span> <span class="pre">&quot;unknown&quot;,</span> <span class="pre">&quot;confidence&quot;:</span> <span class="pre">0.0}</span></code>.</p>
+</section>
+<hr class="docutils" />
+<section id="confidence-gated-routing-in-run-chat-at-line-657">
+<h3>Confidence-Gated Routing (in <code class="docutils literal notranslate"><span class="pre">run_chat()</span></code> at line 657)<a class="headerlink" href="#confidence-gated-routing-in-run-chat-at-line-657" title="Permalink to this heading">#</a></h3>
+<p><strong>Agentic concept: Confidence-Gated Routing</strong></p>
+<p>After <code class="docutils literal notranslate"><span class="pre">_extract_intent()</span></code> returns, the routing logic checks confidence before acting:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>confidence &lt; 0.65  AND  action in {get_leads, search_companies, run_full_pipeline, ...}
+  → send disambig_prompt to LLM → ask user one clarifying question
+  → return immediately, no tool called
+
+confidence ≥ 0.65
+  → route to the appropriate action branch
+</pre></div>
+</div>
+<p>This prevents wrong tool calls and hallucination from misclassification — the agent asks instead of guessing.</p>
+</section>
+<hr class="docutils" />
+<section id="tools-make-tools-at-line-212">
+<h3>Tools (<code class="docutils literal notranslate"><span class="pre">_make_tools()</span></code> at line 212)<a class="headerlink" href="#tools-make-tools-at-line-212" title="Permalink to this heading">#</a></h3>
+<p>All 6 tools are created as closures bound to the current <code class="docutils literal notranslate"><span class="pre">db</span></code> session and <code class="docutils literal notranslate"><span class="pre">run</span></code> object. The LLM reads each function’s docstring to decide which tool to call and what args to pass.</p>
+<p><strong>Tool 1: <code class="docutils literal notranslate"><span class="pre">search_companies(industry,</span> <span class="pre">location,</span> <span class="pre">count=10)</span></code> at line 215</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">1.</span> <span class="n">Set</span> <span class="n">run</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;scout_running&quot;</span>
+<span class="mf">2.</span> <span class="n">Log</span> <span class="n">progress</span> <span class="n">to</span> <span class="n">agent_run_logs</span>
+<span class="mf">3.</span> <span class="n">Call</span> <span class="n">scout_agent</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">industry</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
+<span class="mf">4.</span> <span class="n">Query</span> <span class="n">Company</span> <span class="n">rows</span> <span class="k">for</span> <span class="n">returned</span> <span class="n">company_ids</span>
+<span class="mf">5.</span> <span class="n">Write</span> <span class="n">results</span><span class="p">[</span><span class="s2">&quot;companies&quot;</span><span class="p">]</span> <span class="nb">list</span>
+<span class="mf">6.</span> <span class="n">Log</span> <span class="n">success</span><span class="o">/</span><span class="n">failure</span> <span class="n">to</span> <span class="n">agent_run_logs</span>
+<span class="mf">7.</span> <span class="n">Return</span> <span class="n">JSON</span><span class="p">:</span> <span class="p">{</span><span class="n">found</span><span class="p">,</span> <span class="n">industry</span><span class="p">,</span> <span class="n">location</span><span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Tool 2: <code class="docutils literal notranslate"><span class="pre">get_leads(tier=&quot;&quot;,</span> <span class="pre">industry=&quot;&quot;)</span></code> at line 275</strong></p>
+<ul class="simple">
+<li><p>SQLAlchemy JOIN: <code class="docutils literal notranslate"><span class="pre">Company</span></code> LEFT JOIN <code class="docutils literal notranslate"><span class="pre">LeadScore</span></code></p></li>
+<li><p>Optional filters: <code class="docutils literal notranslate"><span class="pre">func.lower(Company.industry)</span> <span class="pre">==</span> <span class="pre">industry</span></code> and <code class="docutils literal notranslate"><span class="pre">LeadScore.tier</span> <span class="pre">==</span> <span class="pre">tier</span></code></p></li>
+<li><p>Returns top 50 leads sorted by score descending</p></li>
+<li><p>Writes <code class="docutils literal notranslate"><span class="pre">results[&quot;leads&quot;]</span></code></p></li>
+</ul>
+<p><strong>Tool 3: <code class="docutils literal notranslate"><span class="pre">get_outreach_history()</span></code> at line 317</strong></p>
+<ul class="simple">
+<li><p>JOIN <code class="docutils literal notranslate"><span class="pre">Company</span></code> + <code class="docutils literal notranslate"><span class="pre">OutreachEvent</span></code> where <code class="docutils literal notranslate"><span class="pre">event_type</span> <span class="pre">=</span> <span class="pre">&quot;sent&quot;</span></code></p></li>
+<li><p>Returns: company name, city, emailed_at, follow_up_number, status</p></li>
+<li><p>Writes <code class="docutils literal notranslate"><span class="pre">results[&quot;outreach_history&quot;]</span></code></p></li>
+</ul>
+<p><strong>Tool 4: <code class="docutils literal notranslate"><span class="pre">get_replies()</span></code> at line 347</strong></p>
+<ul class="simple">
+<li><p>JOIN <code class="docutils literal notranslate"><span class="pre">Company</span></code> + <code class="docutils literal notranslate"><span class="pre">OutreachEvent</span></code> where <code class="docutils literal notranslate"><span class="pre">event_type</span> <span class="pre">=</span> <span class="pre">&quot;replied&quot;</span></code></p></li>
+<li><p>Returns: company name, reply_sentiment, first 200 chars of reply_content, replied_at</p></li>
+<li><p>Writes <code class="docutils literal notranslate"><span class="pre">results[&quot;replies&quot;]</span></code></p></li>
+</ul>
+<p><strong>Tool 5: <code class="docutils literal notranslate"><span class="pre">run_full_pipeline(industry,</span> <span class="pre">location,</span> <span class="pre">count=10)</span></code> at line 377</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">1.</span> <span class="n">Set</span> <span class="n">run</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;scout_running&quot;</span>
+<span class="mf">2.</span> <span class="n">Call</span> <span class="n">orchestrator</span><span class="o">.</span><span class="n">run_full_pipeline</span><span class="p">(</span><span class="n">industry</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span>
+<span class="mf">3.</span> <span class="n">Update</span> <span class="n">run</span><span class="o">.</span><span class="n">companies_found</span><span class="p">,</span> <span class="n">companies_scored</span><span class="p">,</span> <span class="n">drafts_created</span>
+<span class="mf">4.</span> <span class="n">Set</span> <span class="n">run</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;writer_awaiting_approval&quot;</span>
+<span class="mf">5.</span> <span class="n">Log</span> <span class="n">to</span> <span class="n">agent_run_logs</span>
+<span class="mf">6.</span> <span class="n">Return</span> <span class="n">JSON</span> <span class="n">summary</span>
+</pre></div>
+</div>
+<p><strong>Tool 6: <code class="docutils literal notranslate"><span class="pre">approve_leads(company_ids,</span> <span class="pre">approved_by=&quot;sales_team&quot;)</span></code> at line 421</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">For</span> <span class="n">each</span> <span class="n">company_id</span> <span class="ow">in</span> <span class="n">company_ids</span><span class="p">:</span>
+  <span class="mf">1.</span> <span class="n">Query</span> <span class="n">latest</span> <span class="n">LeadScore</span> <span class="n">row</span> <span class="k">for</span> <span class="n">company</span>
+  <span class="mf">2.</span> <span class="n">Set</span> <span class="n">score_row</span><span class="o">.</span><span class="n">approved_human</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">approved_by</span><span class="p">,</span> <span class="n">approved_at</span>
+  <span class="mf">3.</span> <span class="n">Set</span> <span class="n">company</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;approved&quot;</span><span class="p">,</span> <span class="n">updated_at</span> <span class="o">=</span> <span class="n">now</span>
+<span class="mf">4.</span> <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+<span class="mf">5.</span> <span class="n">Return</span> <span class="n">JSON</span><span class="p">:</span> <span class="p">{</span><span class="n">approved</span><span class="p">:</span> <span class="n">N</span><span class="p">,</span> <span class="n">approved_by</span><span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="action-routing-run-chat-at-line-606">
+<h3>Action Routing (<code class="docutils literal notranslate"><span class="pre">run_chat()</span></code> at line 606)<a class="headerlink" href="#action-routing-run-chat-at-line-606" title="Permalink to this heading">#</a></h3>
+<p>After confidence check, <code class="docutils literal notranslate"><span class="pre">run_chat()</span></code> routes by <code class="docutils literal notranslate"><span class="pre">action</span></code>:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Action</p></th>
+<th class="head"><p>What happens</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">conversational</span></code></p></td>
+<td><p>Direct <code class="docutils literal notranslate"><span class="pre">llm.invoke([SystemMessage,</span> <span class="pre">HumanMessage])</span></code> — no tool called</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">get_leads</span></code></p></td>
+<td><p>Call tool[1] directly → summarise result with a follow-up LLM call</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">get_outreach_history</span></code></p></td>
+<td><p>Call tool[2] directly → summarise result</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">get_replies</span></code></p></td>
+<td><p>Call tool[3] directly → summarise result</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">search_companies</span></code></p></td>
+<td><p>Check for missing industry/location → clarify if missing → call tool[0] directly</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">run_full_pipeline</span></code></p></td>
+<td><p>Check for missing industry/location → clarify if missing → call tool[4] directly</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">approve_leads</span></code></p></td>
+<td><p>Full agent loop handles (complex — needs company ID list)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">unknown</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">create_agent(llm,</span> <span class="pre">tools,</span> <span class="pre">system_prompt=SYSTEM_PROMPT)</span></code> → ReAct loop</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Direct tool calls vs agent loop</strong>: For all clearly-classified actions, tools are called directly (<code class="docutils literal notranslate"><span class="pre">tools[N].invoke()</span></code>). The full ReAct agent loop is only used for <code class="docutils literal notranslate"><span class="pre">unknown</span></code> — this avoids hallucination risk from the LLM generating wrong arguments in a multi-step loop.</p>
+<p><strong>Clarification Before Action</strong> (search_companies and run_full_pipeline branches):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>missing = []
+if not location: missing.append(&quot;location (e.g. Buffalo NY)&quot;)
+if not industry: missing.append(&quot;type of companies&quot;)
+
+if missing:
+    → ask user one short sentence
+    → return without calling any tool
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="run-tracking">
+<h3>Run Tracking<a class="headerlink" href="#run-tracking" title="Permalink to this heading">#</a></h3>
+<p>Three helpers write to <code class="docutils literal notranslate"><span class="pre">agent_runs</span></code> and <code class="docutils literal notranslate"><span class="pre">agent_run_logs</span></code>:</p>
+<p><strong><code class="docutils literal notranslate"><span class="pre">_create_run(db,</span> <span class="pre">trigger_input,</span> <span class="pre">run_id)</span></code> at line 157:</strong></p>
+<ul class="simple">
+<li><p>Inserts <code class="docutils literal notranslate"><span class="pre">AgentRun(trigger_source=&quot;chat&quot;,</span> <span class="pre">status=&quot;started&quot;,</span> <span class="pre">current_stage=&quot;chat&quot;)</span></code></p></li>
+</ul>
+<p><strong><code class="docutils literal notranslate"><span class="pre">_log_action(db,</span> <span class="pre">run_id,</span> <span class="pre">agent,</span> <span class="pre">action,</span> <span class="pre">status,</span> <span class="pre">...)</span></code> at line 175:</strong></p>
+<ul class="simple">
+<li><p>Appends <code class="docutils literal notranslate"><span class="pre">AgentRunLog</span></code> row with: agent name, action label, status, output_summary, duration_ms, error_message</p></li>
+</ul>
+<p><strong><code class="docutils literal notranslate"><span class="pre">_finish_run(db,</span> <span class="pre">run,</span> <span class="pre">status)</span></code> at line 201:</strong></p>
+<ul class="simple">
+<li><p>Sets <code class="docutils literal notranslate"><span class="pre">run.status</span></code> + <code class="docutils literal notranslate"><span class="pre">run.completed_at</span></code></p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="full-data-flow">
+<h2>Full Data Flow<a class="headerlink" href="#full-data-flow" title="Permalink to this heading">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>run_chat(message, db, run_id, history)
+  │
+  ├─ _create_run()             → AgentRun(status=&quot;started&quot;) in DB
+  ├─ _build_llm()              → ChatOllama or ChatOpenAI
+  ├─ _make_tools()             → 6 LangChain @tool functions (bound to db + run)
+  │
+  ├─ _extract_intent()         → single LLM call → {action, confidence, tier, industry, location, count}
+  │    └─ uses last 6 history messages for context carry-forward
+  │
+  ├─ Confidence gate:
+  │    confidence &lt; 0.65  → disambiguation LLM call → ask user to clarify → return
+  │
+  ├─ Route by action:
+  │    &quot;conversational&quot;        → llm.invoke([System + Human]) → reply
+  │    &quot;get_leads&quot;             → tools[1].invoke() → summarise LLM call → reply
+  │    &quot;get_outreach_history&quot;  → tools[2].invoke() → summarise LLM call → reply
+  │    &quot;get_replies&quot;           → tools[3].invoke() → summarise LLM call → reply
+  │    &quot;search_companies&quot;      → missing check → tools[0].invoke() → summarise LLM call → reply
+  │    &quot;run_full_pipeline&quot;     → missing check → tools[4].invoke() → summarise LLM call → reply
+  │    &quot;unknown&quot;               → create_agent() ReAct loop → reply
+  │
+  ├─ _finish_run()             → AgentRun(status=&quot;completed&quot;) in DB
+  │
+  └─ return {reply, data, run_id}
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="what-gets-written-to-db">
+<h2>What Gets Written to DB<a class="headerlink" href="#what-gets-written-to-db" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Table</p></th>
+<th class="head"><p>Written by</p></th>
+<th class="head"><p>Contents</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">agent_runs</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">_create_run()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">trigger_source=&quot;chat&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">status</span></code>, <code class="docutils literal notranslate"><span class="pre">current_stage</span></code>, <code class="docutils literal notranslate"><span class="pre">started_at</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">agent_runs</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">search_companies</span></code> tool</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">companies_found</span></code>, <code class="docutils literal notranslate"><span class="pre">status=&quot;scout_complete&quot;</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">agent_runs</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">run_full_pipeline</span></code> tool</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">companies_found</span></code>, <code class="docutils literal notranslate"><span class="pre">companies_scored</span></code>, <code class="docutils literal notranslate"><span class="pre">drafts_created</span></code>, <code class="docutils literal notranslate"><span class="pre">status=&quot;writer_awaiting_approval&quot;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">agent_runs</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">_finish_run()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">status=&quot;completed&quot;/&quot;failed&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">completed_at</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">agent_run_logs</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">_log_action()</span></code></p></td>
+<td><p>Every significant action: intent, tool calls, errors, disambiguations</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">lead_scores</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">approve_leads</span></code> tool</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">approved_human=True</span></code>, <code class="docutils literal notranslate"><span class="pre">approved_by</span></code>, <code class="docutils literal notranslate"><span class="pre">approved_at</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">companies</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">approve_leads</span></code> tool</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">status=&quot;approved&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">updated_at</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./chapters/Agents"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="orchestrator_deep_dive.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Orchestrator Agent</p>
+      </div>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tech-stack-used">Tech Stack Used</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#agentic-concepts-used">Agentic Concepts Used</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#file-breakdown">File Breakdown</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-chat-agent-py-single-file-agent"><code class="docutils literal notranslate"><span class="pre">agents/chat_agent.py</span></code> — Single-File Agent</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#system-prompt-system-prompt-at-line-76">System Prompt (<code class="docutils literal notranslate"><span class="pre">SYSTEM_PROMPT</span></code> at line 76)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#llm-factory-build-llm-at-line-134">LLM Factory (<code class="docutils literal notranslate"><span class="pre">_build_llm()</span></code> at line 134)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#langsmith-tracing-setup-tracing-at-line-53">LangSmith Tracing (<code class="docutils literal notranslate"><span class="pre">_setup_tracing()</span></code> at line 53)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#intent-classifier-extract-intent-at-line-543">Intent Classifier (<code class="docutils literal notranslate"><span class="pre">_extract_intent()</span></code> at line 543)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#confidence-gated-routing-in-run-chat-at-line-657">Confidence-Gated Routing (in <code class="docutils literal notranslate"><span class="pre">run_chat()</span></code> at line 657)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tools-make-tools-at-line-212">Tools (<code class="docutils literal notranslate"><span class="pre">_make_tools()</span></code> at line 212)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#action-routing-run-chat-at-line-606">Action Routing (<code class="docutils literal notranslate"><span class="pre">run_chat()</span></code> at line 606)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#run-tracking">Run Tracking</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#full-data-flow">Full Data Flow</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-gets-written-to-db">What Gets Written to DB</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Harshal Patil
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2022.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

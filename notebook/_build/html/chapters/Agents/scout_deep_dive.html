@@ -1,0 +1,757 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Scout Agent &#8212; Utility Lead Intelligence Platform</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'chapters/Agents/scout_deep_dive';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Analyst Agent" href="analyst_deep_dive.html" />
+    <link rel="prev" title="Agents: Deep Technical Walkthrough" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Utility Lead Intelligence Platform</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../../index.html">
+                    Utility Lead Intelligence Platform
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../system_architecture.html">System Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../agentic_design.html">Agentic Design</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Agents: Deep Technical Walkthrough</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Scout Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analyst_deep_dive.html">Analyst Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="writer_deep_dive.html">Writer Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="outreach_deep_dive.html">Outreach Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tracker_deep_dive.html">Tracker Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="orchestrator_deep_dive.html">Orchestrator Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="chat_agent_deep_dive.html">Chat Agent</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/chapters/Agents/scout_deep_dive.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Scout Agent</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tech-stack-used">Tech Stack Used</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#file-by-file-breakdown">File-by-File Breakdown</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-scout-scout-agent-py-coordinator-orchestrator">1. <code class="docutils literal notranslate"><span class="pre">agents/scout/scout_agent.py</span></code> — Coordinator / Orchestrator</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-scout-llm-query-planner-py-llm-query-generation">2. <code class="docutils literal notranslate"><span class="pre">agents/scout/llm_query_planner.py</span></code> — LLM Query Generation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-scout-news-scout-client-py-intent-based-lead-discovery">3. <code class="docutils literal notranslate"><span class="pre">agents/scout/news_scout_client.py</span></code> — Intent-Based Lead Discovery</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-scout-search-client-py-tavily-directory-discovery">4. <code class="docutils literal notranslate"><span class="pre">agents/scout/search_client.py</span></code> — Tavily Directory Discovery</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-scout-directory-scraper-py-html-scraping-with-pagination">5. <code class="docutils literal notranslate"><span class="pre">agents/scout/directory_scraper.py</span></code> — HTML Scraping with Pagination</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-scout-google-maps-client-py-google-places-api">6. <code class="docutils literal notranslate"><span class="pre">agents/scout/google_maps_client.py</span></code> — Google Places API</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-scout-llm-deduplicator-py-two-pass-deduplication">7. <code class="docutils literal notranslate"><span class="pre">agents/scout/llm_deduplicator.py</span></code> — Two-Pass Deduplication</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-scout-scout-critic-py-quality-scoring-source-learning">8. <code class="docutils literal notranslate"><span class="pre">agents/scout/scout_critic.py</span></code> — Quality Scoring + Source Learning</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#execution-phases-scout-agent-run">Execution Phases (<code class="docutils literal notranslate"><span class="pre">scout_agent.run()</span></code>)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scout-critic-quality-rubric">Scout Critic Quality Rubric</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-agentic-concepts-used">Key Agentic Concepts Used</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-gets-saved">What Gets Saved</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#full-data-flow">Full Data Flow</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="scout-agent">
+<h1>Scout Agent<a class="headerlink" href="#scout-agent" title="Permalink to this heading">#</a></h1>
+<section id="tech-stack-used">
+<h2>Tech Stack Used<a class="headerlink" href="#tech-stack-used" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Tech</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>LangChain</strong> (<code class="docutils literal notranslate"><span class="pre">langchain_core.messages.HumanMessage</span></code>)</p></td>
+<td><p>Wraps LLM calls in all 3 LLM modules</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Ollama / OpenAI</strong></p></td>
+<td><p>LLM provider (configured via <code class="docutils literal notranslate"><span class="pre">LLM_PROVIDER</span></code> env var)</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Tavily API</strong></p></td>
+<td><p>Web search + news search (HTTP <code class="docutils literal notranslate"><span class="pre">requests.post</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Google Places API v1</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">places:searchText</span></code> endpoint</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Yelp Business Search API</strong></p></td>
+<td><p>Via <code class="docutils literal notranslate"><span class="pre">yelp_client.py</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>BeautifulSoup4</strong></p></td>
+<td><p>HTML parsing in <code class="docutils literal notranslate"><span class="pre">directory_scraper.py</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>SQLAlchemy ORM</strong></p></td>
+<td><p>All DB reads/writes (<code class="docutils literal notranslate"><span class="pre">Session</span></code>, <code class="docutils literal notranslate"><span class="pre">Company</span></code>, <code class="docutils literal notranslate"><span class="pre">SourcePerformance</span></code>, <code class="docutils literal notranslate"><span class="pre">DirectorySource</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Python <code class="docutils literal notranslate"><span class="pre">requests</span></code></strong></p></td>
+<td><p>HTTP calls to all external APIs and web pages</p></td>
+</tr>
+<tr class="row-even"><td><p><strong><code class="docutils literal notranslate"><span class="pre">difflib.SequenceMatcher</span></code></strong></p></td>
+<td><p>Name similarity scoring in <code class="docutils literal notranslate"><span class="pre">llm_deduplicator.py</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong><code class="docutils literal notranslate"><span class="pre">functools.lru_cache</span></code></strong></p></td>
+<td><p>Memoizes Tavily search results in <code class="docutils literal notranslate"><span class="pre">search_client.py</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="file-by-file-breakdown">
+<h2>File-by-File Breakdown<a class="headerlink" href="#file-by-file-breakdown" title="Permalink to this heading">#</a></h2>
+<section id="agents-scout-scout-agent-py-coordinator-orchestrator">
+<h3>1. <code class="docutils literal notranslate"><span class="pre">agents/scout/scout_agent.py</span></code> — Coordinator / Orchestrator<a class="headerlink" href="#agents-scout-scout-agent-py-coordinator-orchestrator" title="Permalink to this heading">#</a></h3>
+<p><strong>Entry point:</strong> <code class="docutils literal notranslate"><span class="pre">run(industry,</span> <span class="pre">location,</span> <span class="pre">count,</span> <span class="pre">db_session,</span> <span class="pre">run_id)</span></code> at line 75</p>
+<p>This is a <strong>sequential multi-source loop</strong> — not a graph, not an async pipeline. Pure Python <code class="docutils literal notranslate"><span class="pre">for</span></code> loops with early-exit:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">saved_ids</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">count</span><span class="p">:</span> <span class="k">break</span>
+</pre></div>
+</div>
+<p>Writes live progress to <code class="docutils literal notranslate"><span class="pre">agent_run_logs</span></code> table via <code class="docutils literal notranslate"><span class="pre">_log_progress()</span></code> at line 38 — that’s what the UI polls for the live status feed.</p>
+</section>
+<hr class="docutils" />
+<section id="agents-scout-llm-query-planner-py-llm-query-generation">
+<h3>2. <code class="docutils literal notranslate"><span class="pre">agents/scout/llm_query_planner.py</span></code> — LLM Query Generation<a class="headerlink" href="#agents-scout-llm-query-planner-py-llm-query-generation" title="Permalink to this heading">#</a></h3>
+<p><strong>Agentic concept:</strong> Dynamic Query Planning</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">plan_queries(industry,</span> <span class="pre">location)</span></code> at line 106 — sends prompt to LLM via <strong>LangChain’s <code class="docutils literal notranslate"><span class="pre">HumanMessage</span></code></strong>, asks for a JSON array of 4 search queries</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">plan_retry_queries(...)</span></code> at line 154 — called only if &lt;80% of target found; sends what was already tried so LLM avoids repetition</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_call_llm(prompt)</span></code> at line 28 — branches on <code class="docutils literal notranslate"><span class="pre">LLM_PROVIDER</span></code>: Ollama uses <code class="docutils literal notranslate"><span class="pre">llm.invoke([HumanMessage(...)])</span></code>, OpenAI uses raw <code class="docutils literal notranslate"><span class="pre">chat.completions.create()</span></code></p></li>
+<li><p>Falls back to hardcoded queries <code class="docutils literal notranslate"><span class="pre">_fallback_queries()</span></code> at line 80 if LLM fails</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="agents-scout-news-scout-client-py-intent-based-lead-discovery">
+<h3>3. <code class="docutils literal notranslate"><span class="pre">agents/scout/news_scout_client.py</span></code> — Intent-Based Lead Discovery<a class="headerlink" href="#agents-scout-news-scout-client-py-intent-based-lead-discovery" title="Permalink to this heading">#</a></h3>
+<p><strong>Agentic concept:</strong> Intent-Based Prospecting</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">find_companies_in_news(industry,</span> <span class="pre">location)</span></code> at line 254 — public entry point</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_generate_news_queries()</span></code> at line 82 — LLM generates news-specific queries (looks for events, not directories)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_search_news(query)</span></code> at line 216 — calls <strong>Tavily API</strong> with <code class="docutils literal notranslate"><span class="pre">&quot;topic&quot;:</span> <span class="pre">&quot;news&quot;</span></code> to get article snippets (not web pages)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_extract_companies_from_snippets()</span></code> at line 126 — feeds snippets to LLM via <strong>LangChain <code class="docutils literal notranslate"><span class="pre">HumanMessage</span></code></strong>, LLM extracts company name + signal type (<code class="docutils literal notranslate"><span class="pre">expansion</span></code>, <code class="docutils literal notranslate"><span class="pre">new_facility</span></code>, <code class="docutils literal notranslate"><span class="pre">cost_pressure</span></code>, etc.) + detail as structured JSON</p></li>
+<li><p>Returns <code class="docutils literal notranslate"><span class="pre">intent_signal</span></code> field that gets stored in the <code class="docutils literal notranslate"><span class="pre">Company</span></code> DB row</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="agents-scout-search-client-py-tavily-directory-discovery">
+<h3>4. <code class="docutils literal notranslate"><span class="pre">agents/scout/search_client.py</span></code> — Tavily Directory Discovery<a class="headerlink" href="#agents-scout-search-client-py-tavily-directory-discovery" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">search_with_queries(queries,</span> <span class="pre">location)</span></code> at line 163 — takes LLM-planned queries and searches Tavily for <em>directory URLs</em> to scrape</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_cached_tavily_search()</span></code> at line 65 — <code class="docutils literal notranslate"><span class="pre">&#64;lru_cache(maxsize=64)</span></code> prevents redundant Tavily calls within same process run</p></li>
+<li><p>Filters out <strong>19 known-unscrappable domains</strong> (LinkedIn, Glassdoor, ZoomInfo etc.) via <code class="docutils literal notranslate"><span class="pre">_UNSCRAPPABLE_DOMAINS</span></code> at line 34</p></li>
+<li><p>Discovered URLs get saved to <code class="docutils literal notranslate"><span class="pre">directory_sources</span></code> table via <code class="docutils literal notranslate"><span class="pre">directory_scraper.save_directory_sources()</span></code></p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="agents-scout-directory-scraper-py-html-scraping-with-pagination">
+<h3>5. <code class="docutils literal notranslate"><span class="pre">agents/scout/directory_scraper.py</span></code> — HTML Scraping with Pagination<a class="headerlink" href="#agents-scout-directory-scraper-py-html-scraping-with-pagination" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">scrape_directory(url)</span></code> at line 30 — <strong>pagination loop</strong>: keeps calling <code class="docutils literal notranslate"><span class="pre">get_next_page()</span></code> until no next page</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fetch_page(url)</span></code> at line 126 — <strong>retry loop</strong> (up to <code class="docutils literal notranslate"><span class="pre">MAX_RETRIES</span></code>), realistic browser headers, optional proxy via <code class="docutils literal notranslate"><span class="pre">get_proxy_url()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_find_listing_elements(soup)</span></code> at line 266 — uses <strong>BeautifulSoup4</strong> to find <code class="docutils literal notranslate"><span class="pre">&lt;article&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;div&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;li&gt;</span></code> tags with CSS class/id hints like <code class="docutils literal notranslate"><span class="pre">&quot;listing&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;card&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;member&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">parse_listing(tag)</span></code> at line 58 — extracts name (tries <code class="docutils literal notranslate"><span class="pre">h1-h4</span></code>, <code class="docutils literal notranslate"><span class="pre">[itemprop=name]</span></code>, <code class="docutils literal notranslate"><span class="pre">a[title]</span></code>), website (first absolute href), city/category by keyword</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="agents-scout-google-maps-client-py-google-places-api">
+<h3>6. <code class="docutils literal notranslate"><span class="pre">agents/scout/google_maps_client.py</span></code> — Google Places API<a class="headerlink" href="#agents-scout-google-maps-client-py-google-places-api" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">search_companies(industry,</span> <span class="pre">location,</span> <span class="pre">limit,</span> <span class="pre">query_text)</span></code> at line 65</p></li>
+<li><p>Uses <strong>Google Places API v1</strong> (<code class="docutils literal notranslate"><span class="pre">places:searchText</span></code>) with <code class="docutils literal notranslate"><span class="pre">X-Goog-FieldMask</span></code> header to request only the fields we need</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">query_text</span></code> comes from LLM query planner — overrides default query string</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_map_industry(raw_type,</span> <span class="pre">fallback)</span></code> at line 161 — maps Google place types (<code class="docutils literal notranslate"><span class="pre">&quot;hospital&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;lodging&quot;</span></code> etc.) to our 6-bucket industry taxonomy</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">_parse_city_state(formatted_address)</span></code> at line 170 — parses <code class="docutils literal notranslate"><span class="pre">&quot;123</span> <span class="pre">Main</span> <span class="pre">St,</span> <span class="pre">Buffalo,</span> <span class="pre">NY</span> <span class="pre">14201,</span> <span class="pre">USA&quot;</span></code> by splitting on commas</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="agents-scout-llm-deduplicator-py-two-pass-deduplication">
+<h3>7. <code class="docutils literal notranslate"><span class="pre">agents/scout/llm_deduplicator.py</span></code> — Two-Pass Deduplication<a class="headerlink" href="#agents-scout-llm-deduplicator-py-two-pass-deduplication" title="Permalink to this heading">#</a></h3>
+<p><strong>Agentic concept:</strong> LLM-assisted fuzzy matching</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">deduplicate(companies)</span></code> at line 167</p></li>
+<li><p><strong>Pass 1</strong> — exact domain matching using <code class="docutils literal notranslate"><span class="pre">_extract_domain()</span></code> at line 61. Fast, handles ~80% of duplicates</p></li>
+<li><p><strong>Pass 2</strong> — <code class="docutils literal notranslate"><span class="pre">_find_suspicious_pairs()</span></code> at line 75 uses <strong><code class="docutils literal notranslate"><span class="pre">difflib.SequenceMatcher</span></code></strong> to find name pairs with similarity ≥ 0.75, then <code class="docutils literal notranslate"><span class="pre">_ask_llm_which_are_duplicates()</span></code> at line 107 sends up to 8 suspicious pairs to LLM in one call asking for a JSON array of which pair numbers are duplicates</p></li>
+<li><p>LLM call uses <strong>LangChain <code class="docutils literal notranslate"><span class="pre">HumanMessage</span></code></strong> same as other modules</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="agents-scout-scout-critic-py-quality-scoring-source-learning">
+<h3>8. <code class="docutils literal notranslate"><span class="pre">agents/scout/scout_critic.py</span></code> — Quality Scoring + Source Learning<a class="headerlink" href="#agents-scout-scout-critic-py-quality-scoring-source-learning" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">evaluate_quality(companies)</span></code> at line 45 — pure math, no LLM. Scores 0–10 based on <code class="docutils literal notranslate"><span class="pre">website</span></code> (5pts), <code class="docutils literal notranslate"><span class="pre">city</span></code> (3pts), <code class="docutils literal notranslate"><span class="pre">phone</span></code> (2pts) field presence rates</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">update_source_performance(...)</span></code> at line 72 — <strong>upsert</strong> to <code class="docutils literal notranslate"><span class="pre">source_performance</span></code> table: rolling average <code class="docutils literal notranslate"><span class="pre">(old_avg</span> <span class="pre">*</span> <span class="pre">old_runs</span> <span class="pre">+</span> <span class="pre">new_score)</span> <span class="pre">/</span> <span class="pre">(old_runs</span> <span class="pre">+</span> <span class="pre">1)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">rank_sources(industry,</span> <span class="pre">location,</span> <span class="pre">sources,</span> <span class="pre">db)</span></code> at line 132 — SQLAlchemy query on <code class="docutils literal notranslate"><span class="pre">SourcePerformance</span></code> table, sorts by <code class="docutils literal notranslate"><span class="pre">avg_quality_score</span></code> descending. This is the <strong>self-learning loop</strong> — sources that historically perform better get tried first</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="execution-phases-scout-agent-run">
+<h2>Execution Phases (<code class="docutils literal notranslate"><span class="pre">scout_agent.run()</span></code>)<a class="headerlink" href="#execution-phases-scout-agent-run" title="Permalink to this heading">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>1. LLM Query Planning     → 3–5 diverse search queries (not hardcoded strings)
+2. Source Ranking         → order API sources by past performance from DB
+3. Phase 0: News Scout    → finds companies IN THE NEWS with buying signals
+4. Phase 1: Directory     → scrapes configured DB sources (Yellow Pages etc.)
+5. Phase 2: Tavily        → AI-powered web search using planned queries
+6. Phase 3: API Sources   → Google Maps + Yelp, one call per planned query
+7. LLM Deduplication      → removes near-duplicates from the API batch
+8. Quality Retry          → if &lt;80% of target found, generates NEW queries and retries
+9. Source Performance     → writes results back to DB so future runs learn
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="scout-critic-quality-rubric">
+<h2>Scout Critic Quality Rubric<a class="headerlink" href="#scout-critic-quality-rubric" title="Permalink to this heading">#</a></h2>
+<p>After each source, the Critic scores the batch <strong>0.0–10.0</strong>:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Points</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Website present</p></td>
+<td><p>5.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>City present</p></td>
+<td><p>3.0</p></td>
+</tr>
+<tr class="row-even"><td><p>Phone present</p></td>
+<td><p>2.0</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul class="simple">
+<li><p>Score <strong>≥ 6.0</strong> = good quality</p></li>
+<li><p>Score <strong>&lt; 6.0</strong> = try another source</p></li>
+</ul>
+<p>The Critic also writes to the <code class="docutils literal notranslate"><span class="pre">source_performance</span></code> table — a rolling average per <code class="docutils literal notranslate"><span class="pre">(source,</span> <span class="pre">industry,</span> <span class="pre">location)</span></code>. Next run, <code class="docutils literal notranslate"><span class="pre">rank_sources()</span></code> reads this to put the best-performing source first.</p>
+</section>
+<hr class="docutils" />
+<section id="key-agentic-concepts-used">
+<h2>Key Agentic Concepts Used<a class="headerlink" href="#key-agentic-concepts-used" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Concept</p></th>
+<th class="head"><p>Tool / Tech</p></th>
+<th class="head"><p>Where</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Intent-Based Prospecting</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">news_scout_client</span></code></p></td>
+<td><p>Phase 0 — finds warm leads from news</p></td>
+</tr>
+<tr class="row-odd"><td><p>LLM Query Planning</p></td>
+<td><p>Claude via <code class="docutils literal notranslate"><span class="pre">llm_query_planner</span></code></p></td>
+<td><p>Step 1 — diverse query generation</p></td>
+</tr>
+<tr class="row-even"><td><p>Adaptive Source Ranking</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">SourcePerformance</span></code> DB table</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">rank_sources()</span></code> — learns over time</p></td>
+</tr>
+<tr class="row-odd"><td><p>LLM Deduplication</p></td>
+<td><p>Claude via <code class="docutils literal notranslate"><span class="pre">llm_deduplicator</span></code></p></td>
+<td><p>After API batch collection</p></td>
+</tr>
+<tr class="row-even"><td><p>Quality-gated Retry</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">llm_query_planner.plan_retry_queries</span></code></p></td>
+<td><p>If &lt;80% target hit</p></td>
+</tr>
+<tr class="row-odd"><td><p>Website Signal Enrichment</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">website_crawler</span></code></p></td>
+<td><p>Crawls each company’s site for employee/location signals</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="what-gets-saved">
+<h2>What Gets Saved<a class="headerlink" href="#what-gets-saved" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>News companies</strong>: name + industry minimum (LLM already classified), with <code class="docutils literal notranslate"><span class="pre">intent_signal</span></code> field</p></li>
+<li><p><strong>API companies</strong>: name + industry + city minimum (no website required — Google Maps/Yelp are trusted sources)</p></li>
+<li><p><strong>Directory companies</strong>: must pass <code class="docutils literal notranslate"><span class="pre">_validate_scraped()</span></code> — requires name + website + reachable site</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="full-data-flow">
+<h2>Full Data Flow<a class="headerlink" href="#full-data-flow" title="Permalink to this heading">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>User request: &quot;find 10 healthcare companies in Rochester NY&quot;
+          ↓
+llm_query_planner.plan_queries()        ← LangChain → Ollama/OpenAI
+          ↓ 4 diverse query strings
+scout_critic.rank_sources()             ← SQLAlchemy reads source_performance
+          ↓ ordered: [google_maps, yelp] or reversed if yelp historically better
+news_scout_client.find_companies_in_news()
+  → _generate_news_queries()            ← LangChain → Ollama/OpenAI
+  → _search_news() × 3                 ← Tavily API (topic=news)
+  → _extract_companies_from_snippets()  ← LangChain → Ollama/OpenAI
+  → saved with intent_signal field
+          ↓
+directory_scraper.scrape_directory()    ← BeautifulSoup4 + requests (paginated)
+  → company_extractor.extract_all_fields()
+  → website_crawler.crawl_company_site()
+          ↓
+search_client.search_with_queries()     ← Tavily API (web mode)
+  → directory_scraper.scrape_directory() per found URL
+          ↓
+google_maps_client.search_companies() × 4 queries  ← Google Places API v1
+yelp_client.search_companies()                     ← Yelp API
+          ↓
+llm_deduplicator.deduplicate()
+  Pass 1: domain exact match
+  Pass 2: SequenceMatcher similarity → LangChain → Ollama/OpenAI
+          ↓
+If &lt;80% found: llm_query_planner.plan_retry_queries() → retry loop
+          ↓
+scout_critic.update_source_performance() × per source  ← SQLAlchemy upsert
+          ↓
+return saved company IDs
+</pre></div>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./chapters/Agents"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Agents: Deep Technical Walkthrough</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="analyst_deep_dive.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Analyst Agent</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tech-stack-used">Tech Stack Used</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#file-by-file-breakdown">File-by-File Breakdown</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-scout-scout-agent-py-coordinator-orchestrator">1. <code class="docutils literal notranslate"><span class="pre">agents/scout/scout_agent.py</span></code> — Coordinator / Orchestrator</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-scout-llm-query-planner-py-llm-query-generation">2. <code class="docutils literal notranslate"><span class="pre">agents/scout/llm_query_planner.py</span></code> — LLM Query Generation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-scout-news-scout-client-py-intent-based-lead-discovery">3. <code class="docutils literal notranslate"><span class="pre">agents/scout/news_scout_client.py</span></code> — Intent-Based Lead Discovery</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-scout-search-client-py-tavily-directory-discovery">4. <code class="docutils literal notranslate"><span class="pre">agents/scout/search_client.py</span></code> — Tavily Directory Discovery</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-scout-directory-scraper-py-html-scraping-with-pagination">5. <code class="docutils literal notranslate"><span class="pre">agents/scout/directory_scraper.py</span></code> — HTML Scraping with Pagination</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-scout-google-maps-client-py-google-places-api">6. <code class="docutils literal notranslate"><span class="pre">agents/scout/google_maps_client.py</span></code> — Google Places API</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-scout-llm-deduplicator-py-two-pass-deduplication">7. <code class="docutils literal notranslate"><span class="pre">agents/scout/llm_deduplicator.py</span></code> — Two-Pass Deduplication</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-scout-scout-critic-py-quality-scoring-source-learning">8. <code class="docutils literal notranslate"><span class="pre">agents/scout/scout_critic.py</span></code> — Quality Scoring + Source Learning</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#execution-phases-scout-agent-run">Execution Phases (<code class="docutils literal notranslate"><span class="pre">scout_agent.run()</span></code>)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#scout-critic-quality-rubric">Scout Critic Quality Rubric</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-agentic-concepts-used">Key Agentic Concepts Used</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-gets-saved">What Gets Saved</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#full-data-flow">Full Data Flow</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Harshal Patil
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2022.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

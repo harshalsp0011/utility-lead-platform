@@ -1,0 +1,863 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Tracker Agent &#8212; Utility Lead Intelligence Platform</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'chapters/Agents/tracker_deep_dive';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Orchestrator Agent" href="orchestrator_deep_dive.html" />
+    <link rel="prev" title="Outreach Agent" href="outreach_deep_dive.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Utility Lead Intelligence Platform</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../../index.html">
+                    Utility Lead Intelligence Platform
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../system_architecture.html">System Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../agentic_design.html">Agentic Design</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Agents: Deep Technical Walkthrough</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="scout_deep_dive.html">Scout Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analyst_deep_dive.html">Analyst Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="writer_deep_dive.html">Writer Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="outreach_deep_dive.html">Outreach Agent</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Tracker Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="orchestrator_deep_dive.html">Orchestrator Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="chat_agent_deep_dive.html">Chat Agent</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/chapters/Agents/tracker_deep_dive.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Tracker Agent</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tech-stack-used">Tech Stack Used</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#agentic-concepts-used">Agentic Concepts Used</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#file-by-file-breakdown">File-by-File Breakdown</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-tracker-webhook-listener-py-http-webhook-server">1. <code class="docutils literal notranslate"><span class="pre">agents/tracker/webhook_listener.py</span></code> — HTTP Webhook Server</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-tracker-reply-classifier-py-llm-rule-based-classification">2. <code class="docutils literal notranslate"><span class="pre">agents/tracker/reply_classifier.py</span></code> — LLM + Rule-Based Classification</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-tracker-status-updater-py-status-transitions">3. <code class="docutils literal notranslate"><span class="pre">agents/tracker/status_updater.py</span></code> — Status Transitions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-tracker-tracker-agent-py-daily-health-monitor">4. <code class="docutils literal notranslate"><span class="pre">agents/tracker/tracker_agent.py</span></code> — Daily Health Monitor</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-tracker-alert-sender-py-sales-alert-email">5. <code class="docutils literal notranslate"><span class="pre">agents/tracker/alert_sender.py</span></code> — Sales Alert Email</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#event-action-routing">Event → Action Routing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-gets-written-to-db">What Gets Written to DB</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="tracker-agent">
+<h1>Tracker Agent<a class="headerlink" href="#tracker-agent" title="Permalink to this heading">#</a></h1>
+<section id="tech-stack-used">
+<h2>Tech Stack Used<a class="headerlink" href="#tech-stack-used" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Tech</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>FastAPI</strong> + <strong>Uvicorn</strong></p></td>
+<td><p>Webhook HTTP server — listens for SendGrid events on port 8002</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>SendGrid Inbound Parse</strong></p></td>
+<td><p>Delivers reply/open/click/bounce/unsubscribe webhooks</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>HMAC SHA-256</strong> (<code class="docutils literal notranslate"><span class="pre">hashlib</span></code>, <code class="docutils literal notranslate"><span class="pre">hmac</span></code>)</p></td>
+<td><p>Validates SendGrid webhook signatures</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>LangChain / Ollama / OpenAI</strong></p></td>
+<td><p>LLM classifies reply sentiment + generates 2-line sales summary</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>SQLAlchemy ORM</strong></p></td>
+<td><p>Reads/writes <code class="docutils literal notranslate"><span class="pre">Company</span></code>, <code class="docutils literal notranslate"><span class="pre">Contact</span></code>, <code class="docutils literal notranslate"><span class="pre">OutreachEvent</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong><code class="docutils literal notranslate"><span class="pre">requests</span></code></strong></p></td>
+<td><p>Sends approval reminder to Slack webhook (tracker_agent)</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Python <code class="docutils literal notranslate"><span class="pre">re</span></code></strong></p></td>
+<td><p>Cleans raw reply text — strips quoted chains, signatures</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="agentic-concepts-used">
+<h2>Agentic Concepts Used<a class="headerlink" href="#agentic-concepts-used" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Concept</p></th>
+<th class="head"><p>Tool / Tech</p></th>
+<th class="head"><p>Where</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Event-Driven Processing</p></td>
+<td><p>FastAPI webhook + SendGrid Inbound</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">webhook_listener.receive_webhook()</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>LLM Reply Classification</p></td>
+<td><p>LLM → <code class="docutils literal notranslate"><span class="pre">classify_reply_sentiment()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">reply_classifier.classify_reply()</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Rule-Based Fallback</p></td>
+<td><p>Keyword matching</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">rule_based_classify()</span></code> — always runs if LLM unavailable</p></td>
+</tr>
+<tr class="row-odd"><td><p>Automated Status Transitions</p></td>
+<td><p>SQLAlchemy ORM updates</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">status_updater</span></code> — replied / unsubscribed / bounced / no_response</p></td>
+</tr>
+<tr class="row-even"><td><p>Stuck Lead Health Check</p></td>
+<td><p>Daily scheduler job</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">tracker_agent.run_daily_checks()</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Sales Alert Routing</p></td>
+<td><p>SendGrid email via <code class="docutils literal notranslate"><span class="pre">email_sender</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">alert_sender.send_email_alert()</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="file-by-file-breakdown">
+<h2>File-by-File Breakdown<a class="headerlink" href="#file-by-file-breakdown" title="Permalink to this heading">#</a></h2>
+<section id="agents-tracker-webhook-listener-py-http-webhook-server">
+<h3>1. <code class="docutils literal notranslate"><span class="pre">agents/tracker/webhook_listener.py</span></code> — HTTP Webhook Server<a class="headerlink" href="#agents-tracker-webhook-listener-py-http-webhook-server" title="Permalink to this heading">#</a></h3>
+<p><strong>Agentic concept: Event-Driven Processing</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">start_listener(port=8002)</span></code> at line 43 — spins up a <strong>FastAPI</strong> app served by <strong>Uvicorn</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/webhooks/email&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_email_webhook</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JSONResponse</span><span class="p">:</span>
+    <span class="k">return</span> <span class="k">await</span> <span class="n">receive_webhook</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong><code class="docutils literal notranslate"><span class="pre">receive_webhook(request)</span></code> at line 57:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>1. Read raw body bytes
+2. validate_webhook()         → HMAC SHA-256 signature check
+3. parse_sendgrid_event()     → normalize JSON payload → list of event dicts
+4. for each event:
+     tracker_agent.process_event(event)
+5. Always return HTTP 200     → prevents SendGrid retry storms on errors
+</pre></div>
+</div>
+<p><strong><code class="docutils literal notranslate"><span class="pre">parse_sendgrid_event(raw_payload)</span></code> at line 81</strong> — maps SendGrid event types to internal types:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>SendGrid <code class="docutils literal notranslate"><span class="pre">event</span></code></p></th>
+<th class="head"><p>Internal <code class="docutils literal notranslate"><span class="pre">event_type</span></code></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">open</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">opened</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">click</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">clicked</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">bounce</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">bounced</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">unsubscribe</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">unsubscribed</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">inbound</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">replied</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>For <code class="docutils literal notranslate"><span class="pre">replied</span></code> events, calls <code class="docutils literal notranslate"><span class="pre">extract_reply_content()</span></code> to pull clean reply text.</p>
+<p><strong><code class="docutils literal notranslate"><span class="pre">validate_webhook(headers,</span> <span class="pre">body)</span></code> at line 128</strong> — HMAC-SHA256 check:</p>
+<ul class="simple">
+<li><p>Reads <code class="docutils literal notranslate"><span class="pre">X-Twilio-Email-Event-Webhook-Signature</span></code> / <code class="docutils literal notranslate"><span class="pre">X-SendGrid-Signature</span></code> header</p></li>
+<li><p>Computes <code class="docutils literal notranslate"><span class="pre">HMAC(SENDGRID_API_KEY,</span> <span class="pre">body,</span> <span class="pre">sha256)</span></code> and compares via <code class="docutils literal notranslate"><span class="pre">hmac.compare_digest()</span></code></p></li>
+<li><p>Validation failure is logged but <strong>does not drop the event</strong> in phase 1</p></li>
+</ul>
+<p><strong><code class="docutils literal notranslate"><span class="pre">extract_reply_content(event)</span></code> at line 151</strong> — cleans raw inbound email text:</p>
+<ul class="simple">
+<li><p>Strips quoted reply chains (lines starting with <code class="docutils literal notranslate"><span class="pre">&gt;</span></code>)</p></li>
+<li><p>Stops at common separators: <code class="docutils literal notranslate"><span class="pre">&quot;On</span> <span class="pre">{date}</span> <span class="pre">...</span> <span class="pre">wrote:&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;--&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;---&quot;</span></code></p></li>
+<li><p>Collapses 3+ blank lines → 2, normalizes whitespace with <code class="docutils literal notranslate"><span class="pre">re.sub</span></code></p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="agents-tracker-reply-classifier-py-llm-rule-based-classification">
+<h3>2. <code class="docutils literal notranslate"><span class="pre">agents/tracker/reply_classifier.py</span></code> — LLM + Rule-Based Classification<a class="headerlink" href="#agents-tracker-reply-classifier-py-llm-rule-based-classification" title="Permalink to this heading">#</a></h3>
+<p><strong>Agentic concept: LLM-First with Rule-Based Fallback</strong></p>
+<p><strong><code class="docutils literal notranslate"><span class="pre">classify_reply(reply_text)</span></code> at line 23</strong> — two-pass strategy:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>1. Try LLM classifier (agents.tracker.llm_connector.classify_reply_sentiment)
+   → validate result with _is_valid_classification()
+   → normalize and return if valid
+2. Fallback: rule_based_classify()  ← always works, no LLM required
+</pre></div>
+</div>
+<p><strong><code class="docutils literal notranslate"><span class="pre">rule_based_classify(reply_text)</span></code> at line 40</strong> — keyword matching in priority order:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Priority</p></th>
+<th class="head"><p>Keywords</p></th>
+<th class="head"><p>Sentiment</p></th>
+<th class="head"><p>Intent</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1st</p></td>
+<td><p>“unsubscribe”, “remove me”, “stop”, “opt out”</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">negative</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">unsubscribe</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>2nd</p></td>
+<td><p>“interested”, “schedule”, “call”, “sounds good”, “yes”</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">positive</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">wants_meeting</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>3rd</p></td>
+<td><p>“more information”, “send me”, “details”, “how does it work”</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">positive</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">wants_info</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>4th</p></td>
+<td><p>“not interested”, “no thank you”, “wrong person”</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">negative</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">not_interested</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Default</p></td>
+<td><p>(no match)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">neutral</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">other</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Each result includes <code class="docutils literal notranslate"><span class="pre">confidence</span></code> (0.6–0.98).</p>
+<p><strong><code class="docutils literal notranslate"><span class="pre">generate_reply_summary(reply_text,</span> <span class="pre">company_name,</span> <span class="pre">contact_name,</span> <span class="pre">sentiment)</span></code> at line 126:</strong></p>
+<ul class="simple">
+<li><p>Sends reply + context to LLM: <em>“Summarize in 2 lines: Line 1 what they said, Line 2 recommended next action”</em></p></li>
+<li><p>Falls back to <code class="docutils literal notranslate"><span class="pre">agents.writer.llm_connector</span></code> if tracker connector unavailable</p></li>
+<li><p>Falls back to static template if both LLM connectors fail</p></li>
+</ul>
+<p><strong><code class="docutils literal notranslate"><span class="pre">should_alert_sales(sentiment,</span> <span class="pre">intent)</span></code> at line 170:</strong></p>
+<ul class="simple">
+<li><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> only for positive sentiment OR <code class="docutils literal notranslate"><span class="pre">wants_meeting</span></code>/<code class="docutils literal notranslate"><span class="pre">wants_info</span></code> intent</p></li>
+<li><p>Returns <code class="docutils literal notranslate"><span class="pre">False</span></code> for <code class="docutils literal notranslate"><span class="pre">negative</span></code>, <code class="docutils literal notranslate"><span class="pre">not_interested</span></code>, <code class="docutils literal notranslate"><span class="pre">unsubscribe</span></code> — no noise for sales team</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="agents-tracker-status-updater-py-status-transitions">
+<h3>3. <code class="docutils literal notranslate"><span class="pre">agents/tracker/status_updater.py</span></code> — Status Transitions<a class="headerlink" href="#agents-tracker-status-updater-py-status-transitions" title="Permalink to this heading">#</a></h3>
+<p>All status changes flow through here. Valid statuses at line 29:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>new → enriched → scored → approved → contacted → replied → meeting_booked → won
+                                                                           → lost
+                                                         → no_response
+                                                         → archived
+</pre></div>
+</div>
+<p><strong><code class="docutils literal notranslate"><span class="pre">update_lead_status(company_id,</span> <span class="pre">new_status,</span> <span class="pre">db_session)</span></code> at line 52</strong> — validates against <code class="docutils literal notranslate"><span class="pre">_VALID_STATUSES</span></code>, updates <code class="docutils literal notranslate"><span class="pre">company.status</span></code> + <code class="docutils literal notranslate"><span class="pre">company.updated_at</span></code>.</p>
+<p><strong><code class="docutils literal notranslate"><span class="pre">mark_replied(company_id,</span> <span class="pre">reply_content,</span> <span class="pre">sentiment,</span> <span class="pre">db_session)</span></code> at line 67:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>1. update_lead_status() → &quot;replied&quot;
+2. Find all sent/followup_sent/opened/clicked events for this company
+3. Set reply_content + reply_sentiment on all of them
+4. Set event_type = &quot;replied&quot; on all
+5. followup_scheduler.cancel_followups() → stop future follow-ups
+</pre></div>
+</div>
+<p><strong><code class="docutils literal notranslate"><span class="pre">mark_unsubscribed(contact_id,</span> <span class="pre">db_session)</span></code> at line 95:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mf">1.</span> <span class="n">contact</span><span class="o">.</span><span class="n">unsubscribed</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="mf">2.</span> <span class="n">followup_scheduler</span><span class="o">.</span><span class="n">cancel_followups</span><span class="p">()</span>
+<span class="mf">3.</span> <span class="n">Check</span> <span class="k">if</span> <span class="nb">any</span> <span class="n">other</span> <span class="n">active</span> <span class="n">contacts</span> <span class="n">remain</span> <span class="k">for</span> <span class="n">this</span> <span class="n">company</span>
+<span class="mf">4.</span> <span class="n">If</span> <span class="n">none</span><span class="p">:</span> <span class="n">company</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;archived&quot;</span>
+</pre></div>
+</div>
+<p><strong><code class="docutils literal notranslate"><span class="pre">mark_bounced(contact_id,</span> <span class="pre">db_session)</span></code> at line 128:</strong></p>
+<ul class="simple">
+<li><p>Sets <code class="docutils literal notranslate"><span class="pre">contact.verified</span> <span class="pre">=</span> <span class="pre">False</span></code></p></li>
+<li><p>Writes <code class="docutils literal notranslate"><span class="pre">OutreachEvent(event_type=&quot;bounced&quot;)</span></code> with note to find alternative contact</p></li>
+<li><p>Does <strong>not</strong> change company status — bounce triggers contact re-search, not lead close</p></li>
+</ul>
+<p><strong><code class="docutils literal notranslate"><span class="pre">mark_opened(company_id,</span> <span class="pre">contact_id,</span> <span class="pre">db_session)</span></code> at line 197:</strong></p>
+<ul class="simple">
+<li><p>Writes <code class="docutils literal notranslate"><span class="pre">OutreachEvent(event_type=&quot;opened&quot;)</span></code> only — does not change lead status</p></li>
+<li><p>Used for engagement tracking</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="agents-tracker-tracker-agent-py-daily-health-monitor">
+<h3>4. <code class="docutils literal notranslate"><span class="pre">agents/tracker/tracker_agent.py</span></code> — Daily Health Monitor<a class="headerlink" href="#agents-tracker-tracker-agent-py-daily-health-monitor" title="Permalink to this heading">#</a></h3>
+<p><strong><code class="docutils literal notranslate"><span class="pre">run_daily_checks(db_session)</span></code> at line 137:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>1. check_stuck_leads()     → find companies stale 5+ days in non-terminal status
+2. for each stuck company:
+     resolve_stuck_lead()  → decide action based on current status
+3. Return summary: {stuck_found, resolved, needs_attention}
+</pre></div>
+</div>
+<p><strong><code class="docutils literal notranslate"><span class="pre">check_stuck_leads(db_session)</span></code> at line 51:</strong></p>
+<ul class="simple">
+<li><p>SQLAlchemy query: <code class="docutils literal notranslate"><span class="pre">company.updated_at</span> <span class="pre">&lt;</span> <span class="pre">(now</span> <span class="pre">-</span> <span class="pre">5</span> <span class="pre">days)</span></code> AND <code class="docutils literal notranslate"><span class="pre">status</span> <span class="pre">NOT</span> <span class="pre">IN</span> <span class="pre">terminal_statuses</span></code></p></li>
+<li><p>Terminal statuses: <code class="docutils literal notranslate"><span class="pre">won</span></code>, <code class="docutils literal notranslate"><span class="pre">lost</span></code>, <code class="docutils literal notranslate"><span class="pre">no_response</span></code>, <code class="docutils literal notranslate"><span class="pre">archived</span></code>, <code class="docutils literal notranslate"><span class="pre">unsubscribed</span></code></p></li>
+</ul>
+<p><strong><code class="docutils literal notranslate"><span class="pre">resolve_stuck_lead(company_id,</span> <span class="pre">db_session)</span></code> at line 71</strong> — decision tree by status:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Status</p></th>
+<th class="head"><p>Condition</p></th>
+<th class="head"><p>Action</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">contacted</span></code></p></td>
+<td><p>Last sent &gt; 14 days ago, no reply</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mark_sequence_complete()</span></code> → <code class="docutils literal notranslate"><span class="pre">&quot;no_response&quot;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">scored</span></code></p></td>
+<td><p>No EmailDraft row exists</p></td>
+<td><p>Log warning → <code class="docutils literal notranslate"><span class="pre">&quot;needs_writer_attention&quot;</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">draft_created</span></code></p></td>
+<td><p>No approved draft after 5 days</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">_send_approval_reminder()</span></code> → Slack webhook</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong><code class="docutils literal notranslate"><span class="pre">_send_approval_reminder()</span></code> at line 159</strong> — <code class="docutils literal notranslate"><span class="pre">requests.post</span></code> to <code class="docutils literal notranslate"><span class="pre">ALERT_EMAIL</span></code> Slack webhook with company name + dashboard deep-link.</p>
+</section>
+<hr class="docutils" />
+<section id="agents-tracker-alert-sender-py-sales-alert-email">
+<h3>5. <code class="docutils literal notranslate"><span class="pre">agents/tracker/alert_sender.py</span></code> — Sales Alert Email<a class="headerlink" href="#agents-tracker-alert-sender-py-sales-alert-email" title="Permalink to this heading">#</a></h3>
+<p><strong><code class="docutils literal notranslate"><span class="pre">send_email_alert(...)</span></code> at line 27:</strong></p>
+<ul class="simple">
+<li><p>Builds subject: <code class="docutils literal notranslate"><span class="pre">&quot;HOT</span> <span class="pre">LEAD:</span> <span class="pre">{company_name}</span> <span class="pre">replied</span> <span class="pre">—</span> <span class="pre">action</span> <span class="pre">needed&quot;</span></code></p></li>
+<li><p>Calls <code class="docutils literal notranslate"><span class="pre">build_alert_message()</span></code> → multiline body with score, savings, sentiment, LLM summary, dashboard link</p></li>
+<li><p>Delivers via <code class="docutils literal notranslate"><span class="pre">email_sender.send_via_sendgrid()</span></code> to <code class="docutils literal notranslate"><span class="pre">ALERT_EMAIL</span></code> setting</p></li>
+</ul>
+<p><strong><code class="docutils literal notranslate"><span class="pre">should_alert(event_type,</span> <span class="pre">sentiment,</span> <span class="pre">intent)</span></code> at line 97:</strong></p>
+<ul class="simple">
+<li><p>Only fires for <code class="docutils literal notranslate"><span class="pre">event_type=&quot;replied&quot;</span></code> — delegates to <code class="docutils literal notranslate"><span class="pre">reply_classifier.should_alert_sales()</span></code></p></li>
+<li><p>Open/click events do <strong>not</strong> trigger sales alerts</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="event-action-routing">
+<h2>Event → Action Routing<a class="headerlink" href="#event-action-routing" title="Permalink to this heading">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>SendGrid Webhook → POST /webhooks/email
+  └─ parse_sendgrid_event()    → normalize event type + extract reply text
+       │
+       ├─ event_type = &quot;opened&quot;
+       │    └─ status_updater.mark_opened()     → OutreachEvent(opened)
+       │
+       ├─ event_type = &quot;clicked&quot;
+       │    └─ OutreachEvent(clicked) logged only
+       │
+       ├─ event_type = &quot;replied&quot;
+       │    ├─ extract_reply_content()           → strip quoted chains
+       │    ├─ reply_classifier.classify_reply() → LLM → rule fallback
+       │    │    → {sentiment, intent, summary, confidence}
+       │    ├─ status_updater.mark_replied()     → company.status=&quot;replied&quot;
+       │    │                                      cancel_followups()
+       │    ├─ reply_classifier.generate_reply_summary() → LLM 2-line summary
+       │    └─ should_alert_sales() → True?
+       │         └─ alert_sender.send_email_alert() → SendGrid email to sales team
+       │
+       ├─ event_type = &quot;unsubscribed&quot;
+       │    └─ status_updater.mark_unsubscribed() → contact.unsubscribed=True
+       │                                            cancel_followups()
+       │                                            company.status=&quot;archived&quot; if last contact
+       │
+       └─ event_type = &quot;bounced&quot;
+            └─ status_updater.mark_bounced()     → contact.verified=False
+                                                   OutreachEvent(bounced)
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="what-gets-written-to-db">
+<h2>What Gets Written to DB<a class="headerlink" href="#what-gets-written-to-db" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Table</p></th>
+<th class="head"><p>Written by</p></th>
+<th class="head"><p>Contents</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">outreach_events</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mark_opened()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">event_type=&quot;opened&quot;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">outreach_events</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mark_bounced()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">event_type=&quot;bounced&quot;</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">outreach_events</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mark_replied()</span></code></p></td>
+<td><p>Updates existing events → <code class="docutils literal notranslate"><span class="pre">event_type=&quot;replied&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">reply_content</span></code>, <code class="docutils literal notranslate"><span class="pre">reply_sentiment</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">outreach_events</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cancel_followups()</span></code></p></td>
+<td><p>Updates <code class="docutils literal notranslate"><span class="pre">scheduled_followup</span></code> → <code class="docutils literal notranslate"><span class="pre">cancelled_followup</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">companies</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">update_lead_status()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">status</span></code> field updated</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">companies</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mark_unsubscribed()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">status</span> <span class="pre">=</span> <span class="pre">&quot;archived&quot;</span></code> if no active contacts</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">companies</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mark_sequence_complete()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">status</span> <span class="pre">=</span> <span class="pre">&quot;no_response&quot;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">contacts</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mark_unsubscribed()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">unsubscribed</span> <span class="pre">=</span> <span class="pre">True</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">contacts</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mark_bounced()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">verified</span> <span class="pre">=</span> <span class="pre">False</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./chapters/Agents"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="outreach_deep_dive.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Outreach Agent</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="orchestrator_deep_dive.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Orchestrator Agent</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tech-stack-used">Tech Stack Used</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#agentic-concepts-used">Agentic Concepts Used</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#file-by-file-breakdown">File-by-File Breakdown</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-tracker-webhook-listener-py-http-webhook-server">1. <code class="docutils literal notranslate"><span class="pre">agents/tracker/webhook_listener.py</span></code> — HTTP Webhook Server</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-tracker-reply-classifier-py-llm-rule-based-classification">2. <code class="docutils literal notranslate"><span class="pre">agents/tracker/reply_classifier.py</span></code> — LLM + Rule-Based Classification</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-tracker-status-updater-py-status-transitions">3. <code class="docutils literal notranslate"><span class="pre">agents/tracker/status_updater.py</span></code> — Status Transitions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-tracker-tracker-agent-py-daily-health-monitor">4. <code class="docutils literal notranslate"><span class="pre">agents/tracker/tracker_agent.py</span></code> — Daily Health Monitor</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-tracker-alert-sender-py-sales-alert-email">5. <code class="docutils literal notranslate"><span class="pre">agents/tracker/alert_sender.py</span></code> — Sales Alert Email</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#event-action-routing">Event → Action Routing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-gets-written-to-db">What Gets Written to DB</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Harshal Patil
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2022.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

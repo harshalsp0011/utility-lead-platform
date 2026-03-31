@@ -1,0 +1,18 @@
+# Table of Contents
+# Full reference: https://jupyterbook.org/customize/toc.html
+
+format: jb-book
+root: index
+
+chapters:
+  - file: chapters/system_architecture
+  - file: chapters/agentic_design
+  - file: chapters/Agents/index
+    sections:
+      - file: chapters/Agents/scout_deep_dive
+      - file: chapters/Agents/analyst_deep_dive
+      - file: chapters/Agents/writer_deep_dive
+      - file: chapters/Agents/outreach_deep_dive
+      - file: chapters/Agents/tracker_deep_dive
+      - file: chapters/Agents/orchestrator_deep_dive
+      - file: chapters/Agents/chat_agent_deep_dive

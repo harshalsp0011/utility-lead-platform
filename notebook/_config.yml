@@ -1,0 +1,28 @@
+# Jupyter Book configuration
+# Full reference: https://jupyterbook.org/customize/config.html
+
+title: Utility Lead Intelligence Platform
+author: Harshal Patil
+logo: ""
+
+# Build settings
+only_build_toc_files: true
+
+# HTML output
+html:
+  use_issues_button: false
+  use_repository_button: false
+  use_edit_page_button: false
+
+# Execution settings
+execute:
+  execute_notebooks: "off"   # set to "auto" to run notebooks on build
+
+# LaTeX / PDF settings
+latex:
+  latex_documents:
+    targetname: utility_lead_platform.tex
+
+# Sphinx extensions (optional)
+sphinx:
+  extra_extensions: []

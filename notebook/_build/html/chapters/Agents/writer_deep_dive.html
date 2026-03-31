@@ -1,0 +1,852 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Writer Agent &#8212; Utility Lead Intelligence Platform</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'chapters/Agents/writer_deep_dive';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Outreach Agent" href="outreach_deep_dive.html" />
+    <link rel="prev" title="Analyst Agent" href="analyst_deep_dive.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Utility Lead Intelligence Platform</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../../index.html">
+                    Utility Lead Intelligence Platform
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../system_architecture.html">System Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../agentic_design.html">Agentic Design</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Agents: Deep Technical Walkthrough</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="scout_deep_dive.html">Scout Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analyst_deep_dive.html">Analyst Agent</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Writer Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="outreach_deep_dive.html">Outreach Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tracker_deep_dive.html">Tracker Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="orchestrator_deep_dive.html">Orchestrator Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="chat_agent_deep_dive.html">Chat Agent</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/chapters/Agents/writer_deep_dive.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Writer Agent</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tech-stack-used">Tech Stack Used</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#agentic-concepts-used">Agentic Concepts Used</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#file-by-file-breakdown">File-by-File Breakdown</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-writer-writer-agent-py-coordinator-writer-llm">1. <code class="docutils literal notranslate"><span class="pre">agents/writer/writer_agent.py</span></code> — Coordinator + Writer LLM</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#writer-llm-write-draft-at-line-210">2. Writer LLM — <code class="docutils literal notranslate"><span class="pre">_write_draft()</span></code> at line 210</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-writer-critic-agent-py-critic-llm">3. <code class="docutils literal notranslate"><span class="pre">agents/writer/critic_agent.py</span></code> — Critic LLM</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#writer-critic-loop-process-one-company-at-line-508">4. Writer + Critic Loop — <code class="docutils literal notranslate"><span class="pre">process_one_company()</span></code> at line 508</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#get-best-angle-at-line-96-win-rate-learning">5. <code class="docutils literal notranslate"><span class="pre">get_best_angle()</span></code> at line 96 — Win Rate Learning</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-writer-llm-connector-py-llm-routing">6. <code class="docutils literal notranslate"><span class="pre">agents/writer/llm_connector.py</span></code> — LLM Routing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-writer-tone-validator-py-spam-tone-safety-checks">7. <code class="docutils literal notranslate"><span class="pre">agents/writer/tone_validator.py</span></code> — Spam + Tone Safety Checks</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-writer-template-engine-py-fallback-template-system">8. <code class="docutils literal notranslate"><span class="pre">agents/writer/template_engine.py</span></code> — Fallback Template System</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-gets-written-to-db">What Gets Written to DB</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#full-data-flow">Full Data Flow</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="writer-agent">
+<h1>Writer Agent<a class="headerlink" href="#writer-agent" title="Permalink to this heading">#</a></h1>
+<section id="tech-stack-used">
+<h2>Tech Stack Used<a class="headerlink" href="#tech-stack-used" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Tech</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>LangChain</strong> (<code class="docutils literal notranslate"><span class="pre">langchain_core.messages.HumanMessage</span></code>)</p></td>
+<td><p>LLM calls in <code class="docutils literal notranslate"><span class="pre">critic_agent.py</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Ollama</strong> (<code class="docutils literal notranslate"><span class="pre">ollama.Client</span></code>)</p></td>
+<td><p>Local LLM via <code class="docutils literal notranslate"><span class="pre">llm_connector.call_ollama()</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>OpenAI</strong> (<code class="docutils literal notranslate"><span class="pre">openai.OpenAI</span></code>)</p></td>
+<td><p>Cloud LLM via <code class="docutils literal notranslate"><span class="pre">llm_connector.call_openai()</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>SQLAlchemy ORM</strong></p></td>
+<td><p>Reads <code class="docutils literal notranslate"><span class="pre">Company</span></code>, <code class="docutils literal notranslate"><span class="pre">CompanyFeature</span></code>, <code class="docutils literal notranslate"><span class="pre">LeadScore</span></code>, <code class="docutils literal notranslate"><span class="pre">Contact</span></code>, <code class="docutils literal notranslate"><span class="pre">EmailWinRate</span></code>; writes <code class="docutils literal notranslate"><span class="pre">EmailDraft</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Python <code class="docutils literal notranslate"><span class="pre">re</span></code></strong></p></td>
+<td><p>Regex checks in <code class="docutils literal notranslate"><span class="pre">tone_validator.py</span></code> (spam words, caps, savings claims)</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Plain text templates</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">data/templates/email_*.txt</span></code> — industry-specific fallback templates</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="agentic-concepts-used">
+<h2>Agentic Concepts Used<a class="headerlink" href="#agentic-concepts-used" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Concept</p></th>
+<th class="head"><p>Tool / Tech</p></th>
+<th class="head"><p>Where</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Context-Aware Generation</p></td>
+<td><p>LLM reads <code class="docutils literal notranslate"><span class="pre">score_reason</span></code> from Analyst before writing</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">_write_draft()</span></code> — <code class="docutils literal notranslate"><span class="pre">_WRITER_PROMPT</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Self-Critique / Reflection Loop</p></td>
+<td><p>Critic LLM evaluates → Writer rewrites</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">while</span> <span class="pre">not</span> <span class="pre">critic_result[&quot;passed&quot;]</span></code> loop</p></td>
+</tr>
+<tr class="row-even"><td><p>Learning from Feedback</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">EmailWinRate</span></code> DB table — best angle per industry</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">get_best_angle()</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Uncertainty Flagging</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">low_confidence=True</span></code> when never passes after 2 rewrites</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">_save_draft()</span></code> field</p></td>
+</tr>
+<tr class="row-even"><td><p>Graceful Degradation</p></td>
+<td><p>No contact → generic draft, not a skip</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">contact_name</span> <span class="pre">=</span> <span class="pre">&quot;there&quot;</span></code> fallback</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="file-by-file-breakdown">
+<h2>File-by-File Breakdown<a class="headerlink" href="#file-by-file-breakdown" title="Permalink to this heading">#</a></h2>
+<section id="agents-writer-writer-agent-py-coordinator-writer-llm">
+<h3>1. <code class="docutils literal notranslate"><span class="pre">agents/writer/writer_agent.py</span></code> — Coordinator + Writer LLM<a class="headerlink" href="#agents-writer-writer-agent-py-coordinator-writer-llm" title="Permalink to this heading">#</a></h3>
+<p><strong>Entry point:</strong> <code class="docutils literal notranslate"><span class="pre">run(company_ids,</span> <span class="pre">db_session,</span> <span class="pre">run_id,</span> <span class="pre">on_progress)</span></code> at line 323</p>
+<p>Loops over companies, calls <code class="docutils literal notranslate"><span class="pre">process_one_company()</span></code>, emits <code class="docutils literal notranslate"><span class="pre">on_progress</span></code> callbacks for live UI updates, increments <code class="docutils literal notranslate"><span class="pre">agent_runs.drafts_created</span></code> after each success.</p>
+<p><strong>Full pipeline per company — <code class="docutils literal notranslate"><span class="pre">process_one_company()</span></code> at line 382:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>1. Load company + features + score from DB
+2. Load priority contact (CFO/VP/Facilities) — graceful fallback if none
+3. get_best_angle()        → query EmailWinRate for top-performing angle hint
+4. Build writer_context    → all company signals + analyst score_reason + angle hint
+5. _write_draft()          → Writer LLM generates subject + body + angle
+6. critic_agent.evaluate() → Critic LLM scores 0–10 on 5 criteria
+7. while score &lt; 7 and rewrites &lt; 2:
+     _rewrite_draft()       → Writer LLM rewrites using Critic&#39;s feedback
+     critic_agent.evaluate() → re-score
+8. _save_draft()           → EmailDraft DB row (with critic_score, low_confidence, rewrite_count)
+9. company.status = &quot;draft_created&quot;
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="writer-llm-write-draft-at-line-210">
+<h3>2. Writer LLM — <code class="docutils literal notranslate"><span class="pre">_write_draft()</span></code> at line 210<a class="headerlink" href="#writer-llm-write-draft-at-line-210" title="Permalink to this heading">#</a></h3>
+<p><strong>Agentic concept: Context-Aware Generation</strong></p>
+<p>The Writer LLM does <strong>not</strong> fill a template. It reads the full company profile including the Analyst’s <code class="docutils literal notranslate"><span class="pre">score_reason</span></code> field, <strong>reasons first</strong> (2–3 sentences) about the best angle, picks an angle, then writes the email.</p>
+<p><strong><code class="docutils literal notranslate"><span class="pre">_WRITER_PROMPT</span></code></strong> (line 144) gives the LLM:</p>
+<ul class="simple">
+<li><p>Company name, industry, city, state, site count</p></li>
+<li><p>Savings low/mid/high estimates</p></li>
+<li><p>Deregulated state flag</p></li>
+<li><p>Analyst’s <code class="docutils literal notranslate"><span class="pre">score_reason</span></code> — the WHY this company is a good lead</p></li>
+<li><p>Contact name + title</p></li>
+<li><p>Win rate angle hint (if enough history exists)</p></li>
+<li><p>5 available angles to choose from</p></li>
+</ul>
+<p><strong>Output format the LLM must return:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>REASONING: &lt;2–3 sentence reasoning&gt;
+ANGLE: &lt;one of 5 angle names&gt;
+SUBJECT: &lt;specific subject line&gt;
+BODY:
+&lt;email body 100–160 words&gt;
+</pre></div>
+</div>
+<p>Parsed by <code class="docutils literal notranslate"><span class="pre">_parse_writer_output()</span></code> at line 265 — handles two LLM output formats (with and without explicit <code class="docutils literal notranslate"><span class="pre">BODY:</span></code> marker). <code class="docutils literal notranslate"><span class="pre">_strip_llm_explanation()</span></code> at line 253 removes any self-commentary the LLM appends after the email.</p>
+</section>
+<hr class="docutils" />
+<section id="agents-writer-critic-agent-py-critic-llm">
+<h3>3. <code class="docutils literal notranslate"><span class="pre">agents/writer/critic_agent.py</span></code> — Critic LLM<a class="headerlink" href="#agents-writer-critic-agent-py-critic-llm" title="Permalink to this heading">#</a></h3>
+<p><strong>Agentic concept: Self-Critique / Reflection Pattern</strong></p>
+<p>A <strong>separate LLM call</strong> acts as quality gatekeeper. The Writer and Critic are two different prompt invocations — generate → evaluate → improve → repeat.</p>
+<p><strong><code class="docutils literal notranslate"><span class="pre">evaluate(subject,</span> <span class="pre">body,</span> <span class="pre">company_context)</span></code> at line 100</strong></p>
+<p>Sends <code class="docutils literal notranslate"><span class="pre">_CRITIC_PROMPT</span></code> to LLM with the full email draft + company context. LLM returns structured JSON:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;criteria&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;personalization&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;savings_figure&quot;</span><span class="p">:</span><span class="w">  </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;clear_cta&quot;</span><span class="p">:</span><span class="w">       </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;human_tone&quot;</span><span class="p">:</span><span class="w">      </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;subject_quality&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;score&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;passed&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;feedback&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Add a specific savings figure — &#39;13% reduction&#39; is vague.&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Rubric (2 pts each, 10 max):</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Criterion</p></th>
+<th class="head"><p>What it checks</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">personalization</span></code></p></td>
+<td><p>Mentions company name or specific detail — not generic boilerplate</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">savings_figure</span></code></p></td>
+<td><p>Specific dollar/% estimate — not “significant savings”</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">clear_cta</span></code></p></td>
+<td><p>“free audit”, “15-min call”, “reply to schedule” — not vague</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">human_tone</span></code></p></td>
+<td><p>Reads like a real person, not AI or template</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">subject_quality</span></code></p></td>
+<td><p>Specific subject — not “Quick question” / “Hello”</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Score is <strong>recalculated from criteria</strong> (not trusted from LLM arithmetic) at line 152.</p>
+<p>On any LLM failure: returns <code class="docutils literal notranslate"><span class="pre">{&quot;score&quot;:</span> <span class="pre">7.0,</span> <span class="pre">&quot;passed&quot;:</span> <span class="pre">True}</span></code> — so Writer doesn’t loop forever.</p>
+</section>
+<hr class="docutils" />
+<section id="writer-critic-loop-process-one-company-at-line-508">
+<h3>4. Writer + Critic Loop — <code class="docutils literal notranslate"><span class="pre">process_one_company()</span></code> at line 508<a class="headerlink" href="#writer-critic-loop-process-one-company-at-line-508" title="Permalink to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">_MAX_REWRITES</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">_PASS_THRESHOLD</span> <span class="o">=</span> <span class="mf">7.0</span>
+
+<span class="n">subject</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">angle</span> <span class="o">=</span> <span class="n">_write_draft</span><span class="p">(</span><span class="n">writer_context</span><span class="p">)</span>
+<span class="n">critic_result</span> <span class="o">=</span> <span class="n">critic_agent</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">critic_context</span><span class="p">)</span>
+
+<span class="k">while</span> <span class="ow">not</span> <span class="n">critic_result</span><span class="p">[</span><span class="s2">&quot;passed&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">rewrite_count</span> <span class="o">&lt;</span> <span class="n">_MAX_REWRITES</span><span class="p">:</span>
+    <span class="n">rewrite_count</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">subject</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">angle</span> <span class="o">=</span> <span class="n">_rewrite_draft</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">critic_result</span><span class="p">[</span><span class="s2">&quot;feedback&quot;</span><span class="p">],</span> <span class="n">angle</span><span class="p">)</span>
+    <span class="n">critic_result</span> <span class="o">=</span> <span class="n">critic_agent</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">body</span><span class="p">,</span> <span class="n">critic_context</span><span class="p">)</span>
+
+<span class="n">low_confidence</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">critic_result</span><span class="p">[</span><span class="s2">&quot;passed&quot;</span><span class="p">]</span>  <span class="c1"># True if never passed after 2 rewrites</span>
+</pre></div>
+</div>
+<p><strong><code class="docutils literal notranslate"><span class="pre">_rewrite_draft()</span></code></strong> at line 217 uses <code class="docutils literal notranslate"><span class="pre">_REWRITE_PROMPT</span></code> — shows the LLM the original email + Critic’s specific feedback + score. Angle is <strong>preserved</strong> through rewrites; only the content changes.</p>
+<p><code class="docutils literal notranslate"><span class="pre">low_confidence=True</span></code> is saved to the <code class="docutils literal notranslate"><span class="pre">email_drafts</span></code> table — the UI shows these drafts flagged for human review.</p>
+</section>
+<hr class="docutils" />
+<section id="get-best-angle-at-line-96-win-rate-learning">
+<h3>5. <code class="docutils literal notranslate"><span class="pre">get_best_angle()</span></code> at line 96 — Win Rate Learning<a class="headerlink" href="#get-best-angle-at-line-96-win-rate-learning" title="Permalink to this heading">#</a></h3>
+<p><strong>Agentic concept: Learning from Feedback</strong></p>
+<p>Before writing, the Writer queries the <code class="docutils literal notranslate"><span class="pre">email_win_rate</span></code> table for the highest-reply-rate angle for this industry (minimum 5 emails sent). If found, an <strong>angle hint</strong> is injected into the Writer prompt:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">==</span> <span class="n">WIN</span> <span class="n">RATE</span> <span class="n">HINT</span> <span class="o">==</span>
+<span class="n">For</span> <span class="n">healthcare</span><span class="p">,</span> <span class="n">the</span> <span class="n">angle</span> <span class="s1">&#39;audit_offer&#39;</span> <span class="n">has</span> <span class="n">the</span> <span class="n">highest</span> <span class="n">reply</span> <span class="n">rate</span>
+<span class="n">based</span> <span class="n">on</span> <span class="n">past</span> <span class="n">emails</span><span class="o">.</span> <span class="n">Prefer</span> <span class="n">this</span> <span class="n">angle</span> <span class="n">unless</span> <span class="n">signals</span> <span class="n">suggest</span> <span class="n">otherwise</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>Cold start (no history yet) → <code class="docutils literal notranslate"><span class="pre">angle_hint</span> <span class="pre">=</span> <span class="pre">&quot;&quot;</span></code> → LLM picks freely.</p>
+<p>The 5 valid angles:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Angle</p></th>
+<th class="head"><p>Lead message</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cost_savings</span></code></p></td>
+<td><p>Dollar savings estimate</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">audit_offer</span></code></p></td>
+<td><p>Free no-commitment energy audit</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">risk_reduction</span></code></p></td>
+<td><p>Utility cost volatility / budget risk</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">multi_site_savings</span></code></p></td>
+<td><p>Multi-location efficiency opportunity</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">deregulation_opportunity</span></code></p></td>
+<td><p>Open energy market / supplier switch</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="agents-writer-llm-connector-py-llm-routing">
+<h3>6. <code class="docutils literal notranslate"><span class="pre">agents/writer/llm_connector.py</span></code> — LLM Routing<a class="headerlink" href="#agents-writer-llm-connector-py-llm-routing" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">select_provider()</span></code> at line 70 — reads <code class="docutils literal notranslate"><span class="pre">LLM_PROVIDER</span></code> env var, validates it’s <code class="docutils literal notranslate"><span class="pre">&quot;ollama&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;openai&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">call_ollama(prompt)</span></code> at line 16 — uses <code class="docutils literal notranslate"><span class="pre">ollama.Client(host=OLLAMA_BASE_URL).chat(model=LLM_MODEL,</span> <span class="pre">...)</span></code>; handles both old (dict) and new (object) <code class="docutils literal notranslate"><span class="pre">ollama</span></code> SDK response formats</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">call_openai(prompt)</span></code> at line 46 — uses <code class="docutils literal notranslate"><span class="pre">openai.OpenAI(api_key=...).chat.completions.create(...)</span></code> with <code class="docutils literal notranslate"><span class="pre">temperature=0.7</span></code>, <code class="docutils literal notranslate"><span class="pre">max_tokens=1000</span></code></p></li>
+</ul>
+<p>Note: Writer uses <code class="docutils literal notranslate"><span class="pre">llm_connector</span></code> directly (not LangChain). Critic uses LangChain <code class="docutils literal notranslate"><span class="pre">HumanMessage</span></code>. Both call the same underlying model.</p>
+</section>
+<hr class="docutils" />
+<section id="agents-writer-tone-validator-py-spam-tone-safety-checks">
+<h3>7. <code class="docutils literal notranslate"><span class="pre">agents/writer/tone_validator.py</span></code> — Spam + Tone Safety Checks<a class="headerlink" href="#agents-writer-tone-validator-py-spam-tone-safety-checks" title="Permalink to this heading">#</a></h3>
+<p><strong>No LLM. Pure rule-based regex.</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">validate_tone(subject,</span> <span class="pre">body)</span></code> at line 35 runs 5 checks and returns a 0–10 score:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Check</p></th>
+<th class="head"><p>Function</p></th>
+<th class="head"><p>Rule</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Spam words</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">check_spam_words()</span></code></p></td>
+<td><p>Flags: “free”, “guaranteed”, “act now”, “click here”, etc.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Length</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">check_length()</span></code></p></td>
+<td><p>Body must be 50–250 words</p></td>
+</tr>
+<tr class="row-even"><td><p>CTA present</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">check_cta_present()</span></code></p></td>
+<td><p>Must contain: “call”, “schedule”, “meeting”, “chat”, etc.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Caps usage</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">check_caps_usage()</span></code></p></td>
+<td><p>Max 3 ALL-CAPS words</p></td>
+</tr>
+<tr class="row-even"><td><p>Savings claim</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">check_savings_claim()</span></code></p></td>
+<td><p>Flags any claim &gt; $50M as unrealistic</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Score = <code class="docutils literal notranslate"><span class="pre">10</span> <span class="pre">-</span> <span class="pre">(2</span> <span class="pre">×</span> <span class="pre">number_of_issues)</span></code>.</p>
+</section>
+<hr class="docutils" />
+<section id="agents-writer-template-engine-py-fallback-template-system">
+<h3>8. <code class="docutils literal notranslate"><span class="pre">agents/writer/template_engine.py</span></code> — Fallback Template System<a class="headerlink" href="#agents-writer-template-engine-py-fallback-template-system" title="Permalink to this heading">#</a></h3>
+<p>Industry-specific <code class="docutils literal notranslate"><span class="pre">.txt</span></code> templates in <code class="docutils literal notranslate"><span class="pre">data/templates/</span></code>:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Industry</p></th>
+<th class="head"><p>Template file</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>healthcare</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">email_healthcare.txt</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>hospitality</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">email_hospitality.txt</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>manufacturing</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">email_manufacturing.txt</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>retail</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">email_retail.txt</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>public_sector</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">email_public_sector.txt</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Follow-up templates: <code class="docutils literal notranslate"><span class="pre">followup_day3.txt</span></code>, <code class="docutils literal notranslate"><span class="pre">followup_day7.txt</span></code>, <code class="docutils literal notranslate"><span class="pre">followup_day14.txt</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">fill_static_fields(template,</span> <span class="pre">context)</span></code> at line 44 — replaces <code class="docutils literal notranslate"><span class="pre">{{placeholder}}</span></code> tokens. Unknown placeholders are left unchanged. This is the <strong>fallback path</strong> — primary path is the LLM Writer.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="what-gets-written-to-db">
+<h2>What Gets Written to DB<a class="headerlink" href="#what-gets-written-to-db" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Table</p></th>
+<th class="head"><p>Written by</p></th>
+<th class="head"><p>Contents</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">email_drafts</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">_save_draft()</span></code></p></td>
+<td><p>subject, body, angle, savings_estimate, critic_score, low_confidence, rewrite_count, <code class="docutils literal notranslate"><span class="pre">approved_human=False</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">companies</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">process_one_company()</span></code></p></td>
+<td><p>status → <code class="docutils literal notranslate"><span class="pre">&quot;draft_created&quot;</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">agent_runs</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">run()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">drafts_created</span></code> counter incremented live</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="full-data-flow">
+<h2>Full Data Flow<a class="headerlink" href="#full-data-flow" title="Permalink to this heading">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>run(company_ids)
+  └─ for each company_id:
+       process_one_company()
+         │
+         ├─ DB load: Company + CompanyFeature + LeadScore
+         ├─ enrichment_client.get_priority_contact()  ← CFO/VP/Facilities from contacts table
+         ├─ get_best_angle()                          ← EmailWinRate table → angle hint
+         │
+         ├─ _write_draft()
+         │    └─ _WRITER_PROMPT.format(context)
+         │         → llm_connector.call_ollama() or call_openai()
+         │         → _parse_writer_output()           ← extracts SUBJECT / BODY / ANGLE
+         │
+         ├─ critic_agent.evaluate()
+         │    └─ _CRITIC_PROMPT → LangChain HumanMessage → LLM
+         │         → JSON: {score, passed, feedback, criteria}
+         │
+         ├─ while score &lt; 7 and rewrites &lt; 2:
+         │    ├─ _rewrite_draft()  ← _REWRITE_PROMPT with original + feedback
+         │    └─ critic_agent.evaluate()
+         │
+         ├─ _save_draft()   → EmailDraft DB row
+         └─ company.status = &quot;draft_created&quot;
+</pre></div>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./chapters/Agents"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="analyst_deep_dive.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Analyst Agent</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="outreach_deep_dive.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Outreach Agent</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tech-stack-used">Tech Stack Used</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#agentic-concepts-used">Agentic Concepts Used</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#file-by-file-breakdown">File-by-File Breakdown</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-writer-writer-agent-py-coordinator-writer-llm">1. <code class="docutils literal notranslate"><span class="pre">agents/writer/writer_agent.py</span></code> — Coordinator + Writer LLM</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#writer-llm-write-draft-at-line-210">2. Writer LLM — <code class="docutils literal notranslate"><span class="pre">_write_draft()</span></code> at line 210</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-writer-critic-agent-py-critic-llm">3. <code class="docutils literal notranslate"><span class="pre">agents/writer/critic_agent.py</span></code> — Critic LLM</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#writer-critic-loop-process-one-company-at-line-508">4. Writer + Critic Loop — <code class="docutils literal notranslate"><span class="pre">process_one_company()</span></code> at line 508</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#get-best-angle-at-line-96-win-rate-learning">5. <code class="docutils literal notranslate"><span class="pre">get_best_angle()</span></code> at line 96 — Win Rate Learning</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-writer-llm-connector-py-llm-routing">6. <code class="docutils literal notranslate"><span class="pre">agents/writer/llm_connector.py</span></code> — LLM Routing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-writer-tone-validator-py-spam-tone-safety-checks">7. <code class="docutils literal notranslate"><span class="pre">agents/writer/tone_validator.py</span></code> — Spam + Tone Safety Checks</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-writer-template-engine-py-fallback-template-system">8. <code class="docutils literal notranslate"><span class="pre">agents/writer/template_engine.py</span></code> — Fallback Template System</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-gets-written-to-db">What Gets Written to DB</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#full-data-flow">Full Data Flow</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Harshal Patil
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2022.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

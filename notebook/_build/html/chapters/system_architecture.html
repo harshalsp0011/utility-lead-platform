@@ -1,0 +1,1191 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>System Architecture &#8212; Utility Lead Intelligence Platform</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'chapters/system_architecture';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Agentic Design" href="agentic_design.html" />
+    <link rel="prev" title="Utility Lead Intelligence Platform" href="../index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Utility Lead Intelligence Platform</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Utility Lead Intelligence Platform
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">System Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="agentic_design.html">Agentic Design</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="Agents/index.html">Agents: Deep Technical Walkthrough</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="Agents/scout_deep_dive.html">Scout Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Agents/analyst_deep_dive.html">Analyst Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Agents/writer_deep_dive.html">Writer Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Agents/outreach_deep_dive.html">Outreach Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Agents/tracker_deep_dive.html">Tracker Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Agents/orchestrator_deep_dive.html">Orchestrator Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Agents/chat_agent_deep_dive.html">Chat Agent</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/chapters/system_architecture.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>System Architecture</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#platform-overview">Platform Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#high-level-pipeline">High-Level Pipeline</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stage-1-lead-ingestion-scout-agent">Stage 1 — Lead Ingestion (Scout Agent)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-scout-finds-companies">How Scout Finds Companies</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#llm-query-planning">LLM Query Planning</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#deduplication">Deduplication</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#source-performance-learning">Source Performance Learning</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stage-2-enrichment-scoring-analyst-agent">Stage 2 — Enrichment &amp; Scoring (Analyst Agent)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#llm-inspector">LLM Inspector</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#contact-enrichment-waterfall-8-sources">Contact Enrichment Waterfall (8 Sources)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#score-formula-deterministic-math-not-llm">Score Formula (Deterministic Math — NOT LLM)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spend-calculation">Spend Calculation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#llm-score-narration">LLM Score Narration</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stage-3-human-lead-approval-hitl-gate-1">Stage 3 — Human Lead Approval (HITL Gate 1)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stage-4-email-drafting-writer-critic">Stage 4 — Email Drafting (Writer + Critic)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#writing-process">Writing Process</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#email-angles">Email Angles</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#llm-calls-per-email-worst-case">LLM Calls Per Email (Worst Case)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stage-5-human-email-review-hitl-gate-2">Stage 5 — Human Email Review (HITL Gate 2)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stage-6-send-outreach-agent">Stage 6 — Send (Outreach Agent)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stage-7-follow-up-sequence">Stage 7 — Follow-up Sequence</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stage-8-reply-detection-tracking-tracker-agent">Stage 8 — Reply Detection &amp; Tracking (Tracker Agent)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sendgrid-webhook-receiver">SendGrid Webhook Receiver</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reply-classification">Reply Classification</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#event-handling">Event Handling</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#orchestrator">Orchestrator</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-model-summary">Data Model Summary</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core-tables">Core Tables</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#company-status-lifecycle">Company Status Lifecycle</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#agent-responsibilities">Agent Responsibilities</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-configuration-parameters">Key Configuration Parameters</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="system-architecture">
+<h1>System Architecture<a class="headerlink" href="#system-architecture" title="Permalink to this heading">#</a></h1>
+<blockquote>
+<div><p>Full pipeline: Lead Discovery → Enrichment → Scoring → Email Drafting → Human Review → Send → Follow-up → Reply Detection → Meeting Booked</p>
+</div></blockquote>
+<hr class="docutils" />
+<section id="platform-overview">
+<h2>Platform Overview<a class="headerlink" href="#platform-overview" title="Permalink to this heading">#</a></h2>
+<p>This platform automates the full outbound sales pipeline — from discovering companies with high utility spend to booking a first meeting — with human approval checkpoints at two critical stages before any email is sent.</p>
+<p><strong>Core principle:</strong> AI does the research, writing, and scheduling. A human approves before outreach begins. No email is ever sent without explicit human sign-off.</p>
+<p><strong>Three lead sources:</strong></p>
+<ul class="simple">
+<li><p><strong>AI-discovered:</strong> Scout agent finds companies across multiple live data sources</p></li>
+<li><p><strong>CRM import:</strong> Existing contacts pulled from any CRM with a contacts API <em>(planned)</em></p></li>
+<li><p><strong>Manual add:</strong> Sales team adds a company directly via form <em>(planned)</em></p></li>
+</ul>
+<p>All three paths enter the same pipeline and receive the same quality of research and outreach.</p>
+<p><strong>What makes this agentic:</strong> Each stage is not a simple function call — agents Observe available data, Reason about what to do using an LLM, Act by calling tools (APIs, DB writes, LLM calls), and Reflect on results (quality scores, retry decisions, learning loops).</p>
+</section>
+<hr class="docutils" />
+<section id="high-level-pipeline">
+<h2>High-Level Pipeline<a class="headerlink" href="#high-level-pipeline" title="Permalink to this heading">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>┌──────────────────────────────────────────────────────────────────────┐
+│  LEAD SOURCES                                                        │
+│                                                                      │
+│  [Scout Agent]              [CRM Import]        [Manual Add]        │
+│  Google Maps + Yelp +       Pull existing       Sales team form     │
+│  Tavily + directories       CRM contacts        one-off lead        │
+│  LLM query planning         (planned)           (planned)           │
+└───────────────────────────────┬──────────────────────────────────────┘
+                                ↓
+                   companies + contacts tables
+                                ↓
+┌──────────────────────────────────────────────────────────────────────┐
+│  ANALYST AGENT                                                       │
+│  LLM inspector → 8-source contact waterfall                         │
+│  Deterministic score (0–100) + tier + LLM-written score_reason      │
+└───────────────────────────────┬──────────────────────────────────────┘
+                                ↓
+                   ⚠️  HUMAN CHECKPOINT 1 — Leads page
+                       Approve or reject each scored lead
+                                ↓
+┌──────────────────────────────────────────────────────────────────────┐
+│  WRITER + CRITIC AGENTS                                              │
+│  LLM picks angle (win-rate biased) → writes personalized email      │
+│  Critic scores 0–10 on 5 criteria → rewrite if &lt;7 (max 2×)         │
+└───────────────────────────────┬──────────────────────────────────────┘
+                                ↓
+                   ⚠️  HUMAN CHECKPOINT 2 — Email Review page
+                       Edit / Approve / Reject / Regenerate
+                                ↓
+┌──────────────────────────────────────────────────────────────────────┐
+│  OUTREACH AGENT — Send                                               │
+│  SendGrid (or Instantly) → open + click tracking                    │
+│  Unsubscribe guard + daily cap (50/day)                             │
+└───────────────────────────────┬──────────────────────────────────────┘
+                      ┌─────────┴─────────┐
+                      ↓                   ↓
+        ┌─────────────────────┐   ┌───────────────────────┐
+        │  FOLLOW-UP SEQUENCE │   │  CRM SYNC (planned)   │
+        │  Day 3 → Follow-up 1│   │  Create deal on send  │
+        │  Day 7 → Follow-up 2│   │  Update stage on reply│
+        │  Day 14 → Follow-up3│   └───────────────────────┘
+        └──────────┬──────────┘
+                   ↓
+┌──────────────────────────────────────────────────────────────────────┐
+│  TRACKER AGENT                                                       │
+│  SendGrid webhook → reply classification (LLM + rule-based)         │
+│  Cancel follow-ups → update status → alert sales on hot replies     │
+└──────────────────────────────────────────────────────────────────────┘
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="stage-1-lead-ingestion-scout-agent">
+<h2>Stage 1 — Lead Ingestion (Scout Agent)<a class="headerlink" href="#stage-1-lead-ingestion-scout-agent" title="Permalink to this heading">#</a></h2>
+<p><strong>File:</strong> <code class="docutils literal notranslate"><span class="pre">agents/scout/scout_agent.py</span></code><br />
+<strong>Trigger:</strong> Manual via Triggers page, or Airflow schedule<br />
+<strong>Agentic concepts:</strong> LLM Query Planning, Tool Use, LLM Deduplication, Source Performance Learning</p>
+<section id="how-scout-finds-companies">
+<h3>How Scout Finds Companies<a class="headerlink" href="#how-scout-finds-companies" title="Permalink to this heading">#</a></h3>
+<p>Scout does not use one fixed search query. The LLM generates 3–5 query variants for each run, then searches across four source types:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Source Type</p></th>
+<th class="head"><p>File</p></th>
+<th class="head"><p>What it finds</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Directory scraper</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">directory_scraper.py</span></code></p></td>
+<td><p>Companies from configured B2B directories</p></td>
+</tr>
+<tr class="row-odd"><td><p>Tavily news search</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">search_client.py</span></code></p></td>
+<td><p>Companies in live news with utility spend signals</p></td>
+</tr>
+<tr class="row-even"><td><p>Google Maps</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">google_maps_client.py</span></code></p></td>
+<td><p>Local businesses by industry + location</p></td>
+</tr>
+<tr class="row-odd"><td><p>Yelp</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">yelp_client.py</span></code></p></td>
+<td><p>Local businesses, particularly hospitality and retail</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="llm-query-planning">
+<h3>LLM Query Planning<a class="headerlink" href="#llm-query-planning" title="Permalink to this heading">#</a></h3>
+<p>Instead of a fixed query string, <code class="docutils literal notranslate"><span class="pre">llm_query_planner.py</span></code> takes <code class="docutils literal notranslate"><span class="pre">{industry}</span></code> + <code class="docutils literal notranslate"><span class="pre">{location}</span></code> and outputs 3–5 search variants:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;healthcare facilities Buffalo NY utility costs&quot;</span>
+<span class="s2">&quot;hospital expansion Buffalo NY energy&quot;</span>
+<span class="s2">&quot;multi-site medical group western new york&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="deduplication">
+<h3>Deduplication<a class="headerlink" href="#deduplication" title="Permalink to this heading">#</a></h3>
+<p>Two-pass deduplication:</p>
+<ol class="arabic simple">
+<li><p><strong>Rule-based:</strong> Exact domain match against existing <code class="docutils literal notranslate"><span class="pre">companies</span></code> rows</p></li>
+<li><p><strong>LLM near-duplicate:</strong> <code class="docutils literal notranslate"><span class="pre">llm_deduplicator.py</span></code> runs <code class="docutils literal notranslate"><span class="pre">SequenceMatcher(ratio</span> <span class="pre">&gt;</span> <span class="pre">0.75)</span></code> on company names + asks LLM to confirm ambiguous matches</p></li>
+</ol>
+</section>
+<section id="source-performance-learning">
+<h3>Source Performance Learning<a class="headerlink" href="#source-performance-learning" title="Permalink to this heading">#</a></h3>
+<p>After each run, Scout writes a quality score per source to <code class="docutils literal notranslate"><span class="pre">source_performance</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>quality = (% with website × 5) + (% with city × 3) + (% with phone × 2)
+</pre></div>
+</div>
+<p>Future runs rank sources by <code class="docutils literal notranslate"><span class="pre">avg_quality_score</span></code> — high-performing sources get priority.</p>
+<p><strong>Output:</strong> New rows in <code class="docutils literal notranslate"><span class="pre">companies</span></code> with <code class="docutils literal notranslate"><span class="pre">status='new'</span></code>, <code class="docutils literal notranslate"><span class="pre">source='scout'</span></code></p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="stage-2-enrichment-scoring-analyst-agent">
+<h2>Stage 2 — Enrichment &amp; Scoring (Analyst Agent)<a class="headerlink" href="#stage-2-enrichment-scoring-analyst-agent" title="Permalink to this heading">#</a></h2>
+<p><strong>Files:</strong> <code class="docutils literal notranslate"><span class="pre">agents/analyst/analyst_agent.py</span></code>, <code class="docutils literal notranslate"><span class="pre">agents/analyst/enrichment_client.py</span></code>, <code class="docutils literal notranslate"><span class="pre">agents/analyst/score_engine.py</span></code>, <code class="docutils literal notranslate"><span class="pre">agents/analyst/spend_calculator.py</span></code><br />
+<strong>Agentic concepts:</strong> LLM Inspector, Re-enrichment Loop, Contact Waterfall, Deterministic Scoring with LLM Narration</p>
+<section id="llm-inspector">
+<h3>LLM Inspector<a class="headerlink" href="#llm-inspector" title="Permalink to this heading">#</a></h3>
+<p>Before scoring, <code class="docutils literal notranslate"><span class="pre">llm_inspector.py</span></code> runs for every company:</p>
+<ol class="arabic simple">
+<li><p><strong>Industry inference</strong> — if <code class="docutils literal notranslate"><span class="pre">company.industry</span></code> is blank, LLM infers from name + website</p></li>
+<li><p><strong>Data gap detection</strong> — checks for missing: employee_count, site_count, industry, contact</p></li>
+<li><p><strong>Re-enrich decision</strong> — if gaps found, triggers a second enrichment pass (max 2 loops)</p></li>
+</ol>
+<p>Skipped entirely if: industry is known AND employee_count &gt; 0 AND site_count &gt; 0.</p>
+</section>
+<section id="contact-enrichment-waterfall-8-sources">
+<h3>Contact Enrichment Waterfall (8 Sources)<a class="headerlink" href="#contact-enrichment-waterfall-8-sources" title="Permalink to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">enrichment_client.py</span></code> runs a waterfall stopping at the first successful contact:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>1. Hunter.io          → domain-based email finder
+2. Apollo.io          → people search by company domain
+3. Website scraper    → /contact, /about, /team page scan
+4. Serper             → &quot;CFO site:{domain}&quot; Google result
+5. Snov.io            → company domain search
+6. Prospeo            → LinkedIn-backed contact lookup
+7. ZeroBounce         → email verification + contact
+8. Permutation        → firstname.lastname@domain pattern generation
+</pre></div>
+</div>
+<p><strong>Target titles (priority order):</strong> CFO → VP Finance → Director Facilities → VP Operations</p>
+</section>
+<section id="score-formula-deterministic-math-not-llm">
+<h3>Score Formula (Deterministic Math — NOT LLM)<a class="headerlink" href="#score-formula-deterministic-math-not-llm" title="Permalink to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">score_engine.py</span></code> computes a 0–100 score:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>score = (Recovery × 0.40) + (Industry × 0.25) + (Multisite × 0.20) + (DataQuality × 0.15)
+</pre></div>
+</div>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Component</p></th>
+<th class="head"><p>Max</p></th>
+<th class="head"><p>How measured</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Recovery</p></td>
+<td><p>40</p></td>
+<td><p>Savings potential relative to industry benchmark</p></td>
+</tr>
+<tr class="row-odd"><td><p>Industry</p></td>
+<td><p>25</p></td>
+<td><p>Healthcare/manufacturing/data center score highest</p></td>
+</tr>
+<tr class="row-even"><td><p>Multisite</p></td>
+<td><p>20</p></td>
+<td><p>Confirmed multi-site = 20, single site = 0</p></td>
+</tr>
+<tr class="row-odd"><td><p>DataQuality</p></td>
+<td><p>15</p></td>
+<td><p>How many key fields are populated</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Tiers:</strong> ≥70 = high | 40–69 = medium | 0–39 = low</p>
+</section>
+<section id="spend-calculation">
+<h3>Spend Calculation<a class="headerlink" href="#spend-calculation" title="Permalink to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">spend_calculator.py</span></code> uses <code class="docutils literal notranslate"><span class="pre">database/seed_data/industry_benchmarks.json</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>total_spend  = site_count × avg_sqft × kWh_per_sqft × electricity_rate_per_state
+savings_low  = total_spend × 10%
+savings_mid  = total_spend × 13.5%
+savings_high = total_spend × 17%
+</pre></div>
+</div>
+</section>
+<section id="llm-score-narration">
+<h3>LLM Score Narration<a class="headerlink" href="#llm-score-narration" title="Permalink to this heading">#</a></h3>
+<p>After the deterministic score is computed, the LLM writes a plain-English <code class="docutils literal notranslate"><span class="pre">score_reason</span></code> (2–3 sentences). This is what the Writer reads to personalize emails. The LLM does not set the score — only explains it.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="stage-3-human-lead-approval-hitl-gate-1">
+<h2>Stage 3 — Human Lead Approval (HITL Gate 1)<a class="headerlink" href="#stage-3-human-lead-approval-hitl-gate-1" title="Permalink to this heading">#</a></h2>
+<p><strong>Page:</strong> <code class="docutils literal notranslate"><span class="pre">/leads</span></code></p>
+<p>The Leads page shows all scored companies. For each: score bar, tier badge, savings estimate, contact indicator, Approve / Reject actions.</p>
+<ul class="simple">
+<li><p><strong>Approve</strong> → <code class="docutils literal notranslate"><span class="pre">company.status='approved'</span></code>, <code class="docutils literal notranslate"><span class="pre">lead_scores.approved_human=True</span></code></p></li>
+<li><p><strong>Reject</strong> → <code class="docutils literal notranslate"><span class="pre">company.status='archived'</span></code></p></li>
+</ul>
+<p>After scoring, the Orchestrator sends a notification email to <code class="docutils literal notranslate"><span class="pre">ALERT_EMAIL</span></code> with the lead list and a link to the Leads page.</p>
+<p><strong>Auto-approval shortcut:</strong> When contact enrichment succeeds on a high-tier lead, the system auto-approves (<code class="docutils literal notranslate"><span class="pre">approved_by=&quot;system</span> <span class="pre">(contact</span> <span class="pre">found)&quot;</span></code>) so those leads flow directly to the Writer without a manual click.</p>
+</section>
+<hr class="docutils" />
+<section id="stage-4-email-drafting-writer-critic">
+<h2>Stage 4 — Email Drafting (Writer + Critic)<a class="headerlink" href="#stage-4-email-drafting-writer-critic" title="Permalink to this heading">#</a></h2>
+<p><strong>Files:</strong> <code class="docutils literal notranslate"><span class="pre">agents/writer/writer_agent.py</span></code>, <code class="docutils literal notranslate"><span class="pre">agents/writer/critic_agent.py</span></code><br />
+<strong>Agentic concepts:</strong> Context-Aware Generation, Self-Critique Loop, Win-Rate Learning, Uncertainty Flagging</p>
+<section id="writing-process">
+<h3>Writing Process<a class="headerlink" href="#writing-process" title="Permalink to this heading">#</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Load context:
+  company          → name, industry, city, state, website
+  company_features → site_count, savings_mid, deregulated_state
+  lead_scores      → score, tier, score_reason  ← key personalization input
+  contacts         → full_name, title, email
+
+Query email_win_rate → best performing angle for this industry (min 5 samples)
+
+Writer LLM:
+  System prompt: senior utility sales consultant persona
+  Output: SUBJECT / ANGLE / BODY (150–180 words, plain text)
+              ↓ draft v1
+Critic LLM — 5 criteria × 0–2 points each (max 10):
+  1. Personalization  — mentions company name or specific signal
+  2. Savings figure   — contains a dollar or % estimate
+  3. Clear CTA        — one specific ask (call, audit, reply)
+  4. Human tone       — reads naturally, not templated
+  5. Subject line     — specific to company, not generic
+
+Score ≥ 7.0 → save draft
+Score &lt; 7.0 → rewrite with Critic feedback (max 2 rewrites)
+Still &lt; 7.0 → save with low_confidence=True
+</pre></div>
+</div>
+</section>
+<section id="email-angles">
+<h3>Email Angles<a class="headerlink" href="#email-angles" title="Permalink to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Angle</p></th>
+<th class="head"><p>Lead-in</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cost_savings</span></code></p></td>
+<td><p>Dollar savings estimate up front</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">audit_offer</span></code></p></td>
+<td><p>Free no-commitment energy audit</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">risk_reduction</span></code></p></td>
+<td><p>Utility cost volatility / budget risk</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">multi_site_savings</span></code></p></td>
+<td><p>Multi-location efficiency opportunity</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">deregulation_opportunity</span></code></p></td>
+<td><p>Open energy market / supplier switch</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="llm-calls-per-email-worst-case">
+<h3>LLM Calls Per Email (Worst Case)<a class="headerlink" href="#llm-calls-per-email-worst-case" title="Permalink to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Step</p></th>
+<th class="head"><p>Calls</p></th>
+<th class="head"><p>~Tokens</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Writer (initial)</p></td>
+<td><p>1</p></td>
+<td><p>~600</p></td>
+</tr>
+<tr class="row-odd"><td><p>Critic (evaluation)</p></td>
+<td><p>1</p></td>
+<td><p>~400</p></td>
+</tr>
+<tr class="row-even"><td><p>Writer (rewrite ×2)</p></td>
+<td><p>0–2</p></td>
+<td><p>~600 each</p></td>
+</tr>
+<tr class="row-odd"><td><p>Critic (re-eval ×2)</p></td>
+<td><p>0–2</p></td>
+<td><p>~400 each</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Total worst case</strong></p></td>
+<td><p><strong>6</strong></p></td>
+<td><p><strong>~3,800</strong></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="stage-5-human-email-review-hitl-gate-2">
+<h2>Stage 5 — Human Email Review (HITL Gate 2)<a class="headerlink" href="#stage-5-human-email-review-hitl-gate-2" title="Permalink to this heading">#</a></h2>
+<p><strong>Page:</strong> <code class="docutils literal notranslate"><span class="pre">/emails/review</span></code></p>
+<p>Every draft appears as a card with: company + contact, subject preview, Critic score badge, low confidence warning.</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Action</p></th>
+<th class="head"><p>What happens</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Approve &amp; Send</strong></p></td>
+<td><p>Marks draft approved → triggers send</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Edit + Approve</strong></p></td>
+<td><p>Inline edit subject/body → send edited version</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Reject</strong></p></td>
+<td><p>Deletes draft, resets <code class="docutils literal notranslate"><span class="pre">company.status='approved'</span></code> → re-enters Writer queue</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Regenerate</strong></p></td>
+<td><p>Fresh Writer + Critic cycle for this company</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="stage-6-send-outreach-agent">
+<h2>Stage 6 — Send (Outreach Agent)<a class="headerlink" href="#stage-6-send-outreach-agent" title="Permalink to this heading">#</a></h2>
+<p><strong>File:</strong> <code class="docutils literal notranslate"><span class="pre">agents/outreach/email_sender.py</span></code><br />
+<strong>Providers:</strong> SendGrid (default) or Instantly (configurable via <code class="docutils literal notranslate"><span class="pre">EMAIL_PROVIDER</span></code>)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Human clicks &quot;Approve &amp; Send&quot;
+        ↓
+email_sender.send_email(draft_id, db)
+        ↓
+Guardrail checks:
+  1. contact.unsubscribed == False
+  2. sent_today &lt; EMAIL_DAILY_LIMIT (default: 50)
+  3. contact.email is not empty
+        ↓
+Unsubscribe footer appended
+        ↓
+SendGrid POST → open + click tracking enabled
+        ↓
+INSERT outreach_events(event_type=&#39;sent&#39;)
+        ↓
+followup_scheduler.schedule_followups() → 3 × scheduled_followup rows
+        ↓
+company.status = &#39;contacted&#39;
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="stage-7-follow-up-sequence">
+<h2>Stage 7 — Follow-up Sequence<a class="headerlink" href="#stage-7-follow-up-sequence" title="Permalink to this heading">#</a></h2>
+<p><strong>Files:</strong> <code class="docutils literal notranslate"><span class="pre">agents/outreach/followup_scheduler.py</span></code>, <code class="docutils literal notranslate"><span class="pre">agents/outreach/sequence_manager.py</span></code></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Follow-up</p></th>
+<th class="head"><p>Day offset</p></th>
+<th class="head"><p>Subject line</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>#1</p></td>
+<td><p>Day 3</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Re:</span> <span class="pre">{original</span> <span class="pre">subject}</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>#2</p></td>
+<td><p>Day 7</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Re:</span> <span class="pre">{original</span> <span class="pre">subject}</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>#3</p></td>
+<td><p>Day 14</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;Following</span> <span class="pre">up</span> <span class="pre">one</span> <span class="pre">last</span> <span class="pre">time&quot;</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Daily job:</strong> <code class="docutils literal notranslate"><span class="pre">get_due_followups()</span></code> → <code class="docutils literal notranslate"><span class="pre">build_followup_email()</span></code> (LLM polishes body) → <code class="docutils literal notranslate"><span class="pre">send_email()</span></code> → after #3: <code class="docutils literal notranslate"><span class="pre">mark_sequence_complete()</span></code> → <code class="docutils literal notranslate"><span class="pre">company.status='no_response'</span></code></p>
+<p><strong>Automatic cancellation:</strong> when reply received, contact unsubscribes, or company status reaches <code class="docutils literal notranslate"><span class="pre">won</span></code> / <code class="docutils literal notranslate"><span class="pre">lost</span></code>.</p>
+</section>
+<hr class="docutils" />
+<section id="stage-8-reply-detection-tracking-tracker-agent">
+<h2>Stage 8 — Reply Detection &amp; Tracking (Tracker Agent)<a class="headerlink" href="#stage-8-reply-detection-tracking-tracker-agent" title="Permalink to this heading">#</a></h2>
+<p><strong>Files:</strong> <code class="docutils literal notranslate"><span class="pre">agents/tracker/webhook_listener.py</span></code>, <code class="docutils literal notranslate"><span class="pre">agents/tracker/reply_classifier.py</span></code>, <code class="docutils literal notranslate"><span class="pre">agents/tracker/status_updater.py</span></code>, <code class="docutils literal notranslate"><span class="pre">agents/tracker/alert_sender.py</span></code></p>
+<section id="sendgrid-webhook-receiver">
+<h3>SendGrid Webhook Receiver<a class="headerlink" href="#sendgrid-webhook-receiver" title="Permalink to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">webhook_listener.py</span></code> — FastAPI on port 8002:</p>
+<ul class="simple">
+<li><p>Validates HMAC signature</p></li>
+<li><p>Normalizes event types: <code class="docutils literal notranslate"><span class="pre">open→opened</span></code>, <code class="docutils literal notranslate"><span class="pre">bounce→bounced</span></code>, <code class="docutils literal notranslate"><span class="pre">inbound→replied</span></code></p></li>
+<li><p>Always returns HTTP 200 (prevents retry storms)</p></li>
+</ul>
+</section>
+<section id="reply-classification">
+<h3>Reply Classification<a class="headerlink" href="#reply-classification" title="Permalink to this heading">#</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Try: LLM classify_reply_sentiment(text)
+  → validates {sentiment, intent, summary, confidence}
+  → if invalid → fallback
+
+Fallback: rule_based_classify(text)
+  → keyword matching:
+     unsubscribe keywords  → negative / unsubscribe
+     meeting/interest      → positive / wants_meeting
+     info request          → positive / wants_info
+     not interested        → negative / not_interested
+     default               → neutral / other
+</pre></div>
+</div>
+</section>
+<section id="event-handling">
+<h3>Event Handling<a class="headerlink" href="#event-handling" title="Permalink to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Event</p></th>
+<th class="head"><p>Action</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">replied</span></code></p></td>
+<td><p>Classify → <code class="docutils literal notranslate"><span class="pre">status=replied</span></code> → cancel follow-ups → alert sales if positive</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">unsubscribed</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">contact.unsubscribed=True</span></code> → cancel follow-ups → if no active contacts: <code class="docutils literal notranslate"><span class="pre">status=archived</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">bounced</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">contact.verified=False</span></code> → log event</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">opened</span></code></p></td>
+<td><p>Log event only (no status change)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="orchestrator">
+<h2>Orchestrator<a class="headerlink" href="#orchestrator" title="Permalink to this heading">#</a></h2>
+<p><strong>Files:</strong> <code class="docutils literal notranslate"><span class="pre">agents/orchestrator/orchestrator.py</span></code>, <code class="docutils literal notranslate"><span class="pre">agents/orchestrator/task_manager.py</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>run_full_pipeline(industry, location, count, db)
+  1. task_manager.assign_task(&quot;scout&quot;)
+  2. task_manager.assign_task(&quot;analyst&quot;)
+     → HumanApprovalRequest + ALERT_EMAIL notification
+     [HUMAN APPROVES LEADS]
+  3. run_contact_enrichment(high_ids)
+     → auto-approves leads where contact found
+  4. task_manager.assign_task(&quot;writer&quot;)
+     → HumanApprovalRequest + ALERT_EMAIL notification
+     [HUMAN REVIEWS DRAFTS]
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">task_manager.py</span></code> routes each agent call, tracks tasks in <code class="docutils literal notranslate"><span class="pre">_TASK_LOG</span></code> (in-process dict), writes to <code class="docutils literal notranslate"><span class="pre">logs/task_log.txt</span></code>, and provides two-pass retry on failure.</p>
+<p><code class="docutils literal notranslate"><span class="pre">pipeline_monitor.py</span></code> provides: stage funnel counts, active pipeline value rollup, 7-service health checks, and 4-condition stuck pipeline detection.</p>
+</section>
+<hr class="docutils" />
+<section id="data-model-summary">
+<h2>Data Model Summary<a class="headerlink" href="#data-model-summary" title="Permalink to this heading">#</a></h2>
+<section id="core-tables">
+<h3>Core Tables<a class="headerlink" href="#core-tables" title="Permalink to this heading">#</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>companies
+  id, name, website, industry, city, state, phone
+  status  ← drives pipeline stage
+  source  ← &#39;scout&#39; | &#39;crm_import&#39; | &#39;manual&#39;
+
+contacts
+  id, company_id, full_name, title, email
+  source  ← &#39;hunter&#39; | &#39;apollo&#39; | &#39;scrape&#39; | ...
+  verified, unsubscribed
+
+company_features
+  company_id, site_count, employee_count
+  savings_low, savings_mid, savings_high
+  estimated_total_spend, deregulated_state
+
+lead_scores
+  company_id, score (0–100), tier
+  score_reason  ← LLM-written plain English
+  approved_human, approved_by, approved_at
+
+email_drafts
+  company_id, contact_id
+  subject_line, body, template_used (angle)
+  critic_score, low_confidence, rewrite_count
+  approved_human, sent_at
+
+outreach_events
+  company_id, contact_id
+  event_type  ← &#39;sent&#39; | &#39;scheduled_followup&#39; | &#39;followup_sent&#39; |
+                &#39;replied&#39; | &#39;opened&#39; | &#39;clicked&#39; | &#39;bounced&#39; |
+                &#39;unsubscribed&#39; | &#39;cancelled_followup&#39;
+  follow_up_number, next_followup_date
+  reply_content, reply_sentiment
+
+agent_runs + agent_run_logs   ← full audit trail per pipeline trigger
+
+email_win_rate                ← reply rate per angle per industry (Writer reads)
+source_performance            ← quality score per Scout source (Scout reads)
+human_approval_requests       ← HITL queue for leads and email approvals
+</pre></div>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="company-status-lifecycle">
+<h2>Company Status Lifecycle<a class="headerlink" href="#company-status-lifecycle" title="Permalink to this heading">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>new
+ └─ enriched           (Analyst: contact waterfall succeeded)
+     └─ scored         (Analyst: score + savings computed)
+         └─ approved   ← HITL Gate 1 (human approves on Leads page)
+                         OR auto-approved when contact found (high-tier)
+             └─ draft_created   (Writer: email draft saved)
+                 └─ contacted   (Outreach: email sent)
+                     ├─ replied         ← reply detected
+                     │   └─ meeting_booked
+                     │       ├─ won
+                     │       └─ lost
+                     └─ no_response     ← all 3 follow-ups sent, no reply
+
+Any status → archived  (human rejects, or all contacts unsubscribed)
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="agent-responsibilities">
+<h2>Agent Responsibilities<a class="headerlink" href="#agent-responsibilities" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Agent</p></th>
+<th class="head"><p>File</p></th>
+<th class="head"><p>Trigger</p></th>
+<th class="head"><p>Responsibility</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Scout</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">agents/scout/scout_agent.py</span></code></p></td>
+<td><p>Manual / Airflow</p></td>
+<td><p>LLM query planning → multi-source search → LLM dedup → companies saved</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Analyst</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">agents/analyst/analyst_agent.py</span></code></p></td>
+<td><p>Manual / Airflow</p></td>
+<td><p>LLM inspect → 8-source contact waterfall → deterministic score → LLM narration</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Writer</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">agents/writer/writer_agent.py</span></code></p></td>
+<td><p>Manual / Airflow</p></td>
+<td><p>Win-rate angle selection → LLM draft → Critic score → rewrite loop → save draft</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Critic</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">agents/writer/critic_agent.py</span></code></p></td>
+<td><p>Called by Writer</p></td>
+<td><p>Score draft 0–10 on 5 criteria, return feedback for rewrite</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Outreach</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">agents/outreach/outreach_agent.py</span></code></p></td>
+<td><p>Manual / send event</p></td>
+<td><p>Send approved emails, schedule follow-ups, send due follow-ups</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Tracker</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">agents/tracker/tracker_agent.py</span></code></p></td>
+<td><p>SendGrid webhooks + Airflow</p></td>
+<td><p>Classify replies, update statuses, cancel follow-ups, alert sales, daily health checks</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Orchestrator</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">agents/orchestrator/orchestrator.py</span></code></p></td>
+<td><p>API trigger</p></td>
+<td><p>Sequence agents, manage HITL notifications, retry on failure, pipeline monitoring</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Chat</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">agents/chat_agent.py</span></code></p></td>
+<td><p>User message</p></td>
+<td><p>LangChain ReAct — routes natural language to pipeline actions, confidence-gated routing</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="key-configuration-parameters">
+<h2>Key Configuration Parameters<a class="headerlink" href="#key-configuration-parameters" title="Permalink to this heading">#</a></h2>
+<div class="highlight-env notranslate"><div class="highlight"><pre><span></span># LLM
+LLM_PROVIDER=ollama              # &#39;ollama&#39; or &#39;openai&#39;
+LLM_MODEL=llama3.2
+OLLAMA_BASE_URL=http://host.docker.internal:11434
+
+# Email Send
+EMAIL_PROVIDER=sendgrid          # &#39;sendgrid&#39; or &#39;instantly&#39;
+SENDGRID_API_KEY=...
+SENDGRID_FROM_EMAIL=you@yourdomain.com
+EMAIL_DAILY_LIMIT=50
+
+# Follow-up Schedule
+FOLLOWUP_DAY_1=3
+FOLLOWUP_DAY_2=7
+FOLLOWUP_DAY_3=14
+
+# Lead Discovery
+TAVILY_API_KEY=...
+GOOGLE_MAPS_API_KEY=...
+YELP_API_KEY=...
+
+# Contact Enrichment
+APOLLO_API_KEY=...
+HUNTER_API_KEY=...
+SERPER_API_KEY=...
+SNOV_API_KEY=...
+PROSPEO_API_KEY=...
+ZEROBOUNCE_API_KEY=...
+
+# Notifications
+ALERT_EMAIL=sales-team@yourdomain.com
+
+# Sender Identity
+SENDER_NAME=Your Name
+SENDER_TITLE=Your Title
+</pre></div>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./chapters"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Utility Lead Intelligence Platform</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="agentic_design.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Agentic Design</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#platform-overview">Platform Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#high-level-pipeline">High-Level Pipeline</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stage-1-lead-ingestion-scout-agent">Stage 1 — Lead Ingestion (Scout Agent)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#how-scout-finds-companies">How Scout Finds Companies</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#llm-query-planning">LLM Query Planning</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#deduplication">Deduplication</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#source-performance-learning">Source Performance Learning</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stage-2-enrichment-scoring-analyst-agent">Stage 2 — Enrichment &amp; Scoring (Analyst Agent)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#llm-inspector">LLM Inspector</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#contact-enrichment-waterfall-8-sources">Contact Enrichment Waterfall (8 Sources)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#score-formula-deterministic-math-not-llm">Score Formula (Deterministic Math — NOT LLM)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spend-calculation">Spend Calculation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#llm-score-narration">LLM Score Narration</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stage-3-human-lead-approval-hitl-gate-1">Stage 3 — Human Lead Approval (HITL Gate 1)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stage-4-email-drafting-writer-critic">Stage 4 — Email Drafting (Writer + Critic)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#writing-process">Writing Process</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#email-angles">Email Angles</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#llm-calls-per-email-worst-case">LLM Calls Per Email (Worst Case)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stage-5-human-email-review-hitl-gate-2">Stage 5 — Human Email Review (HITL Gate 2)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stage-6-send-outreach-agent">Stage 6 — Send (Outreach Agent)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stage-7-follow-up-sequence">Stage 7 — Follow-up Sequence</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#stage-8-reply-detection-tracking-tracker-agent">Stage 8 — Reply Detection &amp; Tracking (Tracker Agent)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sendgrid-webhook-receiver">SendGrid Webhook Receiver</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#reply-classification">Reply Classification</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#event-handling">Event Handling</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#orchestrator">Orchestrator</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-model-summary">Data Model Summary</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#core-tables">Core Tables</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#company-status-lifecycle">Company Status Lifecycle</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#agent-responsibilities">Agent Responsibilities</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-configuration-parameters">Key Configuration Parameters</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Harshal Patil
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2022.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
