@@ -1,0 +1,776 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Outreach Agent &#8212; Utility Lead Intelligence Platform</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'chapters/Agents/outreach_deep_dive';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Tracker Agent" href="tracker_deep_dive.html" />
+    <link rel="prev" title="Writer Agent" href="writer_deep_dive.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Utility Lead Intelligence Platform</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../../index.html">
+                    Utility Lead Intelligence Platform
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../system_architecture.html">System Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../agentic_design.html">Agentic Design</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Agents: Deep Technical Walkthrough</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="scout_deep_dive.html">Scout Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analyst_deep_dive.html">Analyst Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="writer_deep_dive.html">Writer Agent</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Outreach Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tracker_deep_dive.html">Tracker Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="orchestrator_deep_dive.html">Orchestrator Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="chat_agent_deep_dive.html">Chat Agent</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/chapters/Agents/outreach_deep_dive.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Outreach Agent</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tech-stack-used">Tech Stack Used</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#agentic-concepts-used">Agentic Concepts Used</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#file-by-file-breakdown">File-by-File Breakdown</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-outreach-outreach-agent-py-coordinator">1. <code class="docutils literal notranslate"><span class="pre">agents/outreach/outreach_agent.py</span></code> — Coordinator</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-outreach-email-sender-py-email-delivery">2. <code class="docutils literal notranslate"><span class="pre">agents/outreach/email_sender.py</span></code> — Email Delivery</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-outreach-followup-scheduler-py-follow-up-scheduling">3. <code class="docutils literal notranslate"><span class="pre">agents/outreach/followup_scheduler.py</span></code> — Follow-up Scheduling</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-outreach-sequence-manager-py-follow-up-content-builder">4. <code class="docutils literal notranslate"><span class="pre">agents/outreach/sequence_manager.py</span></code> — Follow-up Content Builder</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#follow-up-sequence-timeline">Follow-up Sequence Timeline</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-gets-written-to-db">What Gets Written to DB</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#full-data-flow">Full Data Flow</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="outreach-agent">
+<h1>Outreach Agent<a class="headerlink" href="#outreach-agent" title="Permalink to this heading">#</a></h1>
+<section id="tech-stack-used">
+<h2>Tech Stack Used<a class="headerlink" href="#tech-stack-used" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Tech</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>SendGrid SDK</strong> (<code class="docutils literal notranslate"><span class="pre">sendgrid</span></code>, <code class="docutils literal notranslate"><span class="pre">sendgrid.helpers.mail</span></code>)</p></td>
+<td><p>Primary email delivery provider</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Instantly API</strong> (<code class="docutils literal notranslate"><span class="pre">requests.post</span></code>)</p></td>
+<td><p>Alternative email delivery via campaign API</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Ollama / OpenAI</strong> (<code class="docutils literal notranslate"><span class="pre">llm_connector</span></code>)</p></td>
+<td><p>LLM polishes follow-up email bodies</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>SQLAlchemy ORM</strong></p></td>
+<td><p>Reads <code class="docutils literal notranslate"><span class="pre">EmailDraft</span></code>, <code class="docutils literal notranslate"><span class="pre">Contact</span></code>, <code class="docutils literal notranslate"><span class="pre">Company</span></code>; writes <code class="docutils literal notranslate"><span class="pre">OutreachEvent</span></code>, <code class="docutils literal notranslate"><span class="pre">EmailDraft</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Python <code class="docutils literal notranslate"><span class="pre">datetime</span></code> + <code class="docutils literal notranslate"><span class="pre">timedelta</span></code></strong></p></td>
+<td><p>Follow-up scheduling — day offsets from send date</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="agentic-concepts-used">
+<h2>Agentic Concepts Used<a class="headerlink" href="#agentic-concepts-used" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Concept</p></th>
+<th class="head"><p>Tool / Tech</p></th>
+<th class="head"><p>Where</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Automated Multi-Step Sequence</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">followup_scheduler</span></code> + <code class="docutils literal notranslate"><span class="pre">OutreachEvent</span></code> table</p></td>
+<td><p>3-touch follow-up cadence auto-scheduled</p></td>
+</tr>
+<tr class="row-odd"><td><p>Daily Rate Limiting</p></td>
+<td><p>SQLAlchemy count query on <code class="docutils literal notranslate"><span class="pre">outreach_events</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">check_daily_limit()</span></code> — enforced before every send</p></td>
+</tr>
+<tr class="row-even"><td><p>Unsubscribe Guard</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Contact.unsubscribed</span></code> flag</p></td>
+<td><p>Checked in <code class="docutils literal notranslate"><span class="pre">send_email()</span></code> and <code class="docutils literal notranslate"><span class="pre">get_due_followups()</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>LLM Email Polishing</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">llm_connector.call_ollama/openai()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">_polish_followup_body()</span></code> in <code class="docutils literal notranslate"><span class="pre">sequence_manager.py</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Provider Abstraction</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">select_provider()</span></code> → SendGrid or Instantly</p></td>
+<td><p>Switchable via <code class="docutils literal notranslate"><span class="pre">EMAIL_PROVIDER</span></code> env var</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="file-by-file-breakdown">
+<h2>File-by-File Breakdown<a class="headerlink" href="#file-by-file-breakdown" title="Permalink to this heading">#</a></h2>
+<section id="agents-outreach-outreach-agent-py-coordinator">
+<h3>1. <code class="docutils literal notranslate"><span class="pre">agents/outreach/outreach_agent.py</span></code> — Coordinator<a class="headerlink" href="#agents-outreach-outreach-agent-py-coordinator" title="Permalink to this heading">#</a></h3>
+<p>Two public entry points:</p>
+<p><strong><code class="docutils literal notranslate"><span class="pre">process_followup_queue(db_session)</span></code> at line 41</strong> — daily scheduler job:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>1. followup_scheduler.get_due_followups()   → find all follow-ups due today
+2. for each due follow-up:
+     sequence_manager.build_followup_email() → build subject + LLM-polished body
+     _create_followup_draft()               → save new EmailDraft row
+     email_sender.send_email()              → send via provider
+     mark OutreachEvent as &quot;followup_sent&quot;
+     if follow_up_number &lt; 3: schedule next batch
+     if follow_up_number == 3: mark_sequence_complete()
+</pre></div>
+</div>
+<p><strong><code class="docutils literal notranslate"><span class="pre">get_approved_queue(db_session)</span></code> at line 121</strong> — returns all human-approved drafts that haven’t been sent yet. Filters by <code class="docutils literal notranslate"><span class="pre">approved_human=True</span></code> and absence of a <code class="docutils literal notranslate"><span class="pre">sent</span></code> event in <code class="docutils literal notranslate"><span class="pre">outreach_events</span></code>.</p>
+<p><strong><code class="docutils literal notranslate"><span class="pre">check_daily_limit(db_session)</span></code> at line 158</strong> — wraps <code class="docutils literal notranslate"><span class="pre">email_sender.check_daily_limit()</span></code>, adds <code class="docutils literal notranslate"><span class="pre">remaining</span></code> count to the response.</p>
+</section>
+<hr class="docutils" />
+<section id="agents-outreach-email-sender-py-email-delivery">
+<h3>2. <code class="docutils literal notranslate"><span class="pre">agents/outreach/email_sender.py</span></code> — Email Delivery<a class="headerlink" href="#agents-outreach-email-sender-py-email-delivery" title="Permalink to this heading">#</a></h3>
+<p><strong><code class="docutils literal notranslate"><span class="pre">send_email(draft_id,</span> <span class="pre">db_session)</span></code> at line 47</strong> — full send pipeline:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>1. Load EmailDraft from DB
+2. Load Contact from DB
+3. Check contact.unsubscribed → skip if true
+4. check_daily_limit()        → skip if at cap
+5. add_unsubscribe_footer()   → append brand footer + unsubscribe instruction
+6. select_provider()          → &quot;sendgrid&quot; or &quot;instantly&quot;
+7. send_via_sendgrid() or send_via_instantly()
+8. log_send_event()           → write OutreachEvent row (event_type=&quot;sent&quot;)
+</pre></div>
+</div>
+<p><strong><code class="docutils literal notranslate"><span class="pre">send_via_sendgrid()</span></code> at line 119</strong> — uses <strong>SendGrid Python SDK</strong>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">SendGridAPIClient(api_key=...)</span></code></p></li>
+<li><p>Builds <code class="docutils literal notranslate"><span class="pre">Mail</span></code> object with <code class="docutils literal notranslate"><span class="pre">From</span></code>, <code class="docutils literal notranslate"><span class="pre">To</span></code>, <code class="docutils literal notranslate"><span class="pre">PlainTextContent</span></code>, <code class="docutils literal notranslate"><span class="pre">HtmlContent</span></code> (body with <code class="docutils literal notranslate"><span class="pre">\n</span></code> → <code class="docutils literal notranslate"><span class="pre">&lt;br&gt;</span></code>)</p></li>
+<li><p>Enables open tracking + click tracking via <code class="docutils literal notranslate"><span class="pre">TrackingSettings</span></code></p></li>
+<li><p>Returns <code class="docutils literal notranslate"><span class="pre">success=True</span></code> on HTTP 202, extracts <code class="docutils literal notranslate"><span class="pre">X-Message-Id</span></code> header</p></li>
+</ul>
+<p><strong><code class="docutils literal notranslate"><span class="pre">send_via_instantly()</span></code> at line 185</strong> — uses <strong><code class="docutils literal notranslate"><span class="pre">requests.post</span></code></strong> directly:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">{INSTANTLY_API_BASE_URL}/api/v1/lead/add</span></code></p></li>
+<li><p>Payload: <code class="docutils literal notranslate"><span class="pre">{campaign_id,</span> <span class="pre">email,</span> <span class="pre">name,</span> <span class="pre">subject,</span> <span class="pre">body}</span></code></p></li>
+<li><p>Returns <code class="docutils literal notranslate"><span class="pre">message_id</span></code> from response JSON</p></li>
+</ul>
+<p><strong><code class="docutils literal notranslate"><span class="pre">check_daily_limit(db_session)</span></code> at line 245</strong> — SQLAlchemy <code class="docutils literal notranslate"><span class="pre">COUNT</span></code> query on <code class="docutils literal notranslate"><span class="pre">outreach_events</span></code> where <code class="docutils literal notranslate"><span class="pre">event_type=&quot;sent&quot;</span></code> AND <code class="docutils literal notranslate"><span class="pre">event_at</span> <span class="pre">&gt;=</span> <span class="pre">start_of_day</span></code>. Compares against <code class="docutils literal notranslate"><span class="pre">EMAIL_DAILY_LIMIT</span></code> setting.</p>
+<p><strong><code class="docutils literal notranslate"><span class="pre">add_unsubscribe_footer(body)</span></code> at line 234</strong> — appends:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">---</span>
+<span class="p">{</span><span class="n">UNSUBSCRIBE_INSTRUCTION</span><span class="p">}</span>
+<span class="p">{</span><span class="n">TB_BRAND_NAME</span><span class="p">}</span> <span class="o">|</span> <span class="p">{</span><span class="n">TB_OFFICE_LOCATION</span><span class="p">}</span> <span class="o">|</span> <span class="p">{</span><span class="n">TB_PHONE</span><span class="p">}</span>
+</pre></div>
+</div>
+<p><strong><code class="docutils literal notranslate"><span class="pre">log_send_event()</span></code> at line 269</strong> — writes one <code class="docutils literal notranslate"><span class="pre">OutreachEvent</span></code> row with <code class="docutils literal notranslate"><span class="pre">event_type=&quot;sent&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">message_id</span></code> stored in <code class="docutils literal notranslate"><span class="pre">reply_content</span></code>.</p>
+</section>
+<hr class="docutils" />
+<section id="agents-outreach-followup-scheduler-py-follow-up-scheduling">
+<h3>3. <code class="docutils literal notranslate"><span class="pre">agents/outreach/followup_scheduler.py</span></code> — Follow-up Scheduling<a class="headerlink" href="#agents-outreach-followup-scheduler-py-follow-up-scheduling" title="Permalink to this heading">#</a></h3>
+<p><strong><code class="docutils literal notranslate"><span class="pre">schedule_followups(company_id,</span> <span class="pre">contact_id,</span> <span class="pre">draft_id,</span> <span class="pre">send_date,</span> <span class="pre">db_session)</span></code> at line 46:</strong></p>
+<p>Creates <strong>3 <code class="docutils literal notranslate"><span class="pre">OutreachEvent</span></code> rows</strong> (<code class="docutils literal notranslate"><span class="pre">event_type=&quot;scheduled_followup&quot;</span></code>) with dates calculated from configurable day offsets:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Follow-up</p></th>
+<th class="head"><p>Day offset setting</p></th>
+<th class="head"><p>Default</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Follow-up 1</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FOLLOWUP_DAY_1</span></code></p></td>
+<td><p>Day 3</p></td>
+</tr>
+<tr class="row-odd"><td><p>Follow-up 2</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FOLLOWUP_DAY_2</span></code></p></td>
+<td><p>Day 7</p></td>
+</tr>
+<tr class="row-even"><td><p>Follow-up 3</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">FOLLOWUP_DAY_3</span></code></p></td>
+<td><p>Day 14</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong><code class="docutils literal notranslate"><span class="pre">get_due_followups(db_session)</span></code> at line 83</strong> — SQLAlchemy 3-table JOIN (<code class="docutils literal notranslate"><span class="pre">OutreachEvent</span></code> + <code class="docutils literal notranslate"><span class="pre">Company</span></code> + <code class="docutils literal notranslate"><span class="pre">Contact</span></code>):</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">event_type</span> <span class="pre">=</span> <span class="pre">&quot;scheduled_followup&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">next_followup_date</span> <span class="pre">&lt;=</span> <span class="pre">date.today()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sales_alerted</span> <span class="pre">=</span> <span class="pre">False</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">company.status</span> <span class="pre">!=</span> <span class="pre">&quot;replied&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">contact.unsubscribed</span> <span class="pre">=</span> <span class="pre">False</span></code></p></li>
+</ul>
+<p>Returns list of dicts with company name, contact email, follow-up number, next date.</p>
+<p><strong><code class="docutils literal notranslate"><span class="pre">cancel_followups(company_id,</span> <span class="pre">db_session)</span></code> at line 117</strong> — sets future <code class="docutils literal notranslate"><span class="pre">scheduled_followup</span></code> events to <code class="docutils literal notranslate"><span class="pre">cancelled_followup</span></code> for a company (called when reply received).</p>
+<p><strong><code class="docutils literal notranslate"><span class="pre">mark_sequence_complete(company_id,</span> <span class="pre">db_session)</span></code> at line 185</strong> — sets <code class="docutils literal notranslate"><span class="pre">company.status</span> <span class="pre">=</span> <span class="pre">&quot;no_response&quot;</span></code> and cancels any remaining scheduled follow-ups.</p>
+<p><strong><code class="docutils literal notranslate"><span class="pre">check_sequence_status(company_id,</span> <span class="pre">db_session)</span></code> at line 140</strong> — returns:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;last_followup_sent&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="s2">&quot;next_followup_date&quot;</span><span class="p">:</span> <span class="n">date</span><span class="p">(</span><span class="mi">2025</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
+    <span class="s2">&quot;sequence_complete&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="s2">&quot;reply_received&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="agents-outreach-sequence-manager-py-follow-up-content-builder">
+<h3>4. <code class="docutils literal notranslate"><span class="pre">agents/outreach/sequence_manager.py</span></code> — Follow-up Content Builder<a class="headerlink" href="#agents-outreach-sequence-manager-py-follow-up-content-builder" title="Permalink to this heading">#</a></h3>
+<p><strong><code class="docutils literal notranslate"><span class="pre">build_followup_email(original_draft_id,</span> <span class="pre">follow_up_number,</span> <span class="pre">db_session)</span></code> at line 37:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>1. Load original EmailDraft + Company + Contact + CompanyFeature + LeadScore from DB
+2. writer_agent.build_context()             → same context dict the Writer uses
+3. template_engine.load_followup_template() → load followup_day{N}.txt
+4. template_engine.fill_static_fields()    → replace {{placeholders}}
+5. build_followup_subject()                → &quot;Re: {original subject}&quot; or &quot;Following up one last time&quot;
+6. _polish_followup_body()                 → LLM polishes the filled template
+</pre></div>
+</div>
+<p><strong><code class="docutils literal notranslate"><span class="pre">build_followup_subject()</span></code> at line 108:</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Follow-up #</p></th>
+<th class="head"><p>Subject</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1 or 2</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Re:</span> <span class="pre">{original</span> <span class="pre">subject}</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;Following</span> <span class="pre">up</span> <span class="pre">one</span> <span class="pre">last</span> <span class="pre">time&quot;</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong><code class="docutils literal notranslate"><span class="pre">_polish_followup_body()</span></code> at line 123</strong> — sends the filled template to LLM:</p>
+<ul class="simple">
+<li><p>Uses <code class="docutils literal notranslate"><span class="pre">llm_connector.call_ollama()</span></code> or <code class="docutils literal notranslate"><span class="pre">call_openai()</span></code> based on <code class="docutils literal notranslate"><span class="pre">LLM_PROVIDER</span></code></p></li>
+<li><p>Prompt instructs: <em>“Polish this follow-up. Keep it short and natural. Don’t invent facts.”</em></p></li>
+<li><p>Falls back to filled template if LLM not available</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="follow-up-sequence-timeline">
+<h2>Follow-up Sequence Timeline<a class="headerlink" href="#follow-up-sequence-timeline" title="Permalink to this heading">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Day 0:  First email sent (human approved)
+         → schedule_followups() creates 3 OutreachEvent rows
+                ↓
+Day 3:  Follow-up 1 — &quot;Re: {subject}&quot; — short reminder
+                ↓
+Day 7:  Follow-up 2 — &quot;Re: {subject}&quot; — add social proof or different angle
+                ↓
+Day 14: Follow-up 3 — &quot;Following up one last time&quot; — final touch
+         → mark_sequence_complete() → company.status = &quot;no_response&quot;
+
+At any point:
+  Reply received → Tracker cancels remaining follow-ups
+  Unsubscribe    → contact.unsubscribed=True → all future sends skipped
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="what-gets-written-to-db">
+<h2>What Gets Written to DB<a class="headerlink" href="#what-gets-written-to-db" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Table</p></th>
+<th class="head"><p>Written by</p></th>
+<th class="head"><p>Contents</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">outreach_events</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">log_send_event()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">event_type=&quot;sent&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">event_at</span></code>, <code class="docutils literal notranslate"><span class="pre">message_id</span></code> in <code class="docutils literal notranslate"><span class="pre">reply_content</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">outreach_events</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">schedule_followups()</span></code></p></td>
+<td><p>3 rows <code class="docutils literal notranslate"><span class="pre">event_type=&quot;scheduled_followup&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">next_followup_date</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">outreach_events</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cancel_followups()</span></code></p></td>
+<td><p>Updates rows to <code class="docutils literal notranslate"><span class="pre">event_type=&quot;cancelled_followup&quot;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">email_drafts</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">_create_followup_draft()</span></code></p></td>
+<td><p>New draft row per follow-up with <code class="docutils literal notranslate"><span class="pre">template_used=&quot;followup_dayN&quot;</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">companies</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mark_sequence_complete()</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">status</span> <span class="pre">=</span> <span class="pre">&quot;no_response&quot;</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="full-data-flow">
+<h2>Full Data Flow<a class="headerlink" href="#full-data-flow" title="Permalink to this heading">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>--- First Email ---
+get_approved_queue()              ← EmailDraft where approved_human=True, no sent event
+  └─ for each draft:
+       email_sender.send_email()
+         ├─ check contact.unsubscribed
+         ├─ check_daily_limit()
+         ├─ add_unsubscribe_footer()
+         ├─ send_via_sendgrid() or send_via_instantly()
+         └─ log_send_event()      → OutreachEvent(event_type=&quot;sent&quot;)
+       followup_scheduler.schedule_followups()  → 3 OutreachEvent rows
+
+--- Daily Follow-up Job ---
+process_followup_queue()
+  └─ followup_scheduler.get_due_followups()    ← 3-table JOIN, due today
+       └─ for each due follow-up:
+            sequence_manager.build_followup_email()
+              ├─ load original draft + company + contact from DB
+              ├─ template_engine.fill_static_fields()
+              └─ _polish_followup_body()        ← LLM (Ollama or OpenAI)
+            _create_followup_draft()            → new EmailDraft row
+            email_sender.send_email()           → send + log event
+            if follow_up_number == 3:
+              mark_sequence_complete()          → company.status=&quot;no_response&quot;
+</pre></div>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./chapters/Agents"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="writer_deep_dive.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Writer Agent</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="tracker_deep_dive.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Tracker Agent</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tech-stack-used">Tech Stack Used</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#agentic-concepts-used">Agentic Concepts Used</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#file-by-file-breakdown">File-by-File Breakdown</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-outreach-outreach-agent-py-coordinator">1. <code class="docutils literal notranslate"><span class="pre">agents/outreach/outreach_agent.py</span></code> — Coordinator</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-outreach-email-sender-py-email-delivery">2. <code class="docutils literal notranslate"><span class="pre">agents/outreach/email_sender.py</span></code> — Email Delivery</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-outreach-followup-scheduler-py-follow-up-scheduling">3. <code class="docutils literal notranslate"><span class="pre">agents/outreach/followup_scheduler.py</span></code> — Follow-up Scheduling</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-outreach-sequence-manager-py-follow-up-content-builder">4. <code class="docutils literal notranslate"><span class="pre">agents/outreach/sequence_manager.py</span></code> — Follow-up Content Builder</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#follow-up-sequence-timeline">Follow-up Sequence Timeline</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-gets-written-to-db">What Gets Written to DB</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#full-data-flow">Full Data Flow</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Harshal Patil
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2022.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

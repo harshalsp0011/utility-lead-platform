@@ -1,0 +1,1014 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Agentic Design &#8212; Utility Lead Intelligence Platform</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'chapters/agentic_design';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Agents: Deep Technical Walkthrough" href="Agents/index.html" />
+    <link rel="prev" title="System Architecture" href="system_architecture.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Utility Lead Intelligence Platform</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../index.html">
+                    Utility Lead Intelligence Platform
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="system_architecture.html">System Architecture</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Agentic Design</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="Agents/index.html">Agents: Deep Technical Walkthrough</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="Agents/scout_deep_dive.html">Scout Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Agents/analyst_deep_dive.html">Analyst Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Agents/writer_deep_dive.html">Writer Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Agents/outreach_deep_dive.html">Outreach Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Agents/tracker_deep_dive.html">Tracker Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Agents/orchestrator_deep_dive.html">Orchestrator Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Agents/chat_agent_deep_dive.html">Chat Agent</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/chapters/agentic_design.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Agentic Design</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-agentic-means-here">What “Agentic” Means Here</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#agentic-concepts-implemented">Agentic Concepts Implemented</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#full-pipeline-where-agentic-behaviors-fire">Full Pipeline — Where Agentic Behaviors Fire</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#concept-deep-dives">Concept Deep Dives</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tool-use-react-loop-chat-agent">Tool Use + ReAct Loop (Chat Agent)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#waterfall-with-graceful-degradation-contact-enrichment">Waterfall with Graceful Degradation (Contact Enrichment)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#context-aware-generation-writer">Context-Aware Generation (Writer)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#self-critique-iterative-refinement-writer-critic">Self-Critique + Iterative Refinement (Writer + Critic)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#uncertainty-flagging-writer">Uncertainty Flagging (Writer)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#human-in-the-loop-hitl-gates">Human-in-the-Loop (HITL) Gates</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#learning-from-feedback-writer-tracker">Learning from Feedback (Writer + Tracker)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#observable-execution-all-agents">Observable Execution (All Agents)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-not-agentic-intentionally">What Is NOT Agentic (Intentionally)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#technology-stack-for-agentic-features">Technology Stack for Agentic Features</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#agentic-maturity-by-agent">Agentic Maturity by Agent</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="agentic-design">
+<h1>Agentic Design<a class="headerlink" href="#agentic-design" title="Permalink to this heading">#</a></h1>
+<blockquote>
+<div><p>How and why this platform uses LLM-based reasoning instead of fixed automation rules.</p>
+</div></blockquote>
+<hr class="docutils" />
+<section id="what-agentic-means-here">
+<h2>What “Agentic” Means Here<a class="headerlink" href="#what-agentic-means-here" title="Permalink to this heading">#</a></h2>
+<p>A traditional automation system executes fixed steps in a fixed order:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Automation:   User → fixed code → fixed query → fixed formula → result
+</pre></div>
+</div>
+<p>An agentic system uses an LLM as a <strong>reasoning and decision layer</strong> on top of deterministic tools (APIs, DB queries, math):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Agentic:   User → LLM reasons about intent
+                → decides which tools to call and in what order
+                → executes tools (APIs, DB, math — deterministic)
+                → evaluates result quality
+                → loops if result is not good enough
+                → returns result
+</pre></div>
+</div>
+<p><strong>Key principle:</strong> LLM never does math. LLM never calls APIs directly. LLM classifies, infers, decides, evaluates, and generates text. Everything else is deterministic code.</p>
+</section>
+<hr class="docutils" />
+<section id="agentic-concepts-implemented">
+<h2>Agentic Concepts Implemented<a class="headerlink" href="#agentic-concepts-implemented" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Concept</p></th>
+<th class="head"><p>Plain English</p></th>
+<th class="head"><p>Where Used</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Tool Use</strong></p></td>
+<td><p>LLM picks and calls tools based on intent</p></td>
+<td><p>Chat Agent</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>ReAct Loop</strong></p></td>
+<td><p>Reason → Act → Observe → repeat until done</p></td>
+<td><p>Chat Agent</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Confidence-Gated Routing</strong></p></td>
+<td><p>LLM rates its own certainty — low confidence triggers clarification</p></td>
+<td><p>Chat Agent</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Context Carry-Forward</strong></p></td>
+<td><p>Multi-turn memory across chat messages</p></td>
+<td><p>Chat Agent</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Dynamic Query Planning</strong></p></td>
+<td><p>LLM generates search variants, not one fixed string</p></td>
+<td><p>Scout</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Waterfall with Graceful Degradation</strong></p></td>
+<td><p>Try provider A → B → C → fallback, never crash</p></td>
+<td><p>Enrichment</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Context-Aware Generation</strong></p></td>
+<td><p>LLM reads company signals, reasons before writing</p></td>
+<td><p>Writer</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Self-Critique / Reflection</strong></p></td>
+<td><p>Agent evaluates its own output on a rubric</p></td>
+<td><p>Writer + Critic</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Iterative Refinement</strong></p></td>
+<td><p>Rewrite loop — max 2 attempts with targeted feedback</p></td>
+<td><p>Writer</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Uncertainty Flagging</strong></p></td>
+<td><p>Agent signals when it can’t reach confidence threshold</p></td>
+<td><p>Writer</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Human-in-the-Loop (HITL)</strong></p></td>
+<td><p>Human approval gates before irreversible actions</p></td>
+<td><p>Leads + Emails</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Observable Execution</strong></p></td>
+<td><p>Live counters, run tracking, completion notifications</p></td>
+<td><p>All agents</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Learning from Feedback</strong></p></td>
+<td><p>Historical reply rates bias future angle selection</p></td>
+<td><p>Writer + Tracker</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="full-pipeline-where-agentic-behaviors-fire">
+<h2>Full Pipeline — Where Agentic Behaviors Fire<a class="headerlink" href="#full-pipeline-where-agentic-behaviors-fire" title="Permalink to this heading">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Scout
+  │  [Tool Use] — Chat LLM picks search_companies tool from user intent
+  │  [Dynamic Query] — LLM builds 3–5 query variants + quality retry loop
+  ▼
+companies table
+
+Analyst
+  │  [LLM Scoring] — LLM narrates score_reason from company signals
+  │  [Data Inference] — Apollo fallback when employee_count missing
+  ▼
+lead_scores  +  company_features
+
+    ┌─── [HITL Gate 1] ─────────────────────────────────────────┐
+    │  Human reviews leads on /leads page                       │
+    │  Approve → company.status = &quot;approved&quot;                    │
+    │  Reject → company excluded from Writer                    │
+    └───────────────────────────────────────────────────────────┘
+
+Contact Enrichment
+  │  [Waterfall] — Hunter → Apollo → Scraper → Serper →
+  │               Snov → Prospeo → ZeroBounce → Permutation
+  │  [Skip Flags] — _hunter_blocked / _apollo_blocked skip after 429/403
+  │  [Quality Gates] — placeholder filter, domain integrity check
+  ▼
+contacts table
+
+Writer
+  │  [Learning] — get_best_angle() reads email_win_rate
+  │  [Context-Aware Generation] — LLM reasons about angle before writing
+  │  [Self-Critique] — Critic LLM scores draft 0–10
+  │  [Iterative Refinement] — rewrite loop (max 2)
+  │  [Uncertainty Flagging] — low_confidence=True if never reaches 7/10
+  │  [Observable Execution] — AgentRun.drafts_created counter
+  ▼
+email_drafts table
+
+    ┌─── [HITL Gate 2] ─────────────────────────────────────────┐
+    │  Human reviews drafts on /emails page                     │
+    │  Approve → email sent immediately via SendGrid            │
+    │  Reject → draft deleted, company reset to &quot;approved&quot;      │
+    │  Edit+Approve → human edits, then sends                   │
+    │  Regenerate → new Writer+Critic cycle                     │
+    └───────────────────────────────────────────────────────────┘
+
+Outreach
+  │  Send approved first emails + 3-touch follow-up sequence (Day 3/7/14)
+  │  [Guardrails] — unsubscribe block, daily send cap, no double-send
+  ▼
+outreach_events table
+
+Tracker
+  │  [Reply Classification] — LLM intent + rule-based fallback
+  │  [Alert] — hot-lead notification to sales team on positive reply
+  │  [Learning Write] — win rate updated on reply → feeds back to Writer
+  ▼
+email_win_rate  (feeds back to Writer on next run)
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="concept-deep-dives">
+<h2>Concept Deep Dives<a class="headerlink" href="#concept-deep-dives" title="Permalink to this heading">#</a></h2>
+<section id="tool-use-react-loop-chat-agent">
+<h3>Tool Use + ReAct Loop (Chat Agent)<a class="headerlink" href="#tool-use-react-loop-chat-agent" title="Permalink to this heading">#</a></h3>
+<p><strong>Concept:</strong> LangChain ReAct (Reason + Act) — the LLM reasons about user intent, picks a tool, observes the result, and decides whether to call another tool or respond.</p>
+<p><strong>Tech:</strong> LangChain <code class="docutils literal notranslate"><span class="pre">create_agent</span></code>, <code class="docutils literal notranslate"><span class="pre">&#64;tool</span></code> decorator, <code class="docutils literal notranslate"><span class="pre">SystemMessage</span></code> / <code class="docutils literal notranslate"><span class="pre">HumanMessage</span></code></p>
+<p><strong>File:</strong> <code class="docutils literal notranslate"><span class="pre">agents/chat_agent.py</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>User: &quot;find 10 healthcare companies in Buffalo&quot;
+  ↓
+LLM reasons: &quot;user wants to discover companies → call search_companies&quot;
+  ↓
+Calls: search_companies(industry=&quot;healthcare&quot;, location=&quot;Buffalo NY&quot;, count=10)
+  ↓
+Observes: 10 companies saved to DB
+  ↓
+LLM responds: &quot;Found 10 healthcare companies in Buffalo&quot;
+</pre></div>
+</div>
+<p>Three-tier routing decides how much LLM power to use:</p>
+<ul class="simple">
+<li><p><strong>Tier 1 — Conversational:</strong> “thanks” → direct reply, no tools</p></li>
+<li><p><strong>Tier 2 — Intent parser:</strong> simple data query → Python extracts filters, calls tool directly</p></li>
+<li><p><strong>Tier 3 — Agent loop:</strong> complex/multi-step → full LangChain ReAct</p></li>
+</ul>
+<p><strong>Why:</strong> Tier 1 and 2 avoid unnecessary LLM calls — faster, cheaper, more reliable.</p>
+<p><strong>Confidence-Gated Routing:</strong> <code class="docutils literal notranslate"><span class="pre">_extract_intent()</span></code> makes one LLM call per message and returns a <code class="docutils literal notranslate"><span class="pre">confidence</span></code> value (0.0–1.0). If confidence &lt; 0.65, the agent asks the user to clarify instead of guessing. This prevents wrong tool calls from ambiguous messages.</p>
+</section>
+<hr class="docutils" />
+<section id="waterfall-with-graceful-degradation-contact-enrichment">
+<h3>Waterfall with Graceful Degradation (Contact Enrichment)<a class="headerlink" href="#waterfall-with-graceful-degradation-contact-enrichment" title="Permalink to this heading">#</a></h3>
+<p><strong>Concept:</strong> A sequence of providers where each failure silently falls through to the next. No single provider crashing stops the pipeline.</p>
+<p><strong>Tech:</strong> Python <code class="docutils literal notranslate"><span class="pre">try/except</span></code> per step, module-level skip flags, ordered fallback chain</p>
+<p><strong>File:</strong> <code class="docutils literal notranslate"><span class="pre">agents/analyst/enrichment_client.py</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="n">contacts</span> <span class="o">=</span> <span class="n">find_via_hunter</span><span class="p">(</span><span class="n">domain</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+    <span class="k">pass</span>  <span class="c1"># fall through to Apollo</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">contacts</span> <span class="o">=</span> <span class="n">find_via_apollo</span><span class="p">(</span><span class="n">domain</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+    <span class="k">pass</span>  <span class="c1"># fall through to scraper</span>
+<span class="c1"># ... 8 steps total</span>
+</pre></div>
+</div>
+<p><strong>Skip flags</strong> (<code class="docutils literal notranslate"><span class="pre">_hunter_blocked</span></code>, <code class="docutils literal notranslate"><span class="pre">_apollo_blocked</span></code>): once a provider returns 429/403, all remaining companies in the run skip that provider — no wasted API calls.</p>
+<p>The 8-step waterfall:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Step</p></th>
+<th class="head"><p>Source</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p><a class="reference external" href="http://Hunter.io">Hunter.io</a></p></td>
+<td><p>Domain email search — 50 searches/month</p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p><a class="reference external" href="http://Apollo.io">Apollo.io</a></p></td>
+<td><p>People search by company domain</p></td>
+</tr>
+<tr class="row-even"><td><p>3</p></td>
+<td><p>Website scraper</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mailto:</span></code> + regex on /contact, /about</p></td>
+</tr>
+<tr class="row-odd"><td><p>4</p></td>
+<td><p>Serper</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;CFO</span> <span class="pre">site:{domain}&quot;</span></code> Google result</p></td>
+</tr>
+<tr class="row-even"><td><p>5</p></td>
+<td><p><a class="reference external" href="http://Snov.io">Snov.io</a></p></td>
+<td><p>Company domain bulk search</p></td>
+</tr>
+<tr class="row-odd"><td><p>6</p></td>
+<td><p>Prospeo</p></td>
+<td><p>LinkedIn-backed two-step lookup</p></td>
+</tr>
+<tr class="row-even"><td><p>7</p></td>
+<td><p>ZeroBounce</p></td>
+<td><p>Email verification + contact</p></td>
+</tr>
+<tr class="row-odd"><td><p>8</p></td>
+<td><p>Permutation</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">firstname.lastname&#64;domain</span></code> patterns</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Why:</strong> Hunter 429 and Apollo 403 used to crash the entire enrichment run. Now they fail silently — every company gets a best-effort result from whatever provider is available.</p>
+</section>
+<hr class="docutils" />
+<section id="context-aware-generation-writer">
+<h3>Context-Aware Generation (Writer)<a class="headerlink" href="#context-aware-generation-writer" title="Permalink to this heading">#</a></h3>
+<p><strong>Concept:</strong> Instead of filling template placeholders, the LLM reads company context and decides the angle, tone, and content before writing a single word.</p>
+<p><strong>File:</strong> <code class="docutils literal notranslate"><span class="pre">agents/writer/writer_agent.py</span></code> — <code class="docutils literal notranslate"><span class="pre">_WRITER_PROMPT</span></code>, <code class="docutils literal notranslate"><span class="pre">_write_draft()</span></code></p>
+<p>The prompt contains:</p>
+<ul class="simple">
+<li><p>Company name, industry, city, state, site count</p></li>
+<li><p>Estimated annual savings (low / mid / high from <code class="docutils literal notranslate"><span class="pre">company_features</span></code>)</p></li>
+<li><p>Whether the state is deregulated</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">score_reason</span></code> — the Analyst’s narrative (e.g. <em>“3-site healthcare org in deregulated NY, ~$180k annual savings potential”</em>)</p></li>
+<li><p>Contact first name and title</p></li>
+<li><p>Win rate hint: which angle has the highest reply rate in this industry</p></li>
+</ul>
+<p>The LLM outputs <code class="docutils literal notranslate"><span class="pre">REASONING:</span></code> → <code class="docutils literal notranslate"><span class="pre">ANGLE:</span></code> → <code class="docutils literal notranslate"><span class="pre">SUBJECT:</span></code> → <code class="docutils literal notranslate"><span class="pre">BODY:</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>REASONING: Healthcare company with 3 sites in deregulated NY — electricity cost
+           is the primary lever. VP of Operations will care about budget
+           predictability more than raw savings. Lead with audit offer.
+ANGLE: audit_offer
+SUBJECT: Free energy audit for Regional General Hospital — 3 sites, $180k opportunity
+BODY: Hi Sarah, ...
+</pre></div>
+</div>
+<p><strong>Why:</strong> Template-filling produces the same email for every company. Context-aware generation produces emails that read like someone actually researched the company.</p>
+</section>
+<hr class="docutils" />
+<section id="self-critique-iterative-refinement-writer-critic">
+<h3>Self-Critique + Iterative Refinement (Writer + Critic)<a class="headerlink" href="#self-critique-iterative-refinement-writer-critic" title="Permalink to this heading">#</a></h3>
+<p><strong>Concept:</strong> A second LLM call evaluates the first LLM’s output on a rubric. If quality is below threshold, the writer rewrites with the specific feedback. Max 2 loops.</p>
+<p><strong>Files:</strong> <code class="docutils literal notranslate"><span class="pre">agents/writer/critic_agent.py</span></code>, <code class="docutils literal notranslate"><span class="pre">agents/writer/writer_agent.py</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Write draft (LLM call 1)
+  ↓
+Critic evaluates (LLM call 2):
+  score=6, feedback=&quot;No savings figure. Subject too generic.&quot;
+  ↓
+Score &lt; 7 → rewrite with feedback (LLM call 3)
+  ↓
+Critic re-evaluates (LLM call 4):
+  score=8, passed=True → save draft
+</pre></div>
+</div>
+<p><strong>Critic rubric</strong> (5 criteria × 0–2 points = 10 max):</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Criterion</p></th>
+<th class="head"><p>Pass condition</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Personalised</p></td>
+<td><p>Mentions company name or a specific detail</p></td>
+</tr>
+<tr class="row-odd"><td><p>Specific number</p></td>
+<td><p>Contains a dollar figure, not just “significant savings”</p></td>
+</tr>
+<tr class="row-even"><td><p>Clear CTA</p></td>
+<td><p>One specific ask — call, audit, or reply</p></td>
+</tr>
+<tr class="row-odd"><td><p>Sounds human</p></td>
+<td><p>Reads like a person wrote it</p></td>
+</tr>
+<tr class="row-even"><td><p>Subject line</p></td>
+<td><p>Specific to this company, not generic</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Threshold:</strong> ≥7 to pass. &lt;7 → rewrite. Still &lt;7 after 2 rewrites → <code class="docutils literal notranslate"><span class="pre">low_confidence=True</span></code>.</p>
+<p><strong>Why:</strong> Without evaluation, whatever the LLM produces on the first try gets sent. The Critic catches generic or vague drafts before a human wastes time reviewing them. In practice, ~60–70% of drafts pass on first try.</p>
+</section>
+<hr class="docutils" />
+<section id="uncertainty-flagging-writer">
+<h3>Uncertainty Flagging (Writer)<a class="headerlink" href="#uncertainty-flagging-writer" title="Permalink to this heading">#</a></h3>
+<p><strong>Concept:</strong> When the agent cannot reach its own quality threshold after all retries, it explicitly signals uncertainty rather than silently passing a low-quality result.</p>
+<p><strong>Tech:</strong> <code class="docutils literal notranslate"><span class="pre">low_confidence</span></code> boolean on <code class="docutils literal notranslate"><span class="pre">EmailDraft</span></code>, warning banner in UI</p>
+<p><strong>File:</strong> <code class="docutils literal notranslate"><span class="pre">agents/writer/writer_agent.py</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">low_confidence</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">critic_result</span><span class="p">[</span><span class="s2">&quot;passed&quot;</span><span class="p">]</span>  <span class="c1"># True if never passed after 2 rewrites</span>
+</pre></div>
+</div>
+<p>The Email Review page shows a red warning banner on <code class="docutils literal notranslate"><span class="pre">low_confidence=True</span></code> drafts so the human knows to review carefully.</p>
+<p><strong>Why:</strong> Silently saving a 5/10 draft misleads the reviewer. Flagging it says: “the AI struggled here — pay extra attention or regenerate.”</p>
+</section>
+<hr class="docutils" />
+<section id="human-in-the-loop-hitl-gates">
+<h3>Human-in-the-Loop (HITL) Gates<a class="headerlink" href="#human-in-the-loop-hitl-gates" title="Permalink to this heading">#</a></h3>
+<p><strong>Concept:</strong> The pipeline pauses at two checkpoints for human review before irreversible actions.</p>
+<p><strong>Tech:</strong> <code class="docutils literal notranslate"><span class="pre">approved_human</span></code> field on <code class="docutils literal notranslate"><span class="pre">LeadScore</span></code> and <code class="docutils literal notranslate"><span class="pre">EmailDraft</span></code>, <code class="docutils literal notranslate"><span class="pre">HumanApprovalRequest</span></code> table, SendGrid notification emails</p>
+<p><strong>Gate 1 — Lead Approval</strong> (after Analyst scores):</p>
+<ul class="simple">
+<li><p>Human reviews leads on <code class="docutils literal notranslate"><span class="pre">/leads</span></code> page — score bar, tier badge, savings estimate</p></li>
+<li><p>Approve → <code class="docutils literal notranslate"><span class="pre">company.status='approved'</span></code>, <code class="docutils literal notranslate"><span class="pre">lead_scores.approved_human=True</span></code></p></li>
+<li><p>Reject → <code class="docutils literal notranslate"><span class="pre">company.status='archived'</span></code></p></li>
+<li><p>Notification email sent to <code class="docutils literal notranslate"><span class="pre">ALERT_EMAIL</span></code> with scored lead list + link</p></li>
+</ul>
+<p><strong>Gate 2 — Draft Approval</strong> (after Writer generates):</p>
+<ul class="simple">
+<li><p>Human reviews drafts on <code class="docutils literal notranslate"><span class="pre">/emails</span></code> page — Approve &amp; Send | Edit + Approve | Reject | Regenerate</p></li>
+<li><p>Approve triggers immediate send via SendGrid</p></li>
+<li><p>Reject → draft deleted, company resets to <code class="docutils literal notranslate"><span class="pre">approved</span></code> (re-enters Writer queue)</p></li>
+<li><p>Notification email sent to <code class="docutils literal notranslate"><span class="pre">ALERT_EMAIL</span></code> with draft list + Critic scores + link</p></li>
+</ul>
+<p><strong>Why:</strong> LLM output is probabilistic — it can produce confident but wrong results. A misaddressed email or incorrect facts could damage a sales relationship. Human gates ensure no external action happens without sign-off.</p>
+</section>
+<hr class="docutils" />
+<section id="learning-from-feedback-writer-tracker">
+<h3>Learning from Feedback (Writer + Tracker)<a class="headerlink" href="#learning-from-feedback-writer-tracker" title="Permalink to this heading">#</a></h3>
+<p><strong>Concept:</strong> The system tracks which email angles generate replies and biases future generation toward what has worked.</p>
+<p><strong>Tech:</strong> <code class="docutils literal notranslate"><span class="pre">email_win_rate</span></code> table, <code class="docutils literal notranslate"><span class="pre">get_best_angle()</span></code> in Writer, Tracker updates on reply events</p>
+<p><strong>Files:</strong> <code class="docutils literal notranslate"><span class="pre">agents/writer/writer_agent.py</span></code> — <code class="docutils literal notranslate"><span class="pre">get_best_angle()</span></code>, <code class="docutils literal notranslate"><span class="pre">agents/tracker/tracker_agent.py</span></code> — <code class="docutils literal notranslate"><span class="pre">process_event()</span></code></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Writer picks angle &quot;audit_offer&quot; for Healthcare company
+  ↓
+email_drafts.template_used = &quot;audit_offer&quot;
+  ↓
+Prospect replies positively
+  ↓
+Tracker: email_win_rate (industry=&quot;Healthcare&quot;, template_id=&quot;audit_offer&quot;)
+  → replies_received += 1
+  → reply_rate recalculated
+  ↓
+Next Writer run for Healthcare:
+  get_best_angle(&quot;Healthcare&quot;) returns &quot;audit_offer&quot;
+  → win rate hint injected into prompt
+  → LLM prefers this angle unless company signals suggest otherwise
+</pre></div>
+</div>
+<p><strong>Cold start protection:</strong> Minimum 5 emails sent before win rate data is trusted (<code class="docutils literal notranslate"><span class="pre">_WIN_RATE_MIN_SENT</span> <span class="pre">=</span> <span class="pre">5</span></code>). Below this, the hint is omitted and LLM picks freely.</p>
+<p><strong>The 5 trackable angles:</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Angle</p></th>
+<th class="head"><p>Lead with</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cost_savings</span></code></p></td>
+<td><p>Dollar savings estimate up front</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">audit_offer</span></code></p></td>
+<td><p>Free no-commitment energy audit</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">risk_reduction</span></code></p></td>
+<td><p>Utility cost volatility / budget risk</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">multi_site_savings</span></code></p></td>
+<td><p>Multi-location efficiency opportunity</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">deregulation_opportunity</span></code></p></td>
+<td><p>Open energy market / supplier switch</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="observable-execution-all-agents">
+<h3>Observable Execution (All Agents)<a class="headerlink" href="#observable-execution-all-agents" title="Permalink to this heading">#</a></h3>
+<p><strong>Concept:</strong> Every agent run is tracked in the database with live counters so humans can see progress and diagnose failures.</p>
+<p><strong>Tech:</strong> <code class="docutils literal notranslate"><span class="pre">agent_runs</span></code> + <code class="docutils literal notranslate"><span class="pre">agent_run_logs</span></code> tables, <code class="docutils literal notranslate"><span class="pre">/pipeline/run/{run_id}</span></code> endpoint</p>
+<p>What gets tracked per run:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">status</span></code>: <code class="docutils literal notranslate"><span class="pre">writer_running</span></code> → <code class="docutils literal notranslate"><span class="pre">writer_awaiting_approval</span></code> (or <code class="docutils literal notranslate"><span class="pre">failed</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">current_stage</span></code>: updated at each step</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">companies_found</span></code>, <code class="docutils literal notranslate"><span class="pre">companies_scored</span></code>, <code class="docutils literal notranslate"><span class="pre">drafts_created</span></code>: live counters</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">error_message</span></code>: populated on failure</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">agent_run_logs</span></code>: one row per tool call with duration_ms and output_summary</p></li>
+</ul>
+<p><strong>Why:</strong> Without run tracking, the frontend can only say “running…” or “done”. With <code class="docutils literal notranslate"><span class="pre">agent_runs</span></code>, the Triggers page shows “3/8 drafts created” in real time and failed runs can be diagnosed.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="what-is-not-agentic-intentionally">
+<h2>What Is NOT Agentic (Intentionally)<a class="headerlink" href="#what-is-not-agentic-intentionally" title="Permalink to this heading">#</a></h2>
+<p>Some parts deliberately stay rule-based and deterministic:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Component</p></th>
+<th class="head"><p>Why it stays rule-based</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Score formula</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Score</span> <span class="pre">=</span> <span class="pre">(Recovery</span> <span class="pre">×</span> <span class="pre">0.40)</span> <span class="pre">+</span> <span class="pre">...</span></code> — LLM would hallucinate numbers</p></td>
+</tr>
+<tr class="row-odd"><td><p>DB queries</p></td>
+<td><p>SQL is deterministic and auditable — LLM-generated SQL is unpredictable</p></td>
+</tr>
+<tr class="row-even"><td><p>Email sending</p></td>
+<td><p>No reasoning needed — if approved, send</p></td>
+</tr>
+<tr class="row-odd"><td><p>Score thresholds</p></td>
+<td><p>Business rules (≥70 = high) — not a judgment call</p></td>
+</tr>
+<tr class="row-even"><td><p>Phone lookup</p></td>
+<td><p>Waterfall of structured API responses — no reasoning needed</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Principle:</strong> Use LLM where reasoning, inference, or language generation adds value. Use deterministic code where correctness and auditability matter more.</p>
+</section>
+<hr class="docutils" />
+<section id="technology-stack-for-agentic-features">
+<h2>Technology Stack for Agentic Features<a class="headerlink" href="#technology-stack-for-agentic-features" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Feature</p></th>
+<th class="head"><p>Library / Tool</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Chat ReAct loop</p></td>
+<td><p>LangChain <code class="docutils literal notranslate"><span class="pre">create_agent</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Writer + Critic LLM calls</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">llm_connector.py</span></code> wrapping Ollama / OpenAI</p></td>
+</tr>
+<tr class="row-even"><td><p>LLM (default)</p></td>
+<td><p>Ollama + <code class="docutils literal notranslate"><span class="pre">llama3.2</span></code> (local — zero cost, data stays on-machine)</p></td>
+</tr>
+<tr class="row-odd"><td><p>LLM (optional)</p></td>
+<td><p>OpenAI <code class="docutils literal notranslate"><span class="pre">gpt-4o-mini</span></code> — faster, ~$0.0015/email</p></td>
+</tr>
+<tr class="row-even"><td><p>Run tracking</p></td>
+<td><p>SQLAlchemy + <code class="docutils literal notranslate"><span class="pre">agent_runs</span></code> table</p></td>
+</tr>
+<tr class="row-odd"><td><p>HITL notifications</p></td>
+<td><p>SendGrid (<code class="docutils literal notranslate"><span class="pre">email_notifier.py</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p>Learning memory</p></td>
+<td><p>PostgreSQL <code class="docutils literal notranslate"><span class="pre">email_win_rate</span></code> table</p></td>
+</tr>
+<tr class="row-odd"><td><p>Waterfall state</p></td>
+<td><p>Module-level flags (<code class="docutils literal notranslate"><span class="pre">_hunter_blocked</span></code>) — process-scoped, zero overhead</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="agentic-maturity-by-agent">
+<h2>Agentic Maturity by Agent<a class="headerlink" href="#agentic-maturity-by-agent" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Agent</p></th>
+<th class="head"><p>Agentic Capabilities</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Chat</strong></p></td>
+<td><p>Full ReAct loop, tool use, confidence-gated routing, multi-turn context carry-forward</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Writer</strong></p></td>
+<td><p>Context-aware generation, Critic self-critique loop, win-rate learning, uncertainty flagging</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Analyst</strong></p></td>
+<td><p>LLM industry inference, data gap detection, re-enrichment loop (max 2), score narration</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Scout</strong></p></td>
+<td><p>LLM query planning (3–5 variants), multi-source search, LLM deduplication, source quality learning</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Tracker</strong></p></td>
+<td><p>LLM + rule-based reply classification, sales alerts, daily stuck-lead health checks</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Outreach</strong></p></td>
+<td><p>3-touch follow-up sequence, daily cap guardrail, unsubscribe guard, LLM follow-up polish</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Orchestrator</strong></p></td>
+<td><p>Pipeline sequencing, task dispatch + retry, HITL gate enforcement, health monitoring</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./chapters"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="system_architecture.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">System Architecture</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="Agents/index.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Agents: Deep Technical Walkthrough</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-agentic-means-here">What “Agentic” Means Here</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#agentic-concepts-implemented">Agentic Concepts Implemented</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#full-pipeline-where-agentic-behaviors-fire">Full Pipeline — Where Agentic Behaviors Fire</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#concept-deep-dives">Concept Deep Dives</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tool-use-react-loop-chat-agent">Tool Use + ReAct Loop (Chat Agent)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#waterfall-with-graceful-degradation-contact-enrichment">Waterfall with Graceful Degradation (Contact Enrichment)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#context-aware-generation-writer">Context-Aware Generation (Writer)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#self-critique-iterative-refinement-writer-critic">Self-Critique + Iterative Refinement (Writer + Critic)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#uncertainty-flagging-writer">Uncertainty Flagging (Writer)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#human-in-the-loop-hitl-gates">Human-in-the-Loop (HITL) Gates</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#learning-from-feedback-writer-tracker">Learning from Feedback (Writer + Tracker)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#observable-execution-all-agents">Observable Execution (All Agents)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-not-agentic-intentionally">What Is NOT Agentic (Intentionally)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#technology-stack-for-agentic-features">Technology Stack for Agentic Features</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#agentic-maturity-by-agent">Agentic Maturity by Agent</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Harshal Patil
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2022.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

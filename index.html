@@ -1,0 +1,665 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Utility Lead Intelligence Platform &#8212; Utility Lead Intelligence Platform</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" href="_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/clipboard.min.js"></script>
+    <script src="_static/copybutton.js"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'index';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="System Architecture" href="chapters/system_architecture.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="#">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Utility Lead Intelligence Platform</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1 current active">
+                <a class="reference internal" href="#">
+                    Utility Lead Intelligence Platform
+                </a>
+            </li>
+        </ul>
+        <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="chapters/system_architecture.html">System Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapters/agentic_design.html">Agentic Design</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="chapters/Agents/index.html">Agents: Deep Technical Walkthrough</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="chapters/Agents/scout_deep_dive.html">Scout Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="chapters/Agents/analyst_deep_dive.html">Analyst Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="chapters/Agents/writer_deep_dive.html">Writer Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="chapters/Agents/outreach_deep_dive.html">Outreach Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="chapters/Agents/tracker_deep_dive.html">Tracker Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="chapters/Agents/orchestrator_deep_dive.html">Orchestrator Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="chapters/Agents/chat_agent_deep_dive.html">Chat Agent</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/index.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Utility Lead Intelligence Platform</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-this-book-covers">What This Book Covers</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#platform-overview">Platform Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pipeline-flow">Pipeline Flow</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#full-tech-stack">Full Tech Stack</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-read-this-book">How to Read This Book</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="utility-lead-intelligence-platform">
+<h1>Utility Lead Intelligence Platform<a class="headerlink" href="#utility-lead-intelligence-platform" title="Permalink to this heading">#</a></h1>
+<p>AI-assisted B2B prospecting and outreach automation for utility cost-reduction sales teams. The platform runs a full pipeline from lead discovery to personalized email delivery — with two human approval checkpoints and no email ever sent without explicit review.</p>
+<hr class="docutils" />
+<section id="what-this-book-covers">
+<h2>What This Book Covers<a class="headerlink" href="#what-this-book-covers" title="Permalink to this heading">#</a></h2>
+<p>This Jupyter Book is the deep technical documentation for every agent in the platform:</p>
+<ul class="simple">
+<li><p>What the agent does and why</p></li>
+<li><p>File names and key functions with line numbers</p></li>
+<li><p>Agentic concepts, tools, and technologies used</p></li>
+<li><p>Data flow diagrams and DB write tables</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="platform-overview">
+<h2>Platform Overview<a class="headerlink" href="#platform-overview" title="Permalink to this heading">#</a></h2>
+<p>The platform is structured around a pipeline of specialized agents:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Agent</p></th>
+<th class="head"><p>Entry Point</p></th>
+<th class="head"><p>Role</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Scout</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">agents/scout/scout_agent.py</span></code></p></td>
+<td><p>Discovers companies from news, Google Maps, Yelp, and directory scraping</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Analyst</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">agents/analyst/analyst_agent.py</span></code></p></td>
+<td><p>Enriches contacts, scores leads 0–100, estimates utility savings</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Writer</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">agents/writer/writer_agent.py</span></code></p></td>
+<td><p>Generates personalized outreach emails via LLM + Critic review loop</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Outreach</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">agents/outreach/outreach_agent.py</span></code></p></td>
+<td><p>Sends emails via SendGrid/Instantly, manages 3-touch follow-up sequences</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Tracker</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">agents/tracker/tracker_agent.py</span></code></p></td>
+<td><p>Classifies replies via LLM, updates lead status, alerts sales team</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Orchestrator</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">agents/orchestrator/orchestrator.py</span></code></p></td>
+<td><p>Chains all agents, manages task dispatch, retry, health monitoring, and weekly reports</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Chat Agent</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">agents/chat_agent.py</span></code></p></td>
+<td><p>Natural-language interface — intent classification, confidence-gated routing, 6 tools</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="pipeline-flow">
+<h2>Pipeline Flow<a class="headerlink" href="#pipeline-flow" title="Permalink to this heading">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Scout finds companies (news + APIs)
+        │
+        ▼
+Analyst enriches contacts + scores 0–100
+        │
+        ▼
+  [HUMAN REVIEW #1]  ← Leads page: approve or skip each company
+        │
+        ▼
+Writer drafts personalized email → Critic reviews → rewrites if needed
+        │
+        ▼
+  [HUMAN REVIEW #2]  ← Email Review page: approve / edit / reject
+        │
+        ▼
+Outreach sends email via SendGrid + schedules follow-ups (Day 3 / 7 / 14)
+        │
+        ▼
+Tracker classifies replies → updates lead status → alerts sales team
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="full-tech-stack">
+<h2>Full Tech Stack<a class="headerlink" href="#full-tech-stack" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Layer</p></th>
+<th class="head"><p>Technology</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Agent framework</p></td>
+<td><p><strong>LangChain</strong> (<code class="docutils literal notranslate"><span class="pre">create_agent</span></code>, <code class="docutils literal notranslate"><span class="pre">&#64;tool</span></code>, <code class="docutils literal notranslate"><span class="pre">AgentExecutor</span></code>)</p></td>
+<td><p>ReAct loops, tool calling, LLM message wrapping</p></td>
+</tr>
+<tr class="row-odd"><td><p>LLM (local)</p></td>
+<td><p><strong>Ollama</strong> + <code class="docutils literal notranslate"><span class="pre">llama3.2</span></code></p></td>
+<td><p>Default LLM provider — runs on-machine</p></td>
+</tr>
+<tr class="row-even"><td><p>LLM (cloud)</p></td>
+<td><p><strong>OpenAI</strong> <code class="docutils literal notranslate"><span class="pre">gpt-4o-mini</span></code></p></td>
+<td><p>Optional — set <code class="docutils literal notranslate"><span class="pre">LLM_PROVIDER=openai</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Tracing</p></td>
+<td><p><strong>LangSmith</strong></p></td>
+<td><p>Visual trace per agent run — LLM calls, tool args, latency</p></td>
+</tr>
+<tr class="row-even"><td><p>Search</p></td>
+<td><p><strong>Tavily API</strong></p></td>
+<td><p>Web search + news search for company discovery</p></td>
+</tr>
+<tr class="row-odd"><td><p>Maps</p></td>
+<td><p><strong>Google Places API v1</strong></p></td>
+<td><p>Business discovery + phone lookup</p></td>
+</tr>
+<tr class="row-even"><td><p>Business search</p></td>
+<td><p><strong>Yelp Business Search API</strong></p></td>
+<td><p>Company discovery + phone fallback</p></td>
+</tr>
+<tr class="row-odd"><td><p>Contact enrichment</p></td>
+<td><p><strong>Apollo</strong>, <strong><a class="reference external" href="http://Hunter.io">Hunter.io</a></strong>, <strong>Prospeo</strong>, <strong><a class="reference external" href="http://Snov.io">Snov.io</a></strong></p></td>
+<td><p>Decision-maker email/title waterfall</p></td>
+</tr>
+<tr class="row-even"><td><p>Email verification</p></td>
+<td><p><strong>ZeroBounce</strong></p></td>
+<td><p>Email address validation</p></td>
+</tr>
+<tr class="row-odd"><td><p>HTML parsing</p></td>
+<td><p><strong>BeautifulSoup4</strong></p></td>
+<td><p>Directory scraping with pagination</p></td>
+</tr>
+<tr class="row-even"><td><p>Email delivery</p></td>
+<td><p><strong>SendGrid SDK</strong></p></td>
+<td><p>Outreach sending with open/click tracking</p></td>
+</tr>
+<tr class="row-odd"><td><p>Email delivery (alt)</p></td>
+<td><p><strong>Instantly API</strong></p></td>
+<td><p>Alternative provider via <code class="docutils literal notranslate"><span class="pre">EMAIL_PROVIDER</span></code> env var</p></td>
+</tr>
+<tr class="row-even"><td><p>Webhooks</p></td>
+<td><p><strong>FastAPI + Uvicorn</strong></p></td>
+<td><p>SendGrid inbound reply/open/click/bounce webhooks (port 8002)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Webhook security</p></td>
+<td><p><strong>HMAC-SHA256</strong> (<code class="docutils literal notranslate"><span class="pre">hashlib</span></code>, <code class="docutils literal notranslate"><span class="pre">hmac</span></code>)</p></td>
+<td><p>SendGrid webhook signature validation</p></td>
+</tr>
+<tr class="row-even"><td><p>ORM</p></td>
+<td><p><strong>SQLAlchemy</strong></p></td>
+<td><p>All DB reads and writes across all agents</p></td>
+</tr>
+<tr class="row-odd"><td><p>Database</p></td>
+<td><p><strong>PostgreSQL</strong></p></td>
+<td><p>External — not in Docker</p></td>
+</tr>
+<tr class="row-even"><td><p>Containerization</p></td>
+<td><p><strong>Docker + nginx</strong></p></td>
+<td><p>2 containers: <code class="docutils literal notranslate"><span class="pre">api</span></code> + <code class="docutils literal notranslate"><span class="pre">frontend</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Scheduling</p></td>
+<td><p><strong>Airflow</strong> (add-on)</p></td>
+<td><p>Optional daily pipeline scheduling</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="how-to-read-this-book">
+<h2>How to Read This Book<a class="headerlink" href="#how-to-read-this-book" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Chapter</p></th>
+<th class="head"><p>What it covers</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>System Architecture</strong></p></td>
+<td><p>Full pipeline flow, all 8 stages, data model, company status lifecycle, agent responsibilities, config reference</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Agentic Design</strong></p></td>
+<td><p>What “agentic” means here, every agentic concept used (Tool Use, ReAct, HITL, Critic loop, Win-Rate Learning…), where each fires in the pipeline</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Agents: Deep Technical Walkthrough</strong></p></td>
+<td><p>One chapter per agent — file names, function names, line numbers, tech stack, data flow diagrams</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Start with <strong>System Architecture</strong> for the big picture, then <strong>Agentic Design</strong> to understand the reasoning patterns, then dive into individual agent chapters in pipeline order: Scout → Analyst → Writer → Outreach → Tracker → Orchestrator → Chat Agent.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="chapters/system_architecture.html">System Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapters/agentic_design.html">Agentic Design</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chapters/Agents/index.html">Agents: Deep Technical Walkthrough</a></li>
+</ul>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="right-next"
+       href="chapters/system_architecture.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">System Architecture</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-this-book-covers">What This Book Covers</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#platform-overview">Platform Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pipeline-flow">Pipeline Flow</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#full-tech-stack">Full Tech Stack</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-read-this-book">How to Read This Book</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Harshal Patil
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2022.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

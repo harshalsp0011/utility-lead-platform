@@ -1,0 +1,867 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Analyst Agent &#8212; Utility Lead Intelligence Platform</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'chapters/Agents/analyst_deep_dive';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Writer Agent" href="writer_deep_dive.html" />
+    <link rel="prev" title="Scout Agent" href="scout_deep_dive.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Utility Lead Intelligence Platform</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../../index.html">
+                    Utility Lead Intelligence Platform
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../system_architecture.html">System Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../agentic_design.html">Agentic Design</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Agents: Deep Technical Walkthrough</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="scout_deep_dive.html">Scout Agent</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Analyst Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="writer_deep_dive.html">Writer Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="outreach_deep_dive.html">Outreach Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tracker_deep_dive.html">Tracker Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="orchestrator_deep_dive.html">Orchestrator Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="chat_agent_deep_dive.html">Chat Agent</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/chapters/Agents/analyst_deep_dive.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Analyst Agent</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tech-stack-used">Tech Stack Used</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#file-by-file-breakdown">File-by-File Breakdown</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-analyst-analyst-agent-py-coordinator">1. <code class="docutils literal notranslate"><span class="pre">agents/analyst/analyst_agent.py</span></code> — Coordinator</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-analyst-analyst-agent-py-gather-company-data-at-line-279">2. <code class="docutils literal notranslate"><span class="pre">agents/analyst/analyst_agent.py</span></code> — <code class="docutils literal notranslate"><span class="pre">gather_company_data()</span></code> at line 279</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-analyst-llm-inspector-py-two-llm-jobs">3. <code class="docutils literal notranslate"><span class="pre">agents/analyst/llm_inspector.py</span></code> — Two LLM Jobs</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-analyst-enrichment-client-py-apollo-hunter">4. <code class="docutils literal notranslate"><span class="pre">agents/analyst/enrichment_client.py</span></code> — Apollo + Hunter</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-analyst-spend-calculator-py-spend-estimation">5. <code class="docutils literal notranslate"><span class="pre">agents/analyst/spend_calculator.py</span></code> — Spend Estimation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-analyst-benchmarks-loader-py-benchmark-data">6. <code class="docutils literal notranslate"><span class="pre">agents/analyst/benchmarks_loader.py</span></code> — Benchmark Data</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-analyst-savings-calculator-py-savings-range">7. <code class="docutils literal notranslate"><span class="pre">agents/analyst/savings_calculator.py</span></code> — Savings Range</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-analyst-score-engine-py-composite-scoring">8. <code class="docutils literal notranslate"><span class="pre">agents/analyst/score_engine.py</span></code> — Composite Scoring</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-agentic-concepts-used">Key Agentic Concepts Used</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-gets-written-to-db">What Gets Written to DB</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#full-data-flow">Full Data Flow</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="analyst-agent">
+<h1>Analyst Agent<a class="headerlink" href="#analyst-agent" title="Permalink to this heading">#</a></h1>
+<section id="tech-stack-used">
+<h2>Tech Stack Used<a class="headerlink" href="#tech-stack-used" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Tech</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>LangChain</strong> (<code class="docutils literal notranslate"><span class="pre">langchain_core.messages.HumanMessage</span></code>)</p></td>
+<td><p>LLM calls in <code class="docutils literal notranslate"><span class="pre">llm_inspector.py</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Ollama / OpenAI</strong></p></td>
+<td><p>LLM provider via <code class="docutils literal notranslate"><span class="pre">LLM_PROVIDER</span></code> env var</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Apollo API</strong> (<code class="docutils literal notranslate"><span class="pre">api.apollo.io</span></code>)</p></td>
+<td><p>Company enrichment (employee count) + contact finding</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Hunter API</strong></p></td>
+<td><p>Contact/email finding for decision-makers</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>SQLAlchemy ORM</strong></p></td>
+<td><p>All DB reads/writes — <code class="docutils literal notranslate"><span class="pre">Company</span></code>, <code class="docutils literal notranslate"><span class="pre">CompanyFeature</span></code>, <code class="docutils literal notranslate"><span class="pre">LeadScore</span></code>, <code class="docutils literal notranslate"><span class="pre">Contact</span></code>, <code class="docutils literal notranslate"><span class="pre">AgentRunLog</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>JSON seed file</strong> (<code class="docutils literal notranslate"><span class="pre">industry_benchmarks.json</span></code>)</p></td>
+<td><p>Benchmark data for spend estimation — loaded once, cached in memory</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Python <code class="docutils literal notranslate"><span class="pre">requests</span></code></strong></p></td>
+<td><p>HTTP calls to Apollo + Hunter APIs</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="file-by-file-breakdown">
+<h2>File-by-File Breakdown<a class="headerlink" href="#file-by-file-breakdown" title="Permalink to this heading">#</a></h2>
+<section id="agents-analyst-analyst-agent-py-coordinator">
+<h3>1. <code class="docutils literal notranslate"><span class="pre">agents/analyst/analyst_agent.py</span></code> — Coordinator<a class="headerlink" href="#agents-analyst-analyst-agent-py-coordinator" title="Permalink to this heading">#</a></h3>
+<p><strong>Entry point:</strong> <code class="docutils literal notranslate"><span class="pre">run(company_ids,</span> <span class="pre">db_session,</span> <span class="pre">run_id,</span> <span class="pre">on_progress)</span></code> at line 75</p>
+<p>Loops over each company ID, calls <code class="docutils literal notranslate"><span class="pre">process_one_company()</span></code>, tracks progress via <code class="docutils literal notranslate"><span class="pre">on_progress</span></code> callback (used by UI for live updates), writes to <code class="docutils literal notranslate"><span class="pre">agent_run_logs</span></code> after each company.</p>
+<p><strong>Full pipeline per company — <code class="docutils literal notranslate"><span class="pre">process_one_company()</span></code> at line 176:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>1. gather_company_data()        → enrichment loop (crawl → Apollo → LLM → re-enrich)
+2. spend_calculator             → utility + telecom spend estimates
+3. savings_calculator           → low/mid/high savings range
+4. score_engine.compute_score() → 0–100 composite score
+5. score_engine.assign_tier()   → high / medium / low
+6. llm_inspector.generate_score_narrative() → 1-sentence human explanation
+7. save_features()              → writes CompanyFeature row
+8. save_score()                 → writes LeadScore row
+9. company.status = &quot;scored&quot;    → updates Company row
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="agents-analyst-analyst-agent-py-gather-company-data-at-line-279">
+<h3>2. <code class="docutils literal notranslate"><span class="pre">agents/analyst/analyst_agent.py</span></code> — <code class="docutils literal notranslate"><span class="pre">gather_company_data()</span></code> at line 279<a class="headerlink" href="#agents-analyst-analyst-agent-py-gather-company-data-at-line-279" title="Permalink to this heading">#</a></h3>
+<p><strong>Agentic concept: Adaptive Re-enrichment Loop</strong></p>
+<p>This is the intelligent data-gathering phase. It doesn’t just crawl once — it inspects what’s missing and decides whether to try again:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Step 1: website_crawler.crawl_company_site()    ← only if site_count or employee_count missing
+Step 2: enrichment_client.enrich_company_data() ← Apollo API fallback if employee_count still 0
+Step 3: llm_inspector.inspect_company()         ← LLM decides: &quot;score_now&quot; OR &quot;enrich_before_scoring&quot;
+Step 4: Re-enrichment loop (max 2 attempts)     ← only if LLM says action=&quot;enrich_before_scoring&quot;
+</pre></div>
+</div>
+<p><strong>LLM is skipped entirely</strong> if <code class="docutils literal notranslate"><span class="pre">industry</span></code> is known AND <code class="docutils literal notranslate"><span class="pre">employee_count</span> <span class="pre">&gt;</span> <span class="pre">0</span></code> AND <code class="docutils literal notranslate"><span class="pre">site_count</span> <span class="pre">&gt;</span> <span class="pre">0</span></code> — no tokens wasted when data is already complete.</p>
+</section>
+<hr class="docutils" />
+<section id="agents-analyst-llm-inspector-py-two-llm-jobs">
+<h3>3. <code class="docutils literal notranslate"><span class="pre">agents/analyst/llm_inspector.py</span></code> — Two LLM Jobs<a class="headerlink" href="#agents-analyst-llm-inspector-py-two-llm-jobs" title="Permalink to this heading">#</a></h3>
+<p><strong>Agentic concept:</strong> LLM as Data Quality Judge + Narrative Generator</p>
+<p><strong>Job 1 — <code class="docutils literal notranslate"><span class="pre">inspect_company()</span></code> at line 81:</strong></p>
+<ul class="simple">
+<li><p>Sends company name, website, industry, employee count, site count, and crawled text excerpt (600 chars) to LLM via <strong>LangChain <code class="docutils literal notranslate"><span class="pre">HumanMessage</span></code></strong></p></li>
+<li><p>LLM returns structured JSON:</p></li>
+</ul>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;inferred_industry&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;healthcare&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;data_gaps&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;employee_count&quot;</span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;enrich_before_scoring&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;confidence&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;high&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>If <code class="docutils literal notranslate"><span class="pre">inferred_industry</span></code> is returned and DB value was <code class="docutils literal notranslate"><span class="pre">&quot;unknown&quot;</span></code>, it overwrites it</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">action</span> <span class="pre">=</span> <span class="pre">&quot;enrich_before_scoring&quot;</span></code> triggers the re-enrichment loop in <code class="docutils literal notranslate"><span class="pre">gather_company_data()</span></code></p></li>
+<li><p>Falls back to <code class="docutils literal notranslate"><span class="pre">{&quot;action&quot;:</span> <span class="pre">&quot;score_now&quot;,</span> <span class="pre">&quot;confidence&quot;:</span> <span class="pre">&quot;low&quot;}</span></code> on any LLM failure</p></li>
+</ul>
+<p><strong>Job 2 — <code class="docutils literal notranslate"><span class="pre">generate_score_narrative()</span></code> at line 183:</strong></p>
+<ul class="simple">
+<li><p>Sends score, tier, savings estimate, industry, employee count, sites, state, deregulated flag to LLM</p></li>
+<li><p>LLM writes a single sentence (max 25 words) explaining why this company scored the way it did</p></li>
+<li><p>Example output: <em>“5-site healthcare group in NY’s deregulated market with $420k in recoverable utility savings.”</em></p></li>
+<li><p>Falls back to <code class="docutils literal notranslate"><span class="pre">_fallback_narrative()</span></code> (rule-based template) if LLM fails</p></li>
+</ul>
+<p>Both use <strong>LangChain <code class="docutils literal notranslate"><span class="pre">HumanMessage</span></code></strong> → Ollama or OpenAI via <code class="docutils literal notranslate"><span class="pre">_call_llm()</span></code> at line 38.</p>
+</section>
+<hr class="docutils" />
+<section id="agents-analyst-enrichment-client-py-apollo-hunter">
+<h3>4. <code class="docutils literal notranslate"><span class="pre">agents/analyst/enrichment_client.py</span></code> — Apollo + Hunter<a class="headerlink" href="#agents-analyst-enrichment-client-py-apollo-hunter" title="Permalink to this heading">#</a></h3>
+<p><strong>Two jobs:</strong></p>
+<p><strong><code class="docutils literal notranslate"><span class="pre">enrich_company_data(domain)</span></code> at line 64 — Apollo organization enrichment:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">POST</span> <span class="pre">https://api.apollo.io/api/v1/organizations/enrich</span></code> with <code class="docutils literal notranslate"><span class="pre">{&quot;domain&quot;:</span> <span class="pre">&quot;example.com&quot;}</span></code></p></li>
+<li><p>Returns <code class="docutils literal notranslate"><span class="pre">employee_count</span></code>, <code class="docutils literal notranslate"><span class="pre">city</span></code>, <code class="docutils literal notranslate"><span class="pre">state</span></code></p></li>
+<li><p>Silently returns <code class="docutils literal notranslate"><span class="pre">{}</span></code> if <code class="docutils literal notranslate"><span class="pre">APOLLO_API_KEY</span></code> missing or domain unknown</p></li>
+</ul>
+<p><strong><code class="docutils literal notranslate"><span class="pre">find_contacts(company_name,</span> <span class="pre">domain,</span> <span class="pre">db)</span></code> — Hunter + Apollo people search:</strong></p>
+<ul class="simple">
+<li><p>Targets decision-maker titles: CFO, VP Finance, Director of Facilities, Energy Manager, etc.</p></li>
+<li><p>Title priority ranking: CFO=1 → VP Finance=2 → Director of Facilities=3 → VP Operations=4</p></li>
+<li><p>Module-level flags <code class="docutils literal notranslate"><span class="pre">_hunter_blocked</span></code> / <code class="docutils literal notranslate"><span class="pre">_apollo_blocked</span></code> skip providers for the rest of the run if rate-limited</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="agents-analyst-spend-calculator-py-spend-estimation">
+<h3>5. <code class="docutils literal notranslate"><span class="pre">agents/analyst/spend_calculator.py</span></code> — Spend Estimation<a class="headerlink" href="#agents-analyst-spend-calculator-py-spend-estimation" title="Permalink to this heading">#</a></h3>
+<p><strong>No LLM. Pure math from benchmark data.</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>utility_spend = site_count × avg_sqft_per_site × kwh_per_sqft_per_year × electricity_rate
+telecom_spend = employee_count × telecom_per_employee
+total_spend   = utility_spend + telecom_spend
+</pre></div>
+</div>
+<p>Key functions:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Function</p></th>
+<th class="head"><p>Line</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">calculate_utility_spend(site_count,</span> <span class="pre">industry,</span> <span class="pre">state)</span></code></p></td>
+<td><p>13</p></td>
+<td><p>Site count × sqft × kWh × rate</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">calculate_telecom_spend(employee_count,</span> <span class="pre">industry)</span></code></p></td>
+<td><p>25</p></td>
+<td><p>Employee count × telecom benchmark</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">calculate_total_spend(utility,</span> <span class="pre">telecom)</span></code></p></td>
+<td><p>32</p></td>
+<td><p>Sums both</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>All benchmark values come from <code class="docutils literal notranslate"><span class="pre">benchmarks_loader.get_benchmark(industry,</span> <span class="pre">state)</span></code>.</p>
+</section>
+<hr class="docutils" />
+<section id="agents-analyst-benchmarks-loader-py-benchmark-data">
+<h3>6. <code class="docutils literal notranslate"><span class="pre">agents/analyst/benchmarks_loader.py</span></code> — Benchmark Data<a class="headerlink" href="#agents-analyst-benchmarks-loader-py-benchmark-data" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Loads <code class="docutils literal notranslate"><span class="pre">database/seed_data/industry_benchmarks.json</span></code> <strong>once</strong> at startup, caches in <code class="docutils literal notranslate"><span class="pre">_BENCHMARKS_CACHE</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_benchmark(industry,</span> <span class="pre">state)</span></code> at line 34 — returns <code class="docutils literal notranslate"><span class="pre">avg_sqft_per_site</span></code>, <code class="docutils literal notranslate"><span class="pre">kwh_per_sqft_per_year</span></code>, <code class="docutils literal notranslate"><span class="pre">telecom_per_employee</span></code>, <code class="docutils literal notranslate"><span class="pre">electricity_rate</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">get_electricity_rate(state)</span></code> at line 65 — state-level $/kWh rates; defaults to <code class="docutils literal notranslate"><span class="pre">0.12</span></code> if state unknown</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">refresh_benchmarks()</span></code> at line 74 — clears cache to force reload (used in tests)</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="agents-analyst-savings-calculator-py-savings-range">
+<h3>7. <code class="docutils literal notranslate"><span class="pre">agents/analyst/savings_calculator.py</span></code> — Savings Range<a class="headerlink" href="#agents-analyst-savings-calculator-py-savings-range" title="Permalink to this heading">#</a></h3>
+<p><strong>Three-bracket estimate from total spend:</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Bracket</p></th>
+<th class="head"><p>Rate</p></th>
+<th class="head"><p>Formula</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Low</p></td>
+<td><p>10%</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">total_spend</span> <span class="pre">×</span> <span class="pre">0.10</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Mid</p></td>
+<td><p>13.5%</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">total_spend</span> <span class="pre">×</span> <span class="pre">0.135</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>High</p></td>
+<td><p>17%</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">total_spend</span> <span class="pre">×</span> <span class="pre">0.17</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">calculate_tb_revenue(savings_mid)</span></code> — multiplies <code class="docutils literal notranslate"><span class="pre">savings_mid</span> <span class="pre">×</span> <span class="pre">TB_CONTINGENCY_FEE</span></code> (default 24%) to get Troy &amp; Banks expected revenue.</p>
+</section>
+<hr class="docutils" />
+<section id="agents-analyst-score-engine-py-composite-scoring">
+<h3>8. <code class="docutils literal notranslate"><span class="pre">agents/analyst/score_engine.py</span></code> — Composite Scoring<a class="headerlink" href="#agents-analyst-score-engine-py-composite-scoring" title="Permalink to this heading">#</a></h3>
+<p><strong><code class="docutils literal notranslate"><span class="pre">compute_score()</span></code> at line 38 — weighted 0–100 formula:</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Component</p></th>
+<th class="head"><p>Max Points</p></th>
+<th class="head"><p>Driver</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Recovery (savings_mid)</p></td>
+<td><p>40 pts</p></td>
+<td><p>≥<span class="math notranslate nohighlight">\(2M=100pts, ≥\)</span>1M=85, ≥<span class="math notranslate nohighlight">\(500k=70, ≥\)</span>250k=55, below=40</p></td>
+</tr>
+<tr class="row-odd"><td><p>Industry fit</p></td>
+<td><p>25 pts</p></td>
+<td><p>healthcare/hospitality/manufacturing/retail=90, public_sector/office=70, unknown=45</p></td>
+</tr>
+<tr class="row-even"><td><p>Multi-site</p></td>
+<td><p>20 pts</p></td>
+<td><p>≥20 sites=20, ≥10=17, ≥5=13, ≥2=8, 1 site=3</p></td>
+</tr>
+<tr class="row-odd"><td><p>Data quality</p></td>
+<td><p>15 pts</p></td>
+<td><p>0–10 score → mapped to 1/4/8/12/15 pts</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Weights are configurable via <code class="docutils literal notranslate"><span class="pre">settings.SCORE_WEIGHT_RECOVERY</span></code>, <code class="docutils literal notranslate"><span class="pre">SCORE_WEIGHT_INDUSTRY</span></code>, etc.</p>
+<p><strong><code class="docutils literal notranslate"><span class="pre">assign_tier()</span></code> at line 61:</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Score</p></th>
+<th class="head"><p>Tier</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>≥ <code class="docutils literal notranslate"><span class="pre">HIGH_SCORE_THRESHOLD</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">high</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>≥ <code class="docutils literal notranslate"><span class="pre">MEDIUM_SCORE_THRESHOLD</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">medium</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Below</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">low</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong><code class="docutils literal notranslate"><span class="pre">assess_data_quality()</span></code> at line 106 — 0–10 quality signal:</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Signal</p></th>
+<th class="head"><p>Points</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Has website</p></td>
+<td><p>+2</p></td>
+</tr>
+<tr class="row-odd"><td><p>Has locations page</p></td>
+<td><p>+2</p></td>
+</tr>
+<tr class="row-even"><td><p>site_count &gt; 0</p></td>
+<td><p>+2</p></td>
+</tr>
+<tr class="row-odd"><td><p>employee_count &gt; 0</p></td>
+<td><p>+2</p></td>
+</tr>
+<tr class="row-even"><td><p>Contact found in DB</p></td>
+<td><p>+2</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="key-agentic-concepts-used">
+<h2>Key Agentic Concepts Used<a class="headerlink" href="#key-agentic-concepts-used" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Concept</p></th>
+<th class="head"><p>Tool / Tech</p></th>
+<th class="head"><p>Where</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Adaptive Re-enrichment Loop</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">website_crawler</span></code> + Apollo API + LLM</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">gather_company_data()</span></code> — loops up to 2x</p></td>
+</tr>
+<tr class="row-odd"><td><p>LLM as Data Quality Judge</p></td>
+<td><p>LangChain + Ollama/OpenAI</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">llm_inspector.inspect_company()</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>LLM Narrative Generation</p></td>
+<td><p>LangChain + Ollama/OpenAI</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">llm_inspector.generate_score_narrative()</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Benchmark-driven Spend Estimation</p></td>
+<td><p>JSON seed file + <code class="docutils literal notranslate"><span class="pre">benchmarks_loader</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">spend_calculator.py</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p>Contact Targeting by Title Priority</p></td>
+<td><p>Apollo + Hunter APIs</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">enrichment_client.find_contacts()</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Progress Streaming</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">on_progress</span></code> callback → UI</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">analyst_agent.run()</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="what-gets-written-to-db">
+<h2>What Gets Written to DB<a class="headerlink" href="#what-gets-written-to-db" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Table</p></th>
+<th class="head"><p>Written by</p></th>
+<th class="head"><p>Contents</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">company_features</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">save_features()</span></code></p></td>
+<td><p>site_count, utility_spend, telecom_spend, savings low/mid/high, industry_fit_score, deregulated_state, data_quality_score</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">lead_scores</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">save_score()</span></code></p></td>
+<td><p>score (0–100), tier, score_reason (LLM narrative), <code class="docutils literal notranslate"><span class="pre">approved_human=False</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">companies</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">process_one_company()</span></code></p></td>
+<td><p>status → <code class="docutils literal notranslate"><span class="pre">&quot;scored&quot;</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">contacts</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">enrichment_client.find_contacts()</span></code></p></td>
+<td><p>decision-maker emails from Hunter/Apollo</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">agent_run_logs</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">_log_action()</span></code></p></td>
+<td><p>per-company action log for UI</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="full-data-flow">
+<h2>Full Data Flow<a class="headerlink" href="#full-data-flow" title="Permalink to this heading">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>run(company_ids)
+  └─ for each company_id:
+       process_one_company()
+         │
+         ├─ gather_company_data()
+         │    ├─ website_crawler.crawl_company_site()    ← reuses Scout&#39;s crawler
+         │    ├─ enrichment_client.enrich_company_data() ← Apollo API (employee_count)
+         │    ├─ llm_inspector.inspect_company()         ← LangChain → Ollama/OpenAI
+         │    └─ re-enrichment loop (max 2x) if LLM says &quot;enrich_before_scoring&quot;
+         │
+         ├─ spend_calculator.calculate_utility_spend()   ← benchmark JSON × site_count
+         ├─ spend_calculator.calculate_telecom_spend()   ← benchmark JSON × employee_count
+         ├─ savings_calculator.calculate_all_savings()   ← 10% / 13.5% / 17% of total_spend
+         │
+         ├─ score_engine.compute_score()                 ← weighted 4-component formula
+         ├─ score_engine.assign_tier()                   ← high / medium / low
+         │
+         ├─ llm_inspector.generate_score_narrative()     ← LangChain → 1-sentence explanation
+         │
+         ├─ save_features()  → CompanyFeature DB row
+         ├─ save_score()     → LeadScore DB row
+         └─ company.status = &quot;scored&quot;
+</pre></div>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./chapters/Agents"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="scout_deep_dive.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Scout Agent</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="writer_deep_dive.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Writer Agent</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tech-stack-used">Tech Stack Used</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#file-by-file-breakdown">File-by-File Breakdown</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-analyst-analyst-agent-py-coordinator">1. <code class="docutils literal notranslate"><span class="pre">agents/analyst/analyst_agent.py</span></code> — Coordinator</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-analyst-analyst-agent-py-gather-company-data-at-line-279">2. <code class="docutils literal notranslate"><span class="pre">agents/analyst/analyst_agent.py</span></code> — <code class="docutils literal notranslate"><span class="pre">gather_company_data()</span></code> at line 279</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-analyst-llm-inspector-py-two-llm-jobs">3. <code class="docutils literal notranslate"><span class="pre">agents/analyst/llm_inspector.py</span></code> — Two LLM Jobs</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-analyst-enrichment-client-py-apollo-hunter">4. <code class="docutils literal notranslate"><span class="pre">agents/analyst/enrichment_client.py</span></code> — Apollo + Hunter</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-analyst-spend-calculator-py-spend-estimation">5. <code class="docutils literal notranslate"><span class="pre">agents/analyst/spend_calculator.py</span></code> — Spend Estimation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-analyst-benchmarks-loader-py-benchmark-data">6. <code class="docutils literal notranslate"><span class="pre">agents/analyst/benchmarks_loader.py</span></code> — Benchmark Data</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-analyst-savings-calculator-py-savings-range">7. <code class="docutils literal notranslate"><span class="pre">agents/analyst/savings_calculator.py</span></code> — Savings Range</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#agents-analyst-score-engine-py-composite-scoring">8. <code class="docutils literal notranslate"><span class="pre">agents/analyst/score_engine.py</span></code> — Composite Scoring</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-agentic-concepts-used">Key Agentic Concepts Used</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-gets-written-to-db">What Gets Written to DB</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#full-data-flow">Full Data Flow</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Harshal Patil
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2022.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
