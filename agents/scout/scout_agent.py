@@ -458,6 +458,7 @@ def _save_news_companies(
                 intent_signal=company.get("intent_signal") or None,
                 run_id=uuid.UUID(run_id) if run_id else None,
                 status="new",
+                data_origin="scout",
                 date_found=now,
                 created_at=now,
                 updated_at=now,
@@ -587,6 +588,7 @@ def _save_api_companies(
                 run_id=uuid.UUID(run_id) if run_id else None,
                 quality_score=None,  # set by Critic after batch evaluation
                 status="new",
+                data_origin="scout",
                 date_found=now,
                 created_at=now,
                 updated_at=now,

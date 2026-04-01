@@ -23,7 +23,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from api.routes import approvals, chat, emails, leads, pipeline, reports, triggers
+from api.routes import api_lab, approvals, chat, emails, leads, pipeline, reports, triggers
 from database import connection
 
 logger = logging.getLogger(__name__)
@@ -60,6 +60,7 @@ app.include_router(pipeline.router,  prefix="/pipeline")
 app.include_router(triggers.router,  prefix="/trigger")
 app.include_router(reports.router,   prefix="/reports")
 app.include_router(approvals.router, prefix="/approvals")
+app.include_router(api_lab.router,   prefix="/api-lab",   tags=["api-lab"])
 
 # ---------------------------------------------------------------------------
 # Health check  (unauthenticated — for load balancers and uptime monitors)

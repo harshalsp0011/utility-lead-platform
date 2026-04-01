@@ -444,3 +444,50 @@ export async function fetchRunStatus(runId) {
 export async function checkApiHealth() {
   return fetchAPI('/health');
 }
+
+// ============================================================================
+// API LAB — live test calls for every external provider
+// ============================================================================
+
+const API_LAB_TIMEOUT = 60000;      // 60s default for external API calls
+const SCRAPER_TIMEOUT = 180000;     // 3min for directory scraping
+
+async function apiLabPost(endpoint, body, timeout = API_LAB_TIMEOUT) {
+  return fetchAPI(endpoint, {
+    method: 'POST',
+    body: JSON.stringify(body),
+    timeout,
+  });
+}
+
+// Search & Discovery
+export const apiLabTavilySearch          = (b) => apiLabPost('/api-lab/tavily/search', b);
+export const apiLabTavilyNews            = (b) => apiLabPost('/api-lab/tavily/news', b);
+export const apiLabGoogleMaps            = (b) => apiLabPost('/api-lab/google-maps/search', b);
+export const apiLabYelp                  = (b) => apiLabPost('/api-lab/yelp/search', b);
+
+// Contact Enrichment & Email Finding — individual (read-only)
+export const apiLabHunter                = (b) => apiLabPost('/api-lab/hunter/search', b);
+export const apiLabApolloEnrich          = (b) => apiLabPost('/api-lab/apollo/enrich', b);
+export const apiLabApolloSearch          = (b) => apiLabPost('/api-lab/apollo/search', b);
+export const apiLabSnov                  = (b) => apiLabPost('/api-lab/snov/search', b);
+export const apiLabProspeo               = (b) => apiLabPost('/api-lab/prospeo/search', b);
+export const apiLabZeroBounceValidate    = (b) => apiLabPost('/api-lab/zerobounce/validate', b);
+export const apiLabZeroBounceGuessFormat = (b) => apiLabPost('/api-lab/zerobounce/guessformat', b);
+export const apiLabSerperEmail           = (b) => apiLabPost('/api-lab/serper/search', b);
+
+// Contact Enrichment — combined waterfall (writes to contacts table)
+export const apiLabEnrichmentWaterfall   = (b) => apiLabPost('/api-lab/enrichment/waterfall', b);
+
+// Email Delivery (live sends — confirmation required in UI)
+export const apiLabSendGrid              = (b) => apiLabPost('/api-lab/sendgrid/test', b);
+export const apiLabInstantly             = (b) => apiLabPost('/api-lab/instantly/test', b);
+
+// Web Scraping & Proxies
+export const apiLabScraperDirectory      = (b) => apiLabPost('/api-lab/scraper/directory', b, SCRAPER_TIMEOUT);
+
+// Credit / limit checks (GET — no body)
+export const apiLabCreditsHunter     = () => fetchAPI('/api-lab/credits/hunter');
+export const apiLabCreditsZeroBounce = () => fetchAPI('/api-lab/credits/zerobounce');
+export const apiLabCreditsSnov       = () => fetchAPI('/api-lab/credits/snov');
+export const apiLabCreditsScraperApi = () => fetchAPI('/api-lab/credits/scraperapi');

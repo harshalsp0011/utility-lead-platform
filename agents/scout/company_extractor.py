@@ -203,6 +203,7 @@ def save_to_database(company_dict: dict[str, Any], db_session: Session) -> str:
             state=state,
             source=company_dict.get("source"),
             source_url=company_dict.get("source_url"),
+            data_origin="scout",
         )
         db_session.add(company)
         db_session.flush()

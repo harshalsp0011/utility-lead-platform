@@ -1579,6 +1579,7 @@ def save_contact(contact_dict: dict[str, Any], company_id: str, db_session: Sess
         source=provider,
         verified=bool(contact_dict.get("verified") or False),
         unsubscribed=False,
+        data_origin="scout",
     )
     db_session.add(contact)
     db_session.commit()

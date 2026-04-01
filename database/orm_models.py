@@ -194,6 +194,8 @@ class Company(Base):
     run_id: Mapped[uuid.UUID | None] = mapped_column(PGUUID(as_uuid=True), ForeignKey("agent_runs.id"), nullable=True)
     quality_score: Mapped[float | None] = mapped_column(Float, nullable=True)
     intent_signal: Mapped[str | None] = mapped_column(Text, nullable=True)
+    data_origin: Mapped[str | None] = mapped_column(String(50), nullable=True)   # 'scout' | 'hubspot_crm' | 'manual'
+    last_synced_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     created_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     updated_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
 
@@ -284,6 +286,8 @@ class Contact(Base):
     source: Mapped[str | None] = mapped_column(String(100), nullable=True)
     verified: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
     unsubscribed: Mapped[bool | None] = mapped_column(Boolean, nullable=True)
+    data_origin: Mapped[str | None] = mapped_column(String(50), nullable=True)   # 'scout' | 'hubspot_crm' | 'manual'
+    last_synced_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     created_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
 
 

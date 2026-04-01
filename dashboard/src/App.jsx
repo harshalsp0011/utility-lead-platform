@@ -9,6 +9,7 @@ import EmailReview from './pages/EmailReview';
 import Pipeline from './pages/Pipeline';
 import Reports from './pages/Reports';
 import Triggers from './pages/Triggers';
+import ApiLab from './pages/ApiLab';
 
 // ---------------------------------------------------------------------------
 // Sidebar nav item
@@ -54,6 +55,7 @@ function Layout({ children }) {
           <NavItem to="/triggers" icon="▶️"  label="Triggers" />
           <NavItem to="/pipeline" icon="⚙️"  label="Pipeline" />
           <NavItem to="/reports"  icon="📊" label="Reports" />
+          <NavItem to="/api-lab"  icon="🧪" label="API Lab" />
         </nav>
 
         {/* Footer */}
@@ -87,6 +89,7 @@ export default function App() {
           <Route path="/triggers" element={<Triggers />} />
           <Route path="/pipeline" element={<Pipeline />} />
           <Route path="/reports"  element={<Reports />} />
+          <Route path="/api-lab"  element={<ApiLab />} />
         </Routes>
       </Layout>
     </BrowserRouter>
