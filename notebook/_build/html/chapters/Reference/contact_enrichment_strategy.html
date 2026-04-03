@@ -1,0 +1,912 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Contact Enrichment Strategy &#8212; Utility Lead Intelligence Platform</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'chapters/Reference/contact_enrichment_strategy';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Contact Enrichment — API Guide &amp; Strategy" href="enrichment_api_guide.html" />
+    <link rel="prev" title="Chatbot Architecture — How It Works" href="chatbot_architecture.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Utility Lead Intelligence Platform</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../../index.html">
+                    Utility Lead Intelligence Platform
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../system_architecture.html">System Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../agentic_design.html">Agentic Design</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../Agents/index.html">Agents: Deep Technical Walkthrough</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../Agents/scout_deep_dive.html">Scout Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Agents/analyst_deep_dive.html">Analyst Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Agents/writer_deep_dive.html">Writer Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Agents/outreach_deep_dive.html">Outreach Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Agents/tracker_deep_dive.html">Tracker Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Agents/orchestrator_deep_dive.html">Orchestrator Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Agents/chat_agent_deep_dive.html">Chat Agent</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="chatbot_architecture.html">Chatbot Architecture — How It Works</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Contact Enrichment Strategy</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="enrichment_api_guide.html">Contact Enrichment — API Guide &amp; Strategy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scout_sources_and_signals.html">Scout — Sources, Signals &amp; Intent-Based Prospecting</a></li>
+
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/chapters/Reference/contact_enrichment_strategy.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Contact Enrichment Strategy</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Contact Enrichment Strategy</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#utility-lead-platform-contact-finding-architecture">Utility Lead Platform — Contact Finding Architecture</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-contact-finding-is-hard-for-smbs">Why Contact Finding Is Hard for SMBs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overall-goal">Overall Goal</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#architecture-waterfall-contact-finding">Architecture: Waterfall Contact Finding</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#trigger-points">Trigger Points</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#contact-finding-waterfall-enrichment-client-find-contacts">Contact Finding Waterfall (<code class="docutils literal notranslate"><span class="pre">enrichment_client.find_contacts</span></code>)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#phone-finding-waterfall-scrape-phone-from-website">Phone Finding Waterfall (<code class="docutils literal notranslate"><span class="pre">scrape_phone_from_website</span></code>)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#files-and-their-roles">Files and Their Roles</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-functions-in-enrichment-client-py">Key Functions in <code class="docutils literal notranslate"><span class="pre">enrichment_client.py</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#target-titles">Target Titles</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#database-where-contact-data-lives">Database: Where Contact Data Lives</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#steps-completed-vs-planned">Steps Completed vs Planned</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-to-expect-realistic-coverage">What to Expect (Realistic Coverage)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#agentic-concepts-used">Agentic Concepts Used</a></li>
+</ul>
+</li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="contact-enrichment-strategy">
+<h1>Contact Enrichment Strategy<a class="headerlink" href="#contact-enrichment-strategy" title="Permalink to this heading">#</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="utility-lead-platform-contact-finding-architecture">
+<h1>Utility Lead Platform — Contact Finding Architecture<a class="headerlink" href="#utility-lead-platform-contact-finding-architecture" title="Permalink to this heading">#</a></h1>
+<p>Last updated: 2026-03-23</p>
+<hr class="docutils" />
+<section id="why-contact-finding-is-hard-for-smbs">
+<h2>Why Contact Finding Is Hard for SMBs<a class="headerlink" href="#why-contact-finding-is-hard-for-smbs" title="Permalink to this heading">#</a></h2>
+<p>The platform targets small-to-mid local businesses (healthcare staffing, manufacturing, medical
+offices in Buffalo/Rochester). These companies are almost never indexed in commercial databases:</p>
+<ul class="simple">
+<li><p><strong><a class="reference external" href="http://Hunter.io">Hunter.io</a> free plan</strong> (50 searches/month): designed for tech/enterprise companies with
+public email patterns. Returns 0 results for most local SMBs.</p></li>
+<li><p><strong>Apollo people-search</strong>: requires a paid plan ($49/mo). Free tier returns 403.</p></li>
+<li><p><strong>ZoomInfo / LeadIQ / Sales Navigator</strong>: enterprise pricing, overkill for this use case.</p></li>
+</ul>
+<p>The platform therefore uses a <strong>multi-layer waterfall strategy</strong> — free sources first,
+paid APIs when available, falling back gracefully when nothing is found.</p>
+</section>
+<hr class="docutils" />
+<section id="overall-goal">
+<h2>Overall Goal<a class="headerlink" href="#overall-goal" title="Permalink to this heading">#</a></h2>
+<p>For each scored company the platform needs at least one of:</p>
+<ol class="arabic simple">
+<li><p><strong>Email address</strong> — personalized cold email via Writer agent</p></li>
+<li><p><strong>Phone number</strong> — direct call by sales rep (often more effective for SMBs)</p></li>
+</ol>
+<p>If neither is available: the company stays in the system with <code class="docutils literal notranslate"><span class="pre">contact_found=false</span></code>
+and can be targeted manually via the “Add Contact” button in LeadDetail.</p>
+</section>
+<hr class="docutils" />
+<section id="architecture-waterfall-contact-finding">
+<h2>Architecture: Waterfall Contact Finding<a class="headerlink" href="#architecture-waterfall-contact-finding" title="Permalink to this heading">#</a></h2>
+<section id="trigger-points">
+<h3>Trigger Points<a class="headerlink" href="#trigger-points" title="Permalink to this heading">#</a></h3>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Where</p></th>
+<th class="head"><p>What runs</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Pipeline page → “👤 Enrich Contacts” button</p></td>
+<td><p>Bulk: all <code class="docutils literal notranslate"><span class="pre">scored/approved</span></code> companies</p></td>
+</tr>
+<tr class="row-odd"><td><p>Pipeline page → “📞 Backfill Phones” button</p></td>
+<td><p>Phone-only: all companies with website but no phone</p></td>
+</tr>
+<tr class="row-even"><td><p>LeadDetail → “👤 Find Contacts” button</p></td>
+<td><p>Single company enrichment</p></td>
+</tr>
+<tr class="row-odd"><td><p>Full pipeline run (Scout → Analyst → Enrich → Write)</p></td>
+<td><p>Automatic after Analyst</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="contact-finding-waterfall-enrichment-client-find-contacts">
+<h3>Contact Finding Waterfall (<code class="docutils literal notranslate"><span class="pre">enrichment_client.find_contacts</span></code>)<a class="headerlink" href="#contact-finding-waterfall-enrichment-client-find-contacts" title="Permalink to this heading">#</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>For each company:
+  ┌─────────────────────────────────────────────────────────────┐
+  │ Step 1 — Hunter.io domain-search (if HUNTER_API_KEY set)   │
+  │   API: GET /v2/domain-search?domain={domain}               │
+  │   Filters: CFO, VP Finance, Facilities Mgr, Controller...  │
+  │   Cost: 1 search credit (50 free/month)                    │
+  │   Best for: tech companies, enterprises, national brands   │
+  └─────────────────────────────────────────────────────────────┘
+           │ found contacts? → SAVE + DONE
+           ↓ empty
+  ┌─────────────────────────────────────────────────────────────┐
+  │ Step 2 — Apollo people-search (if APOLLO_API_KEY set)      │
+  │   API: POST /api/v1/mixed_people/search                    │
+  │   Searches by domain AND/OR company name                   │
+  │   Falls back to name-only if domain missing                │
+  │   Cost: requires paid plan ($49/mo)                        │
+  │   Best for: larger SMBs with LinkedIn presence             │
+  └─────────────────────────────────────────────────────────────┘
+           │ found contacts? → SAVE + DONE
+           ↓ empty
+  ┌─────────────────────────────────────────────────────────────┐
+  │ Step 3 — Website Scraper (free, no API key)                │
+  │   Fetches: homepage + /contact + /about + /team            │
+  │   Extracts: mailto: links (priority) + plain-text emails   │
+  │   Skips: info@, contact@, support@, customerservice@...    │
+  │   Max: 7 HTTP requests, returns up to 5 contacts           │
+  └─────────────────────────────────────────────────────────────┘
+           │ found emails? → EMAIL PATTERN INFERENCE (Step 3b)
+           ↓
+  ┌─────────────────────────────────────────────────────────────┐
+  │ Step 3b — Email Pattern Inference + Hunter Verifier        │
+  │   Detects naming pattern from found emails:                │
+  │     tdepew@ + aevangelist@ → &quot;first_initial_lastname&quot;      │
+  │     john.doe@ → &quot;firstname.lastname&quot;                       │
+  │     johndoe@ → &quot;firstname_lastname&quot;                        │
+  │                                                             │
+  │   Scans contact/about page for exec name + title:          │
+  │     &quot;John Smith, CFO&quot; → applies pattern → jsmith@domain    │
+  │                                                             │
+  │   Verifies with Hunter email verifier (FREE, 100/month):   │
+  │     GET /v2/email-verifier?email={guessed}                 │
+  │     Only saves if status = &quot;valid&quot; or &quot;accept_all&quot;         │
+  │     Does NOT consume a search credit                       │
+  └─────────────────────────────────────────────────────────────┘
+           │ verified guess found? → SAVE as verified contact
+           ↓ nothing works
+           ↓ nothing works
+  ┌─────────────────────────────────────────────────────────────┐
+  │ Step 4 — Serper Google Search (if SERPER_API_KEY set)      │
+  │   Query: &quot;{company} CFO OR owner OR president OR CEO&quot;      │
+  │   Parses organic results + snippets for &quot;Name, Title&quot;      │
+  │   Applies all 3 email patterns → verifies each with Hunter │
+  │   Saves on first verified hit; saves unverified if no key  │
+  │   Cost: 1 Serper credit (2,500 free/month)                 │
+  └─────────────────────────────────────────────────────────────┘
+           │ found + verified? → SAVE as serper contact
+           ↓ nothing works
+  ┌─────────────────────────────────────────────────────────────┐
+  │ Graceful degradation: contact_found=false                  │
+  │   Company still in system, visible in Leads page           │
+  │   &quot;Add Contact&quot; button in LeadDetail for manual entry      │
+  │   LinkedIn search link shown in LeadDetail header          │
+  │     → https://linkedin.com/search/results/companies/?...   │
+  └─────────────────────────────────────────────────────────────┘
+</pre></div>
+</div>
+</section>
+<section id="phone-finding-waterfall-scrape-phone-from-website">
+<h3>Phone Finding Waterfall (<code class="docutils literal notranslate"><span class="pre">scrape_phone_from_website</span></code>)<a class="headerlink" href="#phone-finding-waterfall-scrape-phone-from-website" title="Permalink to this heading">#</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>For each company with website but no phone:
+  1. Fetch homepage (requests + BeautifulSoup, 10s timeout)
+  2. Find &lt;a href=&quot;tel:...&quot;&gt; links → most reliable, usually in header/footer
+  3. Regex scan page text for (XXX) XXX-XXXX or XXX-XXX-XXXX patterns
+  4. Return first valid 10/11-digit phone string
+  → Stored in companies.phone
+  → Shown in Leads table (clickable tel: link) + LeadDetail header
+</pre></div>
+</div>
+<p>Phone scraping runs automatically during every enrichment run for companies missing a phone.
+The “📞 Backfill Phones” button runs it in bulk for all 69 existing companies at once.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="files-and-their-roles">
+<h2>Files and Their Roles<a class="headerlink" href="#files-and-their-roles" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>File</p></th>
+<th class="head"><p>Role</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">agents/analyst/enrichment_client.py</span></code></p></td>
+<td><p>All contact + phone finding logic</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">agents/orchestrator/orchestrator.py</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">run_contact_enrichment()</span></code> — iterates companies, calls enrichment, sets company.status + phone</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">api/routes/triggers.py</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/trigger/enrich</span></code> + <code class="docutils literal notranslate"><span class="pre">/trigger/backfill-phones</span></code> endpoints</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">api/routes/leads.py</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">/leads/{id}/enrich</span></code> — per-company enrichment</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">database/migrations/016_alter_companies_add_phone.sql</span></code></p></td>
+<td><p>Adds phone column</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">database/orm_models.py</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Company.phone</span></code> ORM field</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">dashboard/src/pages/Pipeline.jsx</span></code></p></td>
+<td><p>“Enrich Contacts” + “Backfill Phones” buttons with polling</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">dashboard/src/pages/LeadDetail.jsx</span></code></p></td>
+<td><p>“Find Contacts” button + phone display in header</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">dashboard/src/pages/Leads.jsx</span></code></p></td>
+<td><p>Phone column in table (clickable) + CSV export</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="key-functions-in-enrichment-client-py">
+<h2>Key Functions in <code class="docutils literal notranslate"><span class="pre">enrichment_client.py</span></code><a class="headerlink" href="#key-functions-in-enrichment-client-py" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Function</p></th>
+<th class="head"><p>What it does</p></th>
+<th class="head"><p>Agentic concept</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">find_contacts()</span></code></p></td>
+<td><p>Waterfall entry point — Hunter → Apollo → Website</p></td>
+<td><p>Tool Use</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">find_via_hunter(domain)</span></code></p></td>
+<td><p>Hunter domain-search, title filter</p></td>
+<td><p>Tool Use</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">find_via_apollo(name,</span> <span class="pre">domain)</span></code></p></td>
+<td><p>Apollo people-search, name fallback</p></td>
+<td><p>Tool Use</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">find_via_website(name,</span> <span class="pre">url)</span></code></p></td>
+<td><p>Scrapes contact/about/team pages</p></td>
+<td><p>Tool Use</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">find_via_serper(name,</span> <span class="pre">domain,</span> <span class="pre">hunter_key)</span></code></p></td>
+<td><p>Google search → name → pattern → verify</p></td>
+<td><p>Tool Use + Pattern Inference + Self-Verification</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">build_linkedin_url(company_name)</span></code></p></td>
+<td><p>Constructs LinkedIn company search URL</p></td>
+<td><p>Graceful Degradation</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">scrape_phone_from_website(url)</span></code></p></td>
+<td><p>Extracts phone from tel: links + regex</p></td>
+<td><p>Tool Use</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">_detect_email_pattern(emails)</span></code></p></td>
+<td><p>Infers naming convention from found emails</p></td>
+<td><p>Pattern Inference</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">_apply_pattern(first,</span> <span class="pre">last,</span> <span class="pre">pattern,</span> <span class="pre">domain)</span></code></p></td>
+<td><p>Generates guessed email</p></td>
+<td><p>Pattern Inference</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">verify_email_hunter(email)</span></code></p></td>
+<td><p>Confirms mailbox exists (free verifier)</p></td>
+<td><p>Tool Use + Verification</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">_guess_executive_email(emails,</span> <span class="pre">url,</span> <span class="pre">headers)</span></code></p></td>
+<td><p>Full pattern→name→guess→verify loop</p></td>
+<td><p>Agentic Loop</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">save_contact()</span></code></p></td>
+<td><p>Dedupes by email, persists to contacts table</p></td>
+<td><p>—</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">get_priority_contact()</span></code></p></td>
+<td><p>Returns best contact ranked by title priority</p></td>
+<td><p>—</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="target-titles">
+<h2>Target Titles<a class="headerlink" href="#target-titles" title="Permalink to this heading">#</a></h2>
+<p>Contacts are only saved if their title matches one of these:</p>
+<p><strong>API-sourced (Hunter/Apollo — strict):</strong>
+CFO, Chief Financial Officer, VP Finance, Director of Finance,
+Director of Facilities, Facilities Manager, VP Operations,
+Energy Manager, Procurement Manager, Controller</p>
+<p><strong>Website-scraped (broadened — SMBs use different titles):</strong>
+All above + Owner, Co-owner, President, CEO, Chief Executive Officer,
+Founder, General Manager, Office Manager, Administrator, Practice Manager,
+Executive Director, Director, Principal, Partner, Managing Partner,
+Regional Manager, Operations Manager, Vice President</p>
+</section>
+<hr class="docutils" />
+<section id="database-where-contact-data-lives">
+<h2>Database: Where Contact Data Lives<a class="headerlink" href="#database-where-contact-data-lives" title="Permalink to this heading">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>companies
+  ├── phone           VARCHAR(30)   — scraped from website homepage
+  ├── website         VARCHAR(500)  — used as domain source for Hunter/Apollo
+  ├── contact_found   BOOL          — set TRUE when at least 1 contact saved
+  └── status          VARCHAR       — set to &#39;enriched&#39; when contacts found
+
+contacts
+  ├── company_id      FK → companies
+  ├── full_name       VARCHAR
+  ├── title           VARCHAR
+  ├── email           VARCHAR       — unique, deduped on save
+  ├── linkedin_url    VARCHAR
+  ├── source          VARCHAR       — &#39;hunter&#39; | &#39;apollo&#39; | &#39;website_scraper&#39;
+  ├── verified        BOOL          — TRUE if Hunter verifier confirmed
+  └── unsubscribed    BOOL          — set TRUE on unsubscribe event
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="steps-completed-vs-planned">
+<h2>Steps Completed vs Planned<a class="headerlink" href="#steps-completed-vs-planned" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Step</p></th>
+<th class="head"><p>What</p></th>
+<th class="head"><p>Status</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Step 1</p></td>
+<td><p>Phone column + website phone scraper + backfill trigger</p></td>
+<td><p>✅ Done (2026-03-23)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Step 2</p></td>
+<td><p>Email pattern inference + Hunter verifier + exec name extraction</p></td>
+<td><p>✅ Done (2026-03-23)</p></td>
+</tr>
+<tr class="row-even"><td><p>Step 3</p></td>
+<td><p>Serper Google search for exec name — <code class="docutils literal notranslate"><span class="pre">&quot;{company}</span> <span class="pre">CFO</span> <span class="pre">OR</span> <span class="pre">owner</span> <span class="pre">OR</span> <span class="pre">president</span> <span class="pre">OR</span> <span class="pre">CEO&quot;</span></code> → parse name → apply all 3 patterns → verify with Hunter</p></td>
+<td><p>✅ Done (2026-03-23)</p></td>
+</tr>
+<tr class="row-odd"><td><p>Step 4</p></td>
+<td><p>LinkedIn company URL — constructed from company name, shown in LeadDetail header + returned in API <code class="docutils literal notranslate"><span class="pre">linkedin_search_url</span></code> field</p></td>
+<td><p>✅ Done (2026-03-23)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="what-to-expect-realistic-coverage">
+<h2>What to Expect (Realistic Coverage)<a class="headerlink" href="#what-to-expect-realistic-coverage" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Source</p></th>
+<th class="head"><p>Coverage</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Hunter (free, 50/mo)</p></td>
+<td><p>~5% of SMBs</p></td>
+<td><p>Only national/larger companies</p></td>
+</tr>
+<tr class="row-odd"><td><p>Apollo (paid)</p></td>
+<td><p>~30–40%</p></td>
+<td><p>Much better SMB coverage via LinkedIn</p></td>
+</tr>
+<tr class="row-even"><td><p>Website scraper</p></td>
+<td><p>~15–25%</p></td>
+<td><p>Works where businesses publish emails</p></td>
+</tr>
+<tr class="row-odd"><td><p>Pattern inference + verify</p></td>
+<td><p>~5–10%</p></td>
+<td><p>Works when scraper finds 2+ personal emails</p></td>
+</tr>
+<tr class="row-even"><td><p>Serper Google search</p></td>
+<td><p>~5–15%</p></td>
+<td><p>Finds exec name from news/press/bios, applies patterns</p></td>
+</tr>
+<tr class="row-odd"><td><p>Phone scraper</p></td>
+<td><p>~40–60%</p></td>
+<td><p>Most business websites have phone in header/footer</p></td>
+</tr>
+<tr class="row-even"><td><p>LinkedIn (manual)</p></td>
+<td><p>Any</p></td>
+<td><p>Link shown in LeadDetail → InMail or manual research</p></td>
+</tr>
+<tr class="row-odd"><td><p>Manual entry</p></td>
+<td><p>Any</p></td>
+<td><p>“Add Contact” button in LeadDetail</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Bottom line:</strong> For small local businesses, phone outreach is more reliable than email.
+The phone scraper (Step 1) is the highest-coverage tool in the stack.</p>
+</section>
+<hr class="docutils" />
+<section id="agentic-concepts-used">
+<h2>Agentic Concepts Used<a class="headerlink" href="#agentic-concepts-used" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Concept</p></th>
+<th class="head"><p>Where applied</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Tool Use</strong></p></td>
+<td><p>Every external call: Hunter, Apollo, BeautifulSoup, Hunter verifier, Serper</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Waterfall / Conditional Fallback</strong></p></td>
+<td><p>Hunter → Apollo → Website → Pattern Inference → Serper, stops at first hit</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Pattern Inference</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">_detect_email_pattern</span></code> — reasons about naming convention from observed data</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Self-verification</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">verify_email_hunter</span></code> — agent checks its own guess before committing</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Graceful Degradation</strong></p></td>
+<td><p>Empty domain → skip Hunter; Apollo 403 → skip; no name found → LinkedIn link fallback</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Observation → Action</strong></p></td>
+<td><p>Sees emails like <code class="docutils literal notranslate"><span class="pre">tdepew&#64;</span></code> → infers pattern → finds name → acts (generates guess)</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Google as a Tool</strong></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">find_via_serper</span></code> — treats Google search as a structured tool: query → parse → extract → act</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./chapters/Reference"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="chatbot_architecture.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Chatbot Architecture — How It Works</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="enrichment_api_guide.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Contact Enrichment — API Guide &amp; Strategy</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Contact Enrichment Strategy</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#utility-lead-platform-contact-finding-architecture">Utility Lead Platform — Contact Finding Architecture</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#why-contact-finding-is-hard-for-smbs">Why Contact Finding Is Hard for SMBs</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overall-goal">Overall Goal</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#architecture-waterfall-contact-finding">Architecture: Waterfall Contact Finding</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#trigger-points">Trigger Points</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#contact-finding-waterfall-enrichment-client-find-contacts">Contact Finding Waterfall (<code class="docutils literal notranslate"><span class="pre">enrichment_client.find_contacts</span></code>)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#phone-finding-waterfall-scrape-phone-from-website">Phone Finding Waterfall (<code class="docutils literal notranslate"><span class="pre">scrape_phone_from_website</span></code>)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#files-and-their-roles">Files and Their Roles</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-functions-in-enrichment-client-py">Key Functions in <code class="docutils literal notranslate"><span class="pre">enrichment_client.py</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#target-titles">Target Titles</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#database-where-contact-data-lives">Database: Where Contact Data Lives</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#steps-completed-vs-planned">Steps Completed vs Planned</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-to-expect-realistic-coverage">What to Expect (Realistic Coverage)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#agentic-concepts-used">Agentic Concepts Used</a></li>
+</ul>
+</li>
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Harshal Patil
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2022.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

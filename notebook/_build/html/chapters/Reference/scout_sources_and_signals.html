@@ -1,0 +1,860 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Scout — Sources, Signals &amp; Intent-Based Prospecting &#8212; Utility Lead Intelligence Platform</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'chapters/Reference/scout_sources_and_signals';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="Contact Enrichment — API Guide &amp; Strategy" href="enrichment_api_guide.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Utility Lead Intelligence Platform</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../../index.html">
+                    Utility Lead Intelligence Platform
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../system_architecture.html">System Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../agentic_design.html">Agentic Design</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../Agents/index.html">Agents: Deep Technical Walkthrough</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../Agents/scout_deep_dive.html">Scout Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Agents/analyst_deep_dive.html">Analyst Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Agents/writer_deep_dive.html">Writer Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Agents/outreach_deep_dive.html">Outreach Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Agents/tracker_deep_dive.html">Tracker Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Agents/orchestrator_deep_dive.html">Orchestrator Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Agents/chat_agent_deep_dive.html">Chat Agent</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="chatbot_architecture.html">Chatbot Architecture — How It Works</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contact_enrichment_strategy.html">Contact Enrichment Strategy</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="enrichment_api_guide.html">Contact Enrichment — API Guide &amp; Strategy</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Scout — Sources, Signals &amp; Intent-Based Prospecting</a></li>
+
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/chapters/Reference/scout_sources_and_signals.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Scout — Sources, Signals & Intent-Based Prospecting</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Scout — Sources, Signals &amp; Intent-Based Prospecting</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#reference-document-how-companies-are-discovered-scored-by-signal-and-prioritised">Reference Document: How companies are discovered, scored by signal, and prioritised</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-core-idea">The Core Idea</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#all-discovery-sources">All Discovery Sources</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#total-api-calls-per-scout-run">Total API calls per Scout run</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-intent-signal-flows-through-the-pipeline">How intent_signal flows through the pipeline</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#signal-scoring-bonuses-analyst-phase-planned">Signal scoring bonuses (Analyst phase — planned)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#deduplication-3-layers">Deduplication — 3 layers</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-each-source-finds-example-healthcare-rochester-ny">What each source finds (example: healthcare Rochester NY)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#serpapi-planned-implementation">SerpAPI — planned implementation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#files-involved">Files involved</a></li>
+</ul>
+</li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="scout-sources-signals-intent-based-prospecting">
+<h1>Scout — Sources, Signals &amp; Intent-Based Prospecting<a class="headerlink" href="#scout-sources-signals-intent-based-prospecting" title="Permalink to this heading">#</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="reference-document-how-companies-are-discovered-scored-by-signal-and-prioritised">
+<h1>Reference Document: How companies are discovered, scored by signal, and prioritised<a class="headerlink" href="#reference-document-how-companies-are-discovered-scored-by-signal-and-prioritised" title="Permalink to this heading">#</a></h1>
+<blockquote>
+<div><p>Last updated: 2026-03-22</p>
+</div></blockquote>
+<hr class="docutils" />
+<section id="the-core-idea">
+<h2>The Core Idea<a class="headerlink" href="#the-core-idea" title="Permalink to this heading">#</a></h2>
+<p>Most lead generation tools find companies that EXIST in a location.
+This platform finds companies that NEED an audit RIGHT NOW.</p>
+<p>The difference is <strong>buying signals</strong> — events that tell you a company has a specific,
+active reason to care about utility costs today:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Signal</p></th>
+<th class="head"><p>What happened</p></th>
+<th class="head"><p>Why they need us</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Expansion</strong></p></td>
+<td><p>Opening new location / branch</p></td>
+<td><p>More sites = higher utility spend incoming</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>New facility</strong></p></td>
+<td><p>Breaking ground / construction</p></td>
+<td><p>Audit before opening = lock in best rates</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Cost pressure</strong></p></td>
+<td><p>Budget cuts / rising operating costs</p></td>
+<td><p>Actively looking for savings</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Energy news</strong></p></td>
+<td><p>Mentioned utility bills in public</p></td>
+<td><p>Already thinking about energy costs</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Acquisition</strong></p></td>
+<td><p>Merged with or acquired another company</p></td>
+<td><p>Consolidating multiple utility accounts</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Hiring surge</strong></p></td>
+<td><p>Large headcount growth</p></td>
+<td><p>More space = more energy</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Companies with signals are <strong>warm leads</strong>. Companies without signals are <strong>cold leads</strong>.
+Both are valuable — but signal companies get a scoring boost and priority in the queue.</p>
+</section>
+<hr class="docutils" />
+<section id="all-discovery-sources">
+<h2>All Discovery Sources<a class="headerlink" href="#all-discovery-sources" title="Permalink to this heading">#</a></h2>
+<p>Scout runs multiple sources in order. Each finds different companies.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>┌──────────────────────────────────────────────────────────────────────┐
+│  PHASE 0 — News Scout (Tavily topic=news)              BUILT ✅      │
+│                                                                      │
+│  What: Tavily searched in news mode — returns recent articles        │
+│  Finds: Companies mentioned in local business news with signals      │
+│  LLM role: Extracts company name + signal from article snippets      │
+│  Stored as: companies.intent_signal = &quot;expansion: opening new...&quot;    │
+│  API cost: 3 calls × $0.01 = ~$0.03 per run                         │
+│  Limit: Only finds companies that appeared in covered news           │
+└──────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────┐
+│  PHASE 0.5 — SerpAPI (Google full index)               PLANNED 🔲   │
+│                                                                      │
+│  What: Google&#39;s full search index via SerpAPI                        │
+│  Finds: Companies in news + press releases + local business pages    │
+│         that Tavily misses (different index, wider coverage)         │
+│  Search modes used:                                                  │
+│    tbm=nws  → Google News tab (recent articles, local journals)      │
+│    regular  → Google general results (press releases, company pages) │
+│    tbm=lcl  → Google Local (businesses Google knows about)           │
+│  LLM role: Extracts company name + signal from search snippets       │
+│  API cost: ~$0.001/query (10× cheaper than Tavily)                   │
+│  Env var: SERP_API_KEY                                               │
+│  Why better than Tavily for news: Google indexes local business      │
+│    journals (Buffalo Business First, Democrat &amp; Chronicle, etc.)     │
+│    and PRNewswire/BusinessWire press releases directly               │
+└──────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────┐
+│  PHASE 1 — Configured Directory Sources                BUILT ✅      │
+│                                                                      │
+│  What: Pre-saved URLs in directory_sources table                     │
+│  Finds: Companies listed on industry directories, chamber sites      │
+│  Filter: Location-aware (only tries sources matching the city)       │
+│  Currently: 78 Buffalo-specific sources in DB                        │
+└──────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────┐
+│  PHASE 2 — Tavily Directory Search                     BUILT ✅      │
+│                                                                      │
+│  What: Tavily in regular mode — finds directory/listing pages        │
+│  Finds: Industry association member lists, &quot;top employers&quot; articles  │
+│  LLM role: Query planner generates 4 diverse search queries          │
+│  API cost: 4 calls × $0.01 = $0.04 per run                          │
+└──────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────┐
+│  PHASE 3 — Google Maps Places API                      BUILT ✅      │
+│                                                                      │
+│  What: Google Places Text Search API                                 │
+│  Finds: Physical businesses — clinics, factories, hotels, schools    │
+│  Returns: Name, address, phone, website, business type               │
+│  4 queries × up to 20 results each = up to 80 raw before dedup       │
+│  API cost: 4 calls × $0.017 = $0.07 per run                          │
+└──────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────┐
+│  PHASE 3b — Yelp Business API                          BUILT ✅      │
+│                                                                      │
+│  What: Yelp Business Search API                                      │
+│  Finds: Local businesses (especially hospitality, retail, food)      │
+│  Limitation: Never returns website URL — so no crawl possible        │
+│  Used as: fallback if Google Maps underperforms for this industry    │
+└──────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────┐
+│  ENRICHMENT (Analyst phase — separate from Scout)      BUILT ✅      │
+│                                                                      │
+│  Apollo.io: given company domain → returns contact name/email/title  │
+│  Used by: Analyst enrichment_client, not Scout                       │
+│  Stored in: contacts table                                           │
+└──────────────────────────────────────────────────────────────────────┘
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="total-api-calls-per-scout-run">
+<h2>Total API calls per Scout run<a class="headerlink" href="#total-api-calls-per-scout-run" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Source</p></th>
+<th class="head"><p>Calls</p></th>
+<th class="head"><p>Cost</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Tavily news (Phase 0)</p></td>
+<td><p>3</p></td>
+<td><p>~$0.03</p></td>
+</tr>
+<tr class="row-odd"><td><p>SerpAPI news (Phase 0.5, planned)</p></td>
+<td><p>3</p></td>
+<td><p>~$0.003</p></td>
+</tr>
+<tr class="row-even"><td><p>Tavily directory (Phase 2)</p></td>
+<td><p>4</p></td>
+<td><p>~$0.04</p></td>
+</tr>
+<tr class="row-odd"><td><p>Google Maps (Phase 3)</p></td>
+<td><p>4</p></td>
+<td><p>~$0.07</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Total (current, no SerpAPI)</strong></p></td>
+<td><p><strong>11</strong></p></td>
+<td><p><strong>~$0.14</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Total (with SerpAPI)</strong></p></td>
+<td><p><strong>14</strong></p></td>
+<td><p><strong>~$0.143</strong></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Quality retry (if &lt; 80% target found): +4 more Google Maps calls (~$0.07 extra, once)</p>
+</section>
+<hr class="docutils" />
+<section id="how-intent-signal-flows-through-the-pipeline">
+<h2>How intent_signal flows through the pipeline<a class="headerlink" href="#how-intent-signal-flows-through-the-pipeline" title="Permalink to this heading">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Scout discovers company via news/SerpAPI
+         │
+         ▼
+companies.intent_signal = &quot;expansion: opening 2 new clinics in Monroe County&quot;
+         │
+         ▼
+Analyst reads intent_signal during scoring:
+  base_score = 72
+  signal_bonus = +12  (expansion signal)
+  final_score = 84  → tier = HIGH
+         │
+         ▼
+Writer reads intent_signal when drafting email:
+  &quot;Company is expanding → lead with audit-before-you-open angle,
+   mention multi-site savings, reference the Monroe County expansion&quot;
+         │
+         ▼
+Email draft references the specific signal — not a generic template
+         │
+         ▼
+Human reviews — email feels researched, not cold
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="signal-scoring-bonuses-analyst-phase-planned">
+<h2>Signal scoring bonuses (Analyst phase — planned)<a class="headerlink" href="#signal-scoring-bonuses-analyst-phase-planned" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Signal type</p></th>
+<th class="head"><p>Bonus points</p></th>
+<th class="head"><p>Reasoning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cost_pressure</span></code></p></td>
+<td><p>+15</p></td>
+<td><p>Actively looking for savings — highest intent</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">energy_news</span></code></p></td>
+<td><p>+12</p></td>
+<td><p>Already thinking about utility costs</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">expansion</span></code></p></td>
+<td><p>+12</p></td>
+<td><p>More sites = more utility spend</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">new_facility</span></code></p></td>
+<td><p>+10</p></td>
+<td><p>Pre-opening audit = best timing</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">acquisition</span></code></p></td>
+<td><p>+8</p></td>
+<td><p>Consolidating accounts = complexity</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">hiring</span></code></p></td>
+<td><p>+5</p></td>
+<td><p>Growth signal — less direct but relevant</p></td>
+</tr>
+<tr class="row-even"><td><p>None (regular)</p></td>
+<td><p>+0</p></td>
+<td><p>Base score only</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="deduplication-3-layers">
+<h2>Deduplication — 3 layers<a class="headerlink" href="#deduplication-3-layers" title="Permalink to this heading">#</a></h2>
+<p>Every company passes through 3 duplicate checks before being saved:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Layer 1: In-batch domain dedup (within one run)
+  Python set() — exact domain match
+  &quot;RGH Medical&quot; + &quot;Rochester General&quot; same domain → drop one
+
+Layer 2: LLM name-similarity (within one run)
+  difflib.SequenceMatcher → flags pairs with similarity &gt; 0.75
+  LLM reviews flagged pairs → confirms/rejects duplicate
+  &quot;Rochester Regional Health&quot; vs &quot;Rochester Regional Health System&quot; → LLM: same company
+
+Layer 3: DB duplicate check (against all prior runs)
+  SQL query: SELECT id WHERE domain CONTAINS x OR (name=x AND city=x)
+  Prevents re-saving companies from prior searches
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="what-each-source-finds-example-healthcare-rochester-ny">
+<h2>What each source finds (example: healthcare Rochester NY)<a class="headerlink" href="#what-each-source-finds-example-healthcare-rochester-ny" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Source</p></th>
+<th class="head"><p>Example companies found</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Tavily news</p></td>
+<td><p>“Rochester Regional Health” (news: opening new site)</p></td>
+</tr>
+<tr class="row-odd"><td><p>SerpAPI</p></td>
+<td><p>“Unity Hospital” (press release: facility renovation)</p></td>
+</tr>
+<tr class="row-even"><td><p>Google Maps</p></td>
+<td><p>“Rochester General Hospital”, “Wilmot Cancer Center”, “UR Medicine”</p></td>
+</tr>
+<tr class="row-odd"><td><p>Tavily directory</p></td>
+<td><p>Companies from Greater Rochester Chamber member list</p></td>
+</tr>
+<tr class="row-even"><td><p>Yelp</p></td>
+<td><p>Smaller clinics, urgent care centers, dental practices</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Together they cover: named companies in news, large health systems, mid-size providers,
+small practices — the full spectrum from warm (signal) to cold (directory) leads.</p>
+</section>
+<hr class="docutils" />
+<section id="serpapi-planned-implementation">
+<h2>SerpAPI — planned implementation<a class="headerlink" href="#serpapi-planned-implementation" title="Permalink to this heading">#</a></h2>
+<p><strong>New file:</strong> <code class="docutils literal notranslate"><span class="pre">agents/scout/serp_client.py</span></code></p>
+<p><strong>Three search modes:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Mode 1: Google News — recent articles</span>
+<span class="n">params</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;q&quot;</span><span class="p">:</span> <span class="s2">&quot;healthcare expansion Rochester NY 2024&quot;</span><span class="p">,</span> <span class="s2">&quot;tbm&quot;</span><span class="p">:</span> <span class="s2">&quot;nws&quot;</span> <span class="p">}</span>
+
+<span class="c1"># Mode 2: Google general — press releases</span>
+<span class="n">params</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;q&quot;</span><span class="p">:</span> <span class="s2">&quot;Rochester NY hospital new facility press release&quot;</span> <span class="p">}</span>
+
+<span class="c1"># Mode 3: Google Local — businesses</span>
+<span class="n">params</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;q&quot;</span><span class="p">:</span> <span class="s2">&quot;manufacturing companies Rochester NY&quot;</span><span class="p">,</span> <span class="s2">&quot;tbm&quot;</span><span class="p">:</span> <span class="s2">&quot;lcl&quot;</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Flow:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>3 SerpAPI queries (news mode)
+  → returns article titles + snippets
+  → LLM extracts: company name, city, signal_type, signal_detail
+  → saved with intent_signal
+
+3 SerpAPI queries (general mode)
+  → returns company pages, press releases
+  → LLM extracts company names (no signal, just discovery)
+  → saved without intent_signal
+</pre></div>
+</div>
+<p><strong>Required env var:</strong> <code class="docutils literal notranslate"><span class="pre">SERP_API_KEY=your_key</span></code>
+<strong>Free tier:</strong> 100 searches/month
+<strong>Paid:</strong> $50/month for 5,000 searches</p>
+</section>
+<hr class="docutils" />
+<section id="files-involved">
+<h2>Files involved<a class="headerlink" href="#files-involved" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>File</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">agents/scout/scout_agent.py</span></code></p></td>
+<td><p>Main orchestrator — runs all phases in order</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">agents/scout/news_scout_client.py</span></code></p></td>
+<td><p>Phase 0 — Tavily news search + LLM extraction</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">agents/scout/serp_client.py</span></code></p></td>
+<td><p>Phase 0.5 — SerpAPI news + press release search (PLANNED)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">agents/scout/search_client.py</span></code></p></td>
+<td><p>Phase 2 — Tavily directory search</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">agents/scout/google_maps_client.py</span></code></p></td>
+<td><p>Phase 3 — Google Maps Places API</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">agents/scout/yelp_client.py</span></code></p></td>
+<td><p>Phase 3b — Yelp Business API</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">agents/scout/llm_query_planner.py</span></code></p></td>
+<td><p>Generates 4 diverse queries per source</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">agents/scout/llm_deduplicator.py</span></code></p></td>
+<td><p>2-pass dedup: domain exact + LLM name similarity</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">agents/scout/company_extractor.py</span></code></p></td>
+<td><p>DB duplicate check before each save</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">database/orm_models.py</span></code></p></td>
+<td><p>Company model — includes intent_signal field</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">database/migrations/014_...sql</span></code></p></td>
+<td><p>Added intent_signal column</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./chapters/Reference"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="enrichment_api_guide.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Contact Enrichment — API Guide &amp; Strategy</p>
+      </div>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Scout — Sources, Signals &amp; Intent-Based Prospecting</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#reference-document-how-companies-are-discovered-scored-by-signal-and-prioritised">Reference Document: How companies are discovered, scored by signal, and prioritised</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-core-idea">The Core Idea</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#all-discovery-sources">All Discovery Sources</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#total-api-calls-per-scout-run">Total API calls per Scout run</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-intent-signal-flows-through-the-pipeline">How intent_signal flows through the pipeline</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#signal-scoring-bonuses-analyst-phase-planned">Signal scoring bonuses (Analyst phase — planned)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#deduplication-3-layers">Deduplication — 3 layers</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-each-source-finds-example-healthcare-rochester-ny">What each source finds (example: healthcare Rochester NY)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#serpapi-planned-implementation">SerpAPI — planned implementation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#files-involved">Files involved</a></li>
+</ul>
+</li>
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Harshal Patil
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2022.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

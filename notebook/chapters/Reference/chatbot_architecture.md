@@ -248,6 +248,7 @@ def _extract_intent(message: str, history: list[dict], llm) -> dict:
 ```
 
 The LLM returns one of these `action` values:
+
 | action | Meaning |
 |---|---|
 | `get_leads` | User wants to see scored/tiered leads |

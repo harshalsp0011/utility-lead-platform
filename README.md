@@ -242,24 +242,57 @@ Every tool call appends one `agent_run_logs` row — full audit trail.
 
 ## 4. Tech Stack
 
-| Layer | Technology | Purpose |
-|---|---|---|
-| Frontend | React 18 + Vite + Tailwind CSS | Dashboard UI |
-| Routing | React Router v6 | Page navigation |
-| API | FastAPI + Uvicorn | REST backend, agent orchestration |
-| Agent framework | LangChain | LLM tool-calling and ReAct loops |
-| LLM (local) | Ollama + llama3.2 | Default — runs on your machine |
-| LLM (cloud) | OpenAI gpt-4o-mini | Optional — set `LLM_PROVIDER=openai` |
-| ORM | SQLAlchemy | Database models and queries |
-| Database | PostgreSQL | External — not in Docker |
-| Search | Tavily API | Company discovery + news signals |
-| Maps | Google Maps Places API | Company discovery + phone lookup |
-| Business search | Yelp Business API | Company discovery + phone fallback |
-| Enrichment | Apollo, Hunter.io, Prospeo, Snov.io | Contact email/title lookup waterfall |
-| Verification | ZeroBounce | Email address validation |
-| Email delivery | SendGrid | Outreach sending with tracking |
-| Containerization | Docker + nginx | 2 containers: api + frontend |
-| Scheduled runs | Airflow (add-on) | Optional — daily pipeline scheduling |
+| Layer | Technology | Purpose | Status |
+|---|---|---|---|
+| Frontend | React 18 + Vite + Tailwind CSS | Dashboard UI | ✅ Live |
+| Routing | React Router v6 | Page navigation | ✅ Live |
+| API | FastAPI + Uvicorn | REST backend, agent orchestration | ✅ Live |
+| Agent framework | LangChain | LLM tool-calling and ReAct loops | ✅ Live |
+| LLM (local) | Ollama + llama3.2 | Default — runs on your machine, zero cost | ✅ Live |
+| LLM (cloud) | OpenAI gpt-4o-mini | Optional — set `LLM_PROVIDER=openai` | ✅ Live |
+| Embeddings | Ollama + nomic-embed-text | 768-dim vectors for semantic search | ✅ Running |
+| Vector store | PostgreSQL + pgvector | Semantic knowledge base retrieval | 🔲 Planned |
+| ORM | SQLAlchemy | Database models and queries | ✅ Live |
+| Database | PostgreSQL (AWS RDS) | Business data + agent memory | ✅ Live |
+| Search | Tavily API | Company discovery + news signals | ✅ Live |
+| Maps | Google Maps Places API | Company discovery + phone lookup | ✅ Live |
+| Business search | Yelp Business API | Company discovery + phone fallback | ✅ Live |
+| Enrichment | Apollo, Hunter.io, Prospeo, Snov.io | Contact email/title lookup waterfall | ✅ Live |
+| Verification | ZeroBounce | Email address validation | ✅ Live |
+| Email delivery | SendGrid | Pipeline outreach + tracking | ✅ Live |
+| CRM integration | HubSpot | CRM lead sync + CRM email send | 🔲 Planned |
+| Observability | LangSmith | Full LLM trace per run | ✅ Live |
+| Containerization | Docker + nginx | 2 containers: api + frontend | ✅ Live |
+| Scheduled runs | Airflow (add-on) | Optional — daily pipeline scheduling | ⚠️ Code exists, not live |
+
+### Planned: Vector Memory (Knowledge Base)
+
+The next major agentic upgrade gives the Writer agent **long-term memory** about Troy & Banks
+services, case studies, and proof points — retrieved semantically per company before writing.
+
+```
+Company profile: "manufacturing, 12 sites, Ohio, overpaying on gas"
+        ↓
+Retrieval Agent (nomic-embed-text → pgvector cosine search)
+        ↓
+Top 3 relevant items:
+  • Case study: Ohio manufacturer, 8 sites, cut gas by $80k → [link]
+  • Service: multi-site utility contract renegotiation
+  • CTA: Free 30-min audit → calendly.com/kevingibs/30min
+        ↓
+Writer weaves them naturally into the email
+```
+
+**Why pgvector, not a separate vector DB:**
+`nomic-embed-text` already runs in Ollama. pgvector runs inside existing PostgreSQL.
+No new container, no new service, no separate backup process.
+
+**Why not a knowledge graph (Neo4j etc.):**
+Vector similarity handles the main use case (find relevant case studies for this company type).
+Graph reasoning is only needed for multi-hop queries like "which service performs best in
+deregulated manufacturing states" — add that later if needed.
+
+See `docs/AGENTIC_TRANSFORMATION_PLAN.md` Phases KB-0 through KB-4 for full build plan.
 
 ---
 
@@ -295,28 +328,33 @@ Pipeline stages update automatically at every step.
 | Contact enrichment (8-step waterfall) | ✅ Done |
 | LLM scoring + narrative explanation | ✅ Done |
 | Lead approval (Leads page) | ✅ Done |
-| Writer + Critic + rewrite loop | ✅ Done |
-| Email approval queue (Email Review page) | ✅ Done |
-| SendGrid sending with tracking | ✅ Done |
+| Writer + Critic + rewrite loop (pipeline) | ✅ Done |
+| CRM Leads tab — context notes + writer path | ✅ Done |
+| CRM email: human-feedback regenerate dialog | ✅ Done |
+| CRM email: send confirm dialog (TO/FROM/Subject) | ✅ Done |
+| Real sender signature (Kevin Gibs, Troy & Banks) | ✅ Done |
+| Email approval queue (Email Review — Pipeline tab) | ✅ Done |
+| SendGrid sending with open + click tracking | ✅ Done |
 | Follow-up scheduling (Day 3/7/14) | ✅ Done (DB only) |
 | Dashboard: Leads, Pipeline, Triggers, Email Review | ✅ Done |
 | Follow-up actual sending via Airflow | ⚠️ Code exists, Airflow not live |
-| Reply detection (webhook) | ❌ Not built |
-| CRM sync (e.g., HubSpot) | ❌ Not built |
-| Manual lead add form | ❌ Not built |
-| CRM import (e.g., HubSpot) | ❌ Not built |
-| Reply inbox page | ❌ Not built |
+| Reply detection (webhook receiver built, not wired) | ⚠️ Partial |
+| **Knowledge Base + Vector memory (RAG)** | 🔲 Planned — Phase KB |
+| **pgvector semantic case study retrieval** | 🔲 Planned — Phase KB-2 |
+| HubSpot CRM sync + HubSpot send path | 🔲 Planned — Phase CRM-5 |
+| Manual lead add form | 🔲 Not built |
+| Reply inbox page | 🔲 Not built |
 
 See `docs/BUILD_STATUS.md` for full details, priority order, and what to build next.
 
 ### Build Priority (What's Next)
 
 ```
-1. Reply detection webhook        ← closes biggest gap in pipeline
-2. CRM push sync                  ← CRM visibility for sales team (e.g., HubSpot)
-3. Manual add + CRM import        ← unlocks existing contacts as lead source
-4. Reply inbox page               ← makes replies visible in dashboard
-5. Airflow live scheduling        ← makes follow-ups actually send
+1. Knowledge Base + pgvector (Phase KB)  ← writer gets case studies + proof points + links
+2. Reply detection webhook               ← closes biggest gap in pipeline
+3. HubSpot CRM sync + send (Phase CRM-5)← emails via HubSpot, no spam issues
+4. Reply inbox page                      ← makes replies visible in dashboard
+5. Airflow live scheduling               ← makes follow-ups actually send
 ```
 
 ---
@@ -623,7 +661,7 @@ docker-compose build frontend && docker-compose up -d frontend  # after UI chang
 | `docs/BUILD_STATUS.md` | Exact status of every feature — what's done, what's wired live, what's missing, build priority order |
 | `docs/HOW_IT_WORKS.md` | Plain-English guide for business stakeholders — the journey of a lead from discovery to reply |
 | `docs/SYSTEM_ARCHITECTURE.md` | Full technical architecture — every agent, every API, every data flow, database schema |
-| `docs/AGENTIC_TRANSFORMATION_PLAN.md` | Design plan for agentic upgrades — all phases now complete |
+| `docs/AGENTIC_TRANSFORMATION_PLAN.md` | Agentic upgrade plan — Phases A/B/C complete, Phase D + KB (vector memory) planned |
 | `docs/AGENTIC_DESIGN.md` | Agentic reasoning patterns used across agents |
 | `docs/CONTACT_ENRICHMENT_STRATEGY.md` | Contact enrichment waterfall — sources, fallbacks, quality gates |
 | `docs/ENRICHMENT_API_GUIDE.md` | API-by-API guide for enrichment integrations |

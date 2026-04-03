@@ -16,3 +16,9 @@ chapters:
       - file: chapters/Agents/tracker_deep_dive
       - file: chapters/Agents/orchestrator_deep_dive
       - file: chapters/Agents/chat_agent_deep_dive
+  - file: chapters/Reference/index
+    sections:
+      - file: chapters/Reference/chatbot_architecture
+      - file: chapters/Reference/contact_enrichment_strategy
+      - file: chapters/Reference/enrichment_api_guide
+      - file: chapters/Reference/scout_sources_and_signals

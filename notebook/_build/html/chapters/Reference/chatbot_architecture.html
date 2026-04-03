@@ -1,0 +1,1079 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Chatbot Architecture — How It Works &#8212; Utility Lead Intelligence Platform</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" href="../../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../../_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'chapters/Reference/chatbot_architecture';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Contact Enrichment Strategy" href="contact_enrichment_strategy.html" />
+    <link rel="prev" title="Reference" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Utility Lead Intelligence Platform</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../../index.html">
+                    Utility Lead Intelligence Platform
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../system_architecture.html">System Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../agentic_design.html">Agentic Design</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../Agents/index.html">Agents: Deep Technical Walkthrough</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../Agents/scout_deep_dive.html">Scout Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Agents/analyst_deep_dive.html">Analyst Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Agents/writer_deep_dive.html">Writer Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Agents/outreach_deep_dive.html">Outreach Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Agents/tracker_deep_dive.html">Tracker Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Agents/orchestrator_deep_dive.html">Orchestrator Agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Agents/chat_agent_deep_dive.html">Chat Agent</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Chatbot Architecture — How It Works</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contact_enrichment_strategy.html">Contact Enrichment Strategy</a></li>
+
+<li class="toctree-l2"><a class="reference internal" href="enrichment_api_guide.html">Contact Enrichment — API Guide &amp; Strategy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scout_sources_and_signals.html">Scout — Sources, Signals &amp; Intent-Based Prospecting</a></li>
+
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../../_sources/chapters/Reference/chatbot_architecture.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Chatbot Architecture — How It Works</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#table-of-contents">Table of Contents</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#request-flow-end-to-end">Request Flow (end-to-end)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-memory-context-work">How Memory &amp; Context Work</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-problem-this-solves">The problem this solves</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#solution-short-term-conversation-memory-3-layer-mechanism">Solution: Short-Term Conversation Memory (3-layer mechanism)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-only-6-messages-not-more">Why only 6 messages (not more)?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-this-memory-is-not">What this memory is NOT</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#is-this-rag-explained">Is This RAG? (Explained)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#when-would-we-add-rag">When would we add RAG?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#agentic-concepts-in-use">Agentic Concepts in Use</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#react-reason-act">1. ReAct (Reason + Act)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#llm-intent-extraction-structured-output">2. LLM Intent Extraction (Structured Output)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#short-term-conversation-memory-context-window-memory">3. Short-Term Conversation Memory (Context Window Memory)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tool-use-function-calling">4. Tool Use / Function Calling</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#observe-ask-act-clarification-loop">5. Observe → Ask → Act (Clarification Loop)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#llm-query-planner-multi-query-search">6. LLM Query Planner (Multi-Query Search)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#llm-deduplication">7. LLM Deduplication</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#quality-check-retry-loop">8. Quality Check + Retry Loop</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#background-thread-polling-async-agent-execution">9. Background Thread + Polling (Async Agent Execution)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#human-in-the-loop-hitl">10. Human-in-the-Loop (HITL)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tools-the-agent-can-call">Tools the Agent Can Call</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#llm-intent-extraction-routing">LLM Intent Extraction (Routing)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#observe-ask-act-pattern">Observe → Ask → Act Pattern</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ui-rendering">UI Rendering</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#llm-configuration">LLM Configuration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#database-tracking">Database Tracking</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tech-stack-summary">Tech Stack Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-coming-next-phase-c">What Is Coming Next (Phase C)</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="chatbot-architecture-how-it-works">
+<h1>Chatbot Architecture — How It Works<a class="headerlink" href="#chatbot-architecture-how-it-works" title="Permalink to this heading">#</a></h1>
+<blockquote>
+<div><p>Last updated: 2026-03-22
+Covers: request flow, memory &amp; context, agentic concepts, tech stack, what is and is not RAG</p>
+</div></blockquote>
+<hr class="docutils" />
+<section id="table-of-contents">
+<h2>Table of Contents<a class="headerlink" href="#table-of-contents" title="Permalink to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p><span class="xref myst">Overview</span></p></li>
+<li><p><span class="xref myst">Request Flow (end-to-end)</span></p></li>
+<li><p><span class="xref myst">How Memory &amp; Context Work</span></p></li>
+<li><p><span class="xref myst">Is This RAG? (Explained)</span></p></li>
+<li><p><span class="xref myst">Agentic Concepts in Use</span></p></li>
+<li><p><span class="xref myst">Tools the Agent Can Call</span></p></li>
+<li><p><span class="xref myst">LLM Intent Extraction (Routing)</span></p></li>
+<li><p><span class="xref myst">Observe → Ask → Act Pattern</span></p></li>
+<li><p><span class="xref myst">UI Rendering</span></p></li>
+<li><p><span class="xref myst">LLM Configuration</span></p></li>
+<li><p><span class="xref myst">Database Tracking</span></p></li>
+<li><p><span class="xref myst">Tech Stack Summary</span></p></li>
+</ol>
+</section>
+<hr class="docutils" />
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this heading">#</a></h2>
+<p>The chatbot is the <strong>primary interface</strong> for the platform. The user types natural language
+and the agent decides what to do — no forms, no buttons required.</p>
+<p>The agent is built using <strong>LangChain ReAct</strong> (Reason + Act) on top of either
+<strong>Ollama / llama3.2</strong> (local) or <strong>OpenAI GPT-4o-mini</strong> (cloud).</p>
+<p><strong>Key design principle:</strong> The LLM reasons; the code executes.
+No rigid keyword lists or regex routing. One LLM call classifies intent → deterministic
+Python executes the result.</p>
+</section>
+<hr class="docutils" />
+<section id="request-flow-end-to-end">
+<h2>Request Flow (end-to-end)<a class="headerlink" href="#request-flow-end-to-end" title="Permalink to this heading">#</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>User types message
+       │
+       ▼
+React Chat UI  (localhost:3000)
+  src/pages/Chat.jsx
+       │
+       │  1. Reads last 6 messages from state (conversation history)
+       │  2. POST /chat  { &quot;message&quot;: &quot;...&quot;, &quot;history&quot;: [...last 6 msgs...] }
+       ▼
+FastAPI  (localhost:8001)
+  api/routes/chat.py
+       │
+       │  3. Spawns background thread — returns run_id immediately
+       │  4. Frontend polls GET /pipeline/run/{run_id}  every 2s (live logs)
+       │  5. Frontend polls GET /chat/result/{run_id}   every 2s (final reply)
+       ▼
+agents/chat_agent.py   ← LangChain ReAct agent
+       │
+       │  6. Calls _extract_intent(message, history, llm)
+       │     → single LLM call → returns {action, tier, industry, location, count}
+       │
+       │  7. Routes deterministically by action:
+       │     get_leads       → SQL query on companies + lead_scores
+       │     search_companies → check for missing info → ask OR run Scout
+       │     run_full_pipeline → check for missing info → ask OR run Orchestrator
+       │     get_outreach_history / get_replies → SQL query on outreach_events
+       │     unknown         → LangChain ReAct agent loop (free-form reasoning)
+       │
+       │  8. Tool executes → writes to DB → logs to agent_run_logs
+       │
+       └── Returns { reply: str, data: dict, run_id: str }
+                        │
+                        ▼
+              Chat UI renders reply + inline data cards
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="how-memory-context-work">
+<h2>How Memory &amp; Context Work<a class="headerlink" href="#how-memory-context-work" title="Permalink to this heading">#</a></h2>
+<section id="the-problem-this-solves">
+<h3>The problem this solves<a class="headerlink" href="#the-problem-this-solves" title="Permalink to this heading">#</a></h3>
+<p>Each <code class="docutils literal notranslate"><span class="pre">/chat</span></code> POST is stateless — the server has no memory of prior messages.
+Without context, “and low?” after “show me medium leads” would fail because the
+server sees only <code class="docutils literal notranslate"><span class="pre">&quot;and</span> <span class="pre">low?&quot;</span></code> and has no idea what “low” refers to.</p>
+</section>
+<section id="solution-short-term-conversation-memory-3-layer-mechanism">
+<h3>Solution: Short-Term Conversation Memory (3-layer mechanism)<a class="headerlink" href="#solution-short-term-conversation-memory-3-layer-mechanism" title="Permalink to this heading">#</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>┌─────────────────────────────────────────────────────────────────┐
+│  LAYER 1: Storage                                               │
+│  frontend React state  →  localStorage[&quot;chatMessages&quot;]          │
+│  Every message (user + agent) is appended and persisted.        │
+│  Survives page refresh. Cleared only on &quot;New Chat&quot;.             │
+└──────────────────────────────┬──────────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────────┐
+│  LAYER 2: Context Passthrough                                   │
+│  handleSend() in Chat.jsx slices the last 6 messages            │
+│  (= ~3 back-and-forth turns) and sends them in the POST body:   │
+│                                                                 │
+│  POST /chat                                                     │
+│  {                                                              │
+│    &quot;message&quot;: &quot;and low?&quot;,                                       │
+│    &quot;history&quot;: [                                                 │
+│      { &quot;role&quot;: &quot;user&quot;,      &quot;content&quot;: &quot;show me medium leads&quot; },│
+│      { &quot;role&quot;: &quot;assistant&quot;, &quot;content&quot;: &quot;Here are 4 medium...&quot; } │
+│    ]                                                            │
+│  }                                                              │
+└──────────────────────────────┬──────────────────────────────────┘
+                               │
+                               ▼
+┌─────────────────────────────────────────────────────────────────┐
+│  LAYER 3: LLM Intent Extraction with History                    │
+│  _extract_intent() in chat_agent.py builds this prompt:         │
+│                                                                 │
+│  &quot;Conversation so far:                                          │
+│   User: show me medium leads                                    │
+│   Agent: Here are 4 medium-tier leads...                        │
+│                                                                 │
+│   Current message: &#39;and low?&#39;                                   │
+│   Return JSON: {action, tier, industry, location, count}&quot;       │
+│                                                                 │
+│  LLM reads full context → returns {&quot;action&quot;:&quot;get_leads&quot;,        │
+│  &quot;tier&quot;:&quot;low&quot;} — correctly resolved from conversation.          │
+└─────────────────────────────────────────────────────────────────┘
+</pre></div>
+</div>
+</section>
+<section id="why-only-6-messages-not-more">
+<h3>Why only 6 messages (not more)?<a class="headerlink" href="#why-only-6-messages-not-more" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Keeps LLM prompt short → faster response, lower token cost</p></li>
+<li><p>3 back-and-forth turns covers 99% of follow-up intent resolution</p></li>
+<li><p>Older context is in DB (agent_run_logs) if needed for audit</p></li>
+</ul>
+</section>
+<section id="what-this-memory-is-not">
+<h3>What this memory is NOT<a class="headerlink" href="#what-this-memory-is-not" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>It is <strong>not</strong> persistent across browser sessions after “New Chat”</p></li>
+<li><p>It is <strong>not</strong> stored server-side between requests</p></li>
+<li><p>It is <strong>not</strong> a vector database or semantic search</p></li>
+<li><p>It is <strong>not</strong> RAG (see below)</p></li>
+</ul>
+</section>
+</section>
+<hr class="docutils" />
+<section id="is-this-rag-explained">
+<h2>Is This RAG? (Explained)<a class="headerlink" href="#is-this-rag-explained" title="Permalink to this heading">#</a></h2>
+<p><strong>No. This is NOT RAG.</strong></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Concept</p></th>
+<th class="head"><p>What it means</p></th>
+<th class="head"><p>Do we use it?</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>RAG</strong> (Retrieval-Augmented Generation)</p></td>
+<td><p>Embed a knowledge base into vectors → at query time, retrieve top-K similar chunks → inject into LLM prompt</p></td>
+<td><p>❌ No</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Short-term Conversation Memory</strong></p></td>
+<td><p>Pass last N messages as text in the prompt for context carry-forward</p></td>
+<td><p>✅ Yes (our approach)</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Tool-augmented Generation</strong></p></td>
+<td><p>LLM calls Python functions (tools) to read live DB data → uses results in its reply</p></td>
+<td><p>✅ Yes</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Structured Output Extraction</strong></p></td>
+<td><p>LLM returns JSON from a free-text analysis (intent extraction)</p></td>
+<td><p>✅ Yes</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<section id="when-would-we-add-rag">
+<h3>When would we add RAG?<a class="headerlink" href="#when-would-we-add-rag" title="Permalink to this heading">#</a></h3>
+<p>RAG would make sense if we wanted the agent to answer questions like:</p>
+<ul class="simple">
+<li><p>“What is our company’s outreach policy?”</p></li>
+<li><p>“Summarize our Q3 sales strategy document”</p></li>
+<li><p>“What did we decide about healthcare pricing last month?”</p></li>
+</ul>
+<p>That would require a vector store (e.g. Chroma, Pinecone, pgvector) and an embedding model.
+We do not have that today. Our agent only reads <strong>live database rows</strong>, not documents.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="agentic-concepts-in-use">
+<h2>Agentic Concepts in Use<a class="headerlink" href="#agentic-concepts-in-use" title="Permalink to this heading">#</a></h2>
+<p>Below is every agentic concept used in this project with a plain-English explanation.</p>
+<section id="react-reason-act">
+<h3>1. ReAct (Reason + Act)<a class="headerlink" href="#react-reason-act" title="Permalink to this heading">#</a></h3>
+<p><strong>What it is:</strong> A pattern where the LLM alternates between reasoning (“I need to find healthcare companies in Buffalo”) and acting (calls <code class="docutils literal notranslate"><span class="pre">search_companies</span></code> tool). Popularized in the <a class="reference external" href="https://arxiv.org/abs/2210.03629">ReAct paper (2022)</a>.
+<strong>Where we use it:</strong> <code class="docutils literal notranslate"><span class="pre">create_agent()</span></code> in <code class="docutils literal notranslate"><span class="pre">chat_agent.py</span></code> — LangChain’s <code class="docutils literal notranslate"><span class="pre">AgentExecutor</span></code> with <code class="docutils literal notranslate"><span class="pre">create_react_agent</span></code>.
+<strong>Tech:</strong> <code class="docutils literal notranslate"><span class="pre">langchain.agents.create_react_agent</span></code>, <code class="docutils literal notranslate"><span class="pre">langchain.agents.AgentExecutor</span></code></p>
+</section>
+<section id="llm-intent-extraction-structured-output">
+<h3>2. LLM Intent Extraction (Structured Output)<a class="headerlink" href="#llm-intent-extraction-structured-output" title="Permalink to this heading">#</a></h3>
+<p><strong>What it is:</strong> Instead of regex/keyword routing, we ask the LLM to read the message + history and return structured JSON classifying the user’s intent. The LLM reasons; the code acts.
+<strong>Where we use it:</strong> <code class="docutils literal notranslate"><span class="pre">_extract_intent()</span></code> in <code class="docutils literal notranslate"><span class="pre">chat_agent.py</span></code>
+<strong>Tech:</strong> LLM prompt engineering, JSON parsing with <code class="docutils literal notranslate"><span class="pre">json.loads()</span></code>, fallback to <code class="docutils literal notranslate"><span class="pre">{&quot;action&quot;:</span> <span class="pre">&quot;unknown&quot;}</span></code></p>
+</section>
+<section id="short-term-conversation-memory-context-window-memory">
+<h3>3. Short-Term Conversation Memory (Context Window Memory)<a class="headerlink" href="#short-term-conversation-memory-context-window-memory" title="Permalink to this heading">#</a></h3>
+<p><strong>What it is:</strong> Passing the last N conversation turns directly in the prompt so the LLM can resolve follow-up references (“and low?”, “what about those companies?”). This is called <strong>context window memory</strong> — the history lives in the prompt itself, not in a database or vector store.
+<strong>Where we use it:</strong> <code class="docutils literal notranslate"><span class="pre">history</span></code> parameter in <code class="docutils literal notranslate"><span class="pre">run_chat()</span></code>, <code class="docutils literal notranslate"><span class="pre">_extract_intent()</span></code>, <code class="docutils literal notranslate"><span class="pre">handleSend()</span></code> in Chat.jsx
+<strong>Tech:</strong> Plain JSON array passed in POST body, sliced to last 6 entries</p>
+</section>
+<section id="tool-use-function-calling">
+<h3>4. Tool Use / Function Calling<a class="headerlink" href="#tool-use-function-calling" title="Permalink to this heading">#</a></h3>
+<p><strong>What it is:</strong> The LLM can call Python functions (tools) to read/write real data. Each tool has a name, description, and input schema. The agent decides which tool to call based on the user’s intent.
+<strong>Where we use it:</strong> <code class="docutils literal notranslate"><span class="pre">&#64;tool</span></code> decorated functions in <code class="docutils literal notranslate"><span class="pre">chat_agent.py</span></code>
+<strong>Tech:</strong> <code class="docutils literal notranslate"><span class="pre">langchain.tools</span></code> <code class="docutils literal notranslate"><span class="pre">&#64;tool</span></code> decorator, LangChain <code class="docutils literal notranslate"><span class="pre">AgentExecutor</span></code></p>
+</section>
+<section id="observe-ask-act-clarification-loop">
+<h3>5. Observe → Ask → Act (Clarification Loop)<a class="headerlink" href="#observe-ask-act-clarification-loop" title="Permalink to this heading">#</a></h3>
+<p><strong>What it is:</strong> Before running an expensive operation, the agent checks if it has enough information. If not, it asks the user — instead of guessing or running with defaults.
+<strong>Where we use it:</strong> <code class="docutils literal notranslate"><span class="pre">search_companies</span></code> and <code class="docutils literal notranslate"><span class="pre">run_full_pipeline</span></code> routing in <code class="docutils literal notranslate"><span class="pre">chat_agent.py</span></code> — checks for missing <code class="docutils literal notranslate"><span class="pre">location</span></code> and <code class="docutils literal notranslate"><span class="pre">industry</span></code> before triggering Scout
+<strong>Tech:</strong> Conditional logic + targeted LLM prompt to generate a clarifying question</p>
+</section>
+<section id="llm-query-planner-multi-query-search">
+<h3>6. LLM Query Planner (Multi-Query Search)<a class="headerlink" href="#llm-query-planner-multi-query-search" title="Permalink to this heading">#</a></h3>
+<p><strong>What it is:</strong> Instead of one rigid search query, the LLM generates 3–5 diverse query variants from different angles (“elementary schools Buffalo NY”, “primary education institutions western NY”, “K-12 school district Buffalo”). Each query hits the search API separately → broader coverage.
+<strong>Where we use it:</strong> <code class="docutils literal notranslate"><span class="pre">agents/scout/llm_query_planner.py</span></code> — <code class="docutils literal notranslate"><span class="pre">plan_queries()</span></code>, <code class="docutils literal notranslate"><span class="pre">plan_retry_queries()</span></code>
+<strong>Tech:</strong> LLM prompt → parse numbered list → fallback to static queries</p>
+</section>
+<section id="llm-deduplication">
+<h3>7. LLM Deduplication<a class="headerlink" href="#llm-deduplication" title="Permalink to this heading">#</a></h3>
+<p><strong>What it is:</strong> After multi-query search returns many results, an LLM reviews suspicious pairs (similar names, same domain) and decides which are duplicates. Two-pass: fast domain-exact match → LLM name-similarity review.
+<strong>Where we use it:</strong> <code class="docutils literal notranslate"><span class="pre">agents/scout/llm_deduplicator.py</span></code> — <code class="docutils literal notranslate"><span class="pre">deduplicate()</span></code>
+<strong>Tech:</strong> <code class="docutils literal notranslate"><span class="pre">difflib.SequenceMatcher</span></code> for similarity scoring, LLM for pair review</p>
+</section>
+<section id="quality-check-retry-loop">
+<h3>8. Quality Check + Retry Loop<a class="headerlink" href="#quality-check-retry-loop" title="Permalink to this heading">#</a></h3>
+<p><strong>What it is:</strong> After Scout saves results, if <code class="docutils literal notranslate"><span class="pre">saved</span> <span class="pre">&lt;</span> <span class="pre">target</span> <span class="pre">*</span> <span class="pre">0.8</span></code> (less than 80% of goal), the agent generates new search angles and retries instead of silently returning partial results.
+<strong>Where we use it:</strong> <code class="docutils literal notranslate"><span class="pre">agents/scout/scout_agent.py</span></code> — retry loop after <code class="docutils literal notranslate"><span class="pre">_save_companies()</span></code>
+<strong>Tech:</strong> Conditional retry with <code class="docutils literal notranslate"><span class="pre">plan_retry_queries()</span></code>, max retry guard</p>
+</section>
+<section id="background-thread-polling-async-agent-execution">
+<h3>9. Background Thread + Polling (Async Agent Execution)<a class="headerlink" href="#background-thread-polling-async-agent-execution" title="Permalink to this heading">#</a></h3>
+<p><strong>What it is:</strong> The API spawns the agent in a background thread and returns a <code class="docutils literal notranslate"><span class="pre">run_id</span></code> immediately. The frontend polls two endpoints — one for live progress logs, one for the final result. This keeps the UI responsive during long agent runs.
+<strong>Where we use it:</strong> <code class="docutils literal notranslate"><span class="pre">api/routes/chat.py</span></code> — <code class="docutils literal notranslate"><span class="pre">threading.Thread</span></code>, in-memory <code class="docutils literal notranslate"><span class="pre">_results</span></code> dict
+<strong>Tech:</strong> Python <code class="docutils literal notranslate"><span class="pre">threading</span></code>, FastAPI background pattern, React <code class="docutils literal notranslate"><span class="pre">setInterval</span></code> polling</p>
+</section>
+<section id="human-in-the-loop-hitl">
+<h3>10. Human-in-the-Loop (HITL)<a class="headerlink" href="#human-in-the-loop-hitl" title="Permalink to this heading">#</a></h3>
+<p><strong>What it is:</strong> The agent pauses and waits for human approval before taking irreversible actions (sending emails). Humans review and approve/reject leads and email drafts before the agent proceeds.
+<strong>Where we use it:</strong> Lead approval/rejection (<code class="docutils literal notranslate"><span class="pre">/leads/{id}/approve</span></code>), email draft approval (<code class="docutils literal notranslate"><span class="pre">/emails/{id}/approve</span></code>)
+<strong>Tech:</strong> PostgreSQL status fields (<code class="docutils literal notranslate"><span class="pre">approved</span></code>, <code class="docutils literal notranslate"><span class="pre">pending</span></code>, <code class="docutils literal notranslate"><span class="pre">rejected</span></code>), FastAPI PATCH endpoints</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="tools-the-agent-can-call">
+<h2>Tools the Agent Can Call<a class="headerlink" href="#tools-the-agent-can-call" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Tool</p></th>
+<th class="head"><p>When triggered</p></th>
+<th class="head"><p>What it does</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">search_companies</span></code></p></td>
+<td><p>“find companies”, “search for”, “discover X in Y”</p></td>
+<td><p>Checks for location+industry → asks if missing → runs Scout agent</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">get_leads</span></code></p></td>
+<td><p>“show me leads”, “high-tier”, “scored leads”, “low level”</p></td>
+<td><p>SQL query on <code class="docutils literal notranslate"><span class="pre">companies</span> <span class="pre">+</span> <span class="pre">lead_scores</span></code>, returns tier + score_reason</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">get_outreach_history</span></code></p></td>
+<td><p>“who did we email”, “already contacted”</p></td>
+<td><p>Queries <code class="docutils literal notranslate"><span class="pre">outreach_events</span></code> where type=sent</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">get_replies</span></code></p></td>
+<td><p>“any replies?”, “who replied”, “interested”</p></td>
+<td><p>Queries <code class="docutils literal notranslate"><span class="pre">outreach_events</span></code> where type=replied</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">run_full_pipeline</span></code></p></td>
+<td><p>“run everything”, “full pipeline”, “start from scratch”</p></td>
+<td><p>Checks location+industry → asks if missing → runs Orchestrator</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="llm-intent-extraction-routing">
+<h2>LLM Intent Extraction (Routing)<a class="headerlink" href="#llm-intent-extraction-routing" title="Permalink to this heading">#</a></h2>
+<p><strong>Old approach (brittle):</strong> Regex + keyword lists</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">_TIER_KEYWORDS</span> <span class="pre">=</span> <span class="pre">[&quot;high-tier&quot;,</span> <span class="pre">&quot;high</span> <span class="pre">tier&quot;,</span> <span class="pre">&quot;top</span> <span class="pre">leads&quot;,</span> <span class="pre">...]</span></code></p></li>
+<li><p>Failed silently on variants like “low level”, “top companies”, “find me some good ones”</p></li>
+</ul>
+<p><strong>New approach (robust):</strong> Single LLM call per message</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">_extract_intent</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">history</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">dict</span><span class="p">],</span> <span class="n">llm</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calls LLM with message + last 6 history messages.</span>
+<span class="sd">    Returns: { action, tier, industry, location, count }</span>
+<span class="sd">    Falls back to: { &quot;action&quot;: &quot;unknown&quot; } on any error.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+</pre></div>
+</div>
+<p>The LLM returns one of these <code class="docutils literal notranslate"><span class="pre">action</span></code> values:</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>action</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">get_leads</span></code></p></td>
+<td><p>User wants to see scored/tiered leads</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">search_companies</span></code></p></td>
+<td><p>User wants to find new companies</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">run_full_pipeline</span></code></p></td>
+<td><p>User wants end-to-end Scout + Analyst + Writer</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">get_outreach_history</span></code></p></td>
+<td><p>User wants to see sent emails</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">get_replies</span></code></p></td>
+<td><p>User wants to see replies</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">unknown</span></code></p></td>
+<td><p>Free-form / conversational → falls to ReAct agent loop</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><strong>Why this is better:</strong></p>
+<ul class="simple">
+<li><p>“show me the top ones” → <code class="docutils literal notranslate"><span class="pre">get_leads,</span> <span class="pre">tier=high</span></code> ✅</p></li>
+<li><p>“can we find low level” → <code class="docutils literal notranslate"><span class="pre">get_leads,</span> <span class="pre">tier=low</span></code> ✅</p></li>
+<li><p>“what about medium?” (follow-up) → <code class="docutils literal notranslate"><span class="pre">get_leads,</span> <span class="pre">tier=medium</span></code> ✅ (via history)</p></li>
+<li><p>New phrasing we’ve never seen → LLM handles it without code changes ✅</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="observe-ask-act-pattern">
+<h2>Observe → Ask → Act Pattern<a class="headerlink" href="#observe-ask-act-pattern" title="Permalink to this heading">#</a></h2>
+<p>Before expensive operations (<code class="docutils literal notranslate"><span class="pre">search_companies</span></code>, <code class="docutils literal notranslate"><span class="pre">run_full_pipeline</span></code>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Intent extracted → check required fields
+       │
+       ├── location missing? ──► ask: &quot;Which city/region?&quot;
+       │
+       ├── industry missing? ──► ask: &quot;What type of companies?&quot;
+       │
+       └── both present? ──────► run Scout / Orchestrator
+</pre></div>
+</div>
+<p><strong>Without this:</strong> “find 5 religious sector” → Scout would load 78 Buffalo-specific directory
+sources with no location filter → useless results.</p>
+<p><strong>With this:</strong> “find 5 religious sector” → agent replies “Could you tell me which city
+or region you’d like to search in?” → waits for user input.</p>
+</section>
+<hr class="docutils" />
+<section id="ui-rendering">
+<h2>UI Rendering<a class="headerlink" href="#ui-rendering" title="Permalink to this heading">#</a></h2>
+<p>The chat UI (<code class="docutils literal notranslate"><span class="pre">src/pages/Chat.jsx</span></code>) renders agent responses in two parts:</p>
+<ol class="arabic simple">
+<li><p><strong>Text bubble</strong> — natural language reply from the agent</p></li>
+<li><p><strong>Inline data cards</strong> — structured results:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">CompanyCard</span></code> — name, industry, city, website, source badge</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LeadCard</span></code> — name, tier badge, score, <strong>score_reason</strong> (LLM-written explanation), approved status</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ReplyCard</span></code> — name, sentiment badge, reply snippet, date</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Pipeline</span> <span class="pre">Summary</span></code> — companies found, scored, drafts created</p></li>
+</ul>
+</li>
+</ol>
+<p><strong>Welcome experience:</strong></p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">WELCOME_VERSION</span></code> in localStorage invalidates stale cached welcome messages after UI updates</p></li>
+<li><p>Capability cards toggle (“What can I do?”) — 4 cards explaining agentic features</p></li>
+<li><p>8 suggestion prompts reflecting current agent capabilities</p></li>
+</ul>
+</section>
+<hr class="docutils" />
+<section id="llm-configuration">
+<h2>LLM Configuration<a class="headerlink" href="#llm-configuration" title="Permalink to this heading">#</a></h2>
+<div class="highlight-env notranslate"><div class="highlight"><pre><span></span>LLM_PROVIDER=ollama          # switch to &quot;openai&quot; for GPT-4o-mini
+LLM_MODEL=llama3.2           # or &quot;gpt-4o-mini&quot;
+OLLAMA_BASE_URL=http://host.docker.internal:11434
+OPENAI_API_KEY=              # fill in if using openai
+</pre></div>
+</div>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Provider</p></th>
+<th class="head"><p>Model</p></th>
+<th class="head"><p>Speed</p></th>
+<th class="head"><p>Cost</p></th>
+<th class="head"><p>Best for</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Ollama</p></td>
+<td><p>llama3.2</p></td>
+<td><p>Medium</p></td>
+<td><p>Free (local)</p></td>
+<td><p>Development, privacy</p></td>
+</tr>
+<tr class="row-odd"><td><p>OpenAI</p></td>
+<td><p>gpt-4o-mini</p></td>
+<td><p>Fast</p></td>
+<td><p>~$0.01/call</p></td>
+<td><p>Production, accuracy</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="database-tracking">
+<h2>Database Tracking<a class="headerlink" href="#database-tracking" title="Permalink to this heading">#</a></h2>
+<p>Every chat message creates one <code class="docutils literal notranslate"><span class="pre">agent_runs</span></code> row:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>agent_runs
+├── id              (UUID — this is the run_id returned to frontend)
+├── trigger_source  = &quot;chat&quot;
+├── trigger_input   = { &quot;message&quot;: &quot;...&quot; }
+├── status          started → scout_running → scout_complete → completed / failed
+├── current_stage   chat → scout → analyst → writer → outreach
+├── companies_found
+├── companies_scored
+├── drafts_created
+└── error_message
+</pre></div>
+</div>
+<p>Every tool call appends one row to <code class="docutils literal notranslate"><span class="pre">agent_run_logs</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>agent_run_logs
+├── run_id          (FK to agent_runs)
+├── agent           &quot;scout&quot; | &quot;chat&quot; | &quot;orchestrator&quot;
+├── action          &quot;companies_found&quot; | &quot;get_leads&quot; | etc.
+├── status          &quot;success&quot; | &quot;failure&quot;
+├── output_summary  human-readable result
+└── duration_ms
+</pre></div>
+</div>
+</section>
+<hr class="docutils" />
+<section id="tech-stack-summary">
+<h2>Tech Stack Summary<a class="headerlink" href="#tech-stack-summary" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Layer</p></th>
+<th class="head"><p>Technology</p></th>
+<th class="head"><p>Purpose</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>LLM (local)</strong></p></td>
+<td><p>Ollama + llama3.2</p></td>
+<td><p>Free local inference</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>LLM (cloud)</strong></p></td>
+<td><p>OpenAI GPT-4o-mini</p></td>
+<td><p>Production-grade reasoning</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Agent framework</strong></p></td>
+<td><p>LangChain</p></td>
+<td><p>ReAct agent, tool binding, prompt templates</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>API</strong></p></td>
+<td><p>FastAPI (Python)</p></td>
+<td><p>REST endpoints, background threading</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Frontend</strong></p></td>
+<td><p>React + TailwindCSS</p></td>
+<td><p>Chat UI, polling, card rendering</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Database</strong></p></td>
+<td><p>PostgreSQL</p></td>
+<td><p>Lead data, scores, email drafts, run logs</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Web search</strong></p></td>
+<td><p>Tavily API</p></td>
+<td><p>Directory and news search for Scout</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Maps search</strong></p></td>
+<td><p>Google Maps API</p></td>
+<td><p>Business discovery for Scout</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Containerization</strong></p></td>
+<td><p>Docker + docker-compose</p></td>
+<td><p>Reproducible dev environment</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Context memory</strong></p></td>
+<td><p>localStorage + POST body</p></td>
+<td><p>Short-term conversation carry-forward</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Deduplication</strong></p></td>
+<td><p>difflib + LLM</p></td>
+<td><p>Domain + name-similarity duplicate removal</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<hr class="docutils" />
+<section id="what-is-coming-next-phase-c">
+<h2>What Is Coming Next (Phase C)<a class="headerlink" href="#what-is-coming-next-phase-c" title="Permalink to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Feature</p></th>
+<th class="head"><p>Agentic Concept</p></th>
+<th class="head"><p>Status</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Writer generates from company context (not template)</p></td>
+<td><p>Context-aware generation</p></td>
+<td><p>Phase C</p></td>
+</tr>
+<tr class="row-odd"><td><p>Critic evaluates draft 0–10 → rewrite loop max 2x</p></td>
+<td><p>Self-critique + reflection loop</p></td>
+<td><p>Phase C</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">low_confidence=true</span></code> if draft never reaches score 7</p></td>
+<td><p>Uncertainty flagging</p></td>
+<td><p>Phase C</p></td>
+</tr>
+<tr class="row-odd"><td><p>Dynamic chat filters (industry, tier, date)</p></td>
+<td><p>Tool parameter extraction</p></td>
+<td><p>Phase D</p></td>
+</tr>
+<tr class="row-even"><td><p>pgvector semantic search over leads</p></td>
+<td><p>RAG (first true RAG in the platform)</p></td>
+<td><p>Future</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./chapters/Reference"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Reference</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="contact_enrichment_strategy.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Contact Enrichment Strategy</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#table-of-contents">Table of Contents</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#request-flow-end-to-end">Request Flow (end-to-end)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-memory-context-work">How Memory &amp; Context Work</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-problem-this-solves">The problem this solves</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#solution-short-term-conversation-memory-3-layer-mechanism">Solution: Short-Term Conversation Memory (3-layer mechanism)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#why-only-6-messages-not-more">Why only 6 messages (not more)?</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-this-memory-is-not">What this memory is NOT</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#is-this-rag-explained">Is This RAG? (Explained)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#when-would-we-add-rag">When would we add RAG?</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#agentic-concepts-in-use">Agentic Concepts in Use</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#react-reason-act">1. ReAct (Reason + Act)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#llm-intent-extraction-structured-output">2. LLM Intent Extraction (Structured Output)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#short-term-conversation-memory-context-window-memory">3. Short-Term Conversation Memory (Context Window Memory)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#tool-use-function-calling">4. Tool Use / Function Calling</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#observe-ask-act-clarification-loop">5. Observe → Ask → Act (Clarification Loop)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#llm-query-planner-multi-query-search">6. LLM Query Planner (Multi-Query Search)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#llm-deduplication">7. LLM Deduplication</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#quality-check-retry-loop">8. Quality Check + Retry Loop</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#background-thread-polling-async-agent-execution">9. Background Thread + Polling (Async Agent Execution)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#human-in-the-loop-hitl">10. Human-in-the-Loop (HITL)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tools-the-agent-can-call">Tools the Agent Can Call</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#llm-intent-extraction-routing">LLM Intent Extraction (Routing)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#observe-ask-act-pattern">Observe → Ask → Act Pattern</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ui-rendering">UI Rendering</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#llm-configuration">LLM Configuration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#database-tracking">Database Tracking</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tech-stack-summary">Tech Stack Summary</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-coming-next-phase-c">What Is Coming Next (Phase C)</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Harshal Patil
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2022.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
