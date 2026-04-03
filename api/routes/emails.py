@@ -34,6 +34,7 @@ from sqlalchemy.orm import Session
 
 from api.dependencies import get_db, verify_api_key
 from api.models.email import (
+    CrmGenerateRequest,
     EmailApproveRequest,
     EmailDraftResponse,
     EmailEditRequest,
@@ -307,6 +308,48 @@ def reject_draft(
             f"Reason: {body.rejection_reason or 'not provided'}."
         ),
     }
+
+
+@router.post("/crm-generate", response_model=EmailDraftResponse)
+def generate_crm_draft(
+    body: CrmGenerateRequest,
+    db: Session = Depends(get_db),
+) -> EmailDraftResponse:
+    """Generate an email draft for a CRM-sourced company.
+
+    Agentic concepts:
+      Context-Aware Generation  — writer uses stored meeting context notes as score_reason.
+      Graceful Degradation      — falls back to industry benchmarks if no company_features.
+      Self-Critique + Context   — extended Critic with 6-criterion rubric (context_accuracy).
+      Reflection loop           — rewrites up to 2x if Critic score < 8/12.
+
+    Draft is saved with approved_human=True — CRM leads are pre-qualified, no approval gate.
+    Human still sees the draft in the CRM tab and clicks Send before anything goes out.
+    """
+    from agents.writer import writer_agent  # noqa: PLC0415
+
+    company_id = str(body.company_id)
+
+    new_draft_id = writer_agent.process_crm_company(
+        company_id=company_id,
+        db_session=db,
+        user_feedback=body.user_feedback or None,
+    )
+
+    if not new_draft_id:
+        logger.error("[crm-generate] Writer agent failed for company_id=%s", company_id)
+        raise HTTPException(
+            status_code=500,
+            detail=f"CRM writer could not generate a draft for company {company_id}.",
+        )
+
+    row = db.execute(_draft_query(EmailDraft.id == new_draft_id)).first()
+    if not row:
+        raise HTTPException(status_code=500, detail="Draft generated but could not be retrieved.")
+
+    draft, company, contact = row
+    logger.info("[crm-generate] Draft %s created for company_id=%s", new_draft_id, company_id)
+    return _draft_to_response(draft, company, contact)
 
 
 @router.post("/{draft_id}/regenerate", response_model=EmailDraftResponse)

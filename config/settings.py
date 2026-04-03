@@ -158,9 +158,10 @@ class Settings:
     # TROY & BANKS
     # ------------------------------------------------------------------ #
     TB_CONTINGENCY_FEE: float = float(os.getenv("TB_CONTINGENCY_FEE", "0.24"))
-    TB_SENDER_NAME: str = os.getenv("TB_SENDER_NAME", "")
-    TB_SENDER_TITLE: str = os.getenv("TB_SENDER_TITLE", "")
+    TB_SENDER_NAME: str = os.getenv("TB_SENDER_NAME", "Kevin Gibs")
+    TB_SENDER_TITLE: str = os.getenv("TB_SENDER_TITLE", "Sr. Vice President")
     TB_PHONE: str = os.getenv("TB_PHONE", "")
+    TB_WEBSITE: str = os.getenv("TB_WEBSITE", "https://troybanks.com/")
 
 
 @lru_cache(maxsize=1)

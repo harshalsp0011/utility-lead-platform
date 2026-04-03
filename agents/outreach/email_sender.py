@@ -166,10 +166,14 @@ def send_via_sendgrid(
         response = client.send(mail)
 
         if int(response.status_code) == 202:
-            message_id = ""
-            if isinstance(response.headers, dict):
-                message_id = str(response.headers.get("X-Message-Id") or response.headers.get("x-message-id") or "")
-            return {"success": True, "message_id": message_id}
+            # SendGrid returns http.client.HTTPMessage, not a plain dict — use get() either way
+            headers = response.headers
+            message_id = (
+                headers.get("X-Message-Id")
+                or headers.get("x-message-id")
+                or ""
+            ) if headers else ""
+            return {"success": True, "message_id": str(message_id)}
 
         error_text = ""
         if isinstance(response.body, (bytes, bytearray)):

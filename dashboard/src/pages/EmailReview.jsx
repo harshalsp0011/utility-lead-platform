@@ -26,6 +26,9 @@ import {
   rejectEmail,
   regenerateEmail,
   editEmail,
+  fetchCrmCompanies,
+  saveCompanyContext,
+  generateCrmEmail,
 } from '../services/api';
 
 // ============================================================================
@@ -436,6 +439,496 @@ function CompanyDraftCard({
 }
 
 // ============================================================================
+// CRM TAB COMPONENTS
+// ============================================================================
+
+/**
+/**
+ * SendConfirmDialog: shows exactly where the email is going before sending.
+ */
+function SendConfirmDialog({ toEmail, toName, fromEmail, subject, onConfirm, onCancel }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 p-6">
+        <h2 className="text-lg font-bold text-gray-900 mb-3">Confirm Send</h2>
+        <div className="space-y-2 text-sm mb-5">
+          <div className="flex gap-2">
+            <span className="w-14 text-xs font-semibold text-gray-500 uppercase pt-0.5 flex-shrink-0">To</span>
+            <div>
+              <p className="font-semibold text-gray-900">{toName || toEmail}</p>
+              {toName && <p className="text-blue-600 text-xs">{toEmail}</p>}
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <span className="w-14 text-xs font-semibold text-gray-500 uppercase flex-shrink-0">From</span>
+            <span className="text-gray-700">{fromEmail || 'UBinterns@troybanks.com'}</span>
+          </div>
+          <div className="flex gap-2">
+            <span className="w-14 text-xs font-semibold text-gray-500 uppercase flex-shrink-0">Subject</span>
+            <span className="text-gray-800 font-medium">{subject}</span>
+          </div>
+        </div>
+        <div className="flex gap-3 justify-end">
+          <button onClick={onCancel} className="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition font-semibold text-sm">
+            Cancel
+          </button>
+          <button onClick={onConfirm} className="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition font-semibold text-sm">
+            ✓ Send Now
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * RegenerateDialog: modal asking the user what to change before regenerating.
+ * Feedback is optional — leaving it blank triggers a fresh write.
+ */
+function RegenerateDialog({ onConfirm, onCancel }) {
+  const [feedback, setFeedback] = useState('');
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 p-6">
+        <h2 className="text-lg font-bold text-gray-900 mb-1">Regenerate Email</h2>
+        <p className="text-sm text-gray-500 mb-4">
+          What should change? Leave blank to generate a completely fresh draft.
+        </p>
+        <textarea
+          autoFocus
+          value={feedback}
+          onChange={e => setFeedback(e.target.value)}
+          rows={4}
+          placeholder="e.g. Make the tone more casual, shorten the email, lead with the audit offer instead of savings..."
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+        />
+        <div className="flex gap-3 mt-4 justify-end">
+          <button
+            onClick={onCancel}
+            className="px-4 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition font-semibold text-sm"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => onConfirm(feedback.trim())}
+            className="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition font-semibold text-sm"
+          >
+            ↻ Regenerate
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * CrmDraftView: shows a generated draft inline with Edit + Send actions.
+ */
+function CrmDraftView({ draft, onSend, onRegenerate, isLoading, contact }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [subject, setSubject] = useState(draft.subject_line || '');
+  const [body, setBody] = useState(draft.body || '');
+  const [showRegenerateDialog, setShowRegenerateDialog] = useState(false);
+  const [showSendConfirm, setShowSendConfirm] = useState(false);
+
+  const handleSendConfirmed = async () => {
+    setShowSendConfirm(false);
+    if (isEditing) {
+      await onSend(draft.id, subject, body);
+    } else {
+      await onSend(draft.id);
+    }
+    setIsEditing(false);
+  };
+
+  const handleRegenerateConfirm = (feedback) => {
+    setShowRegenerateDialog(false);
+    onRegenerate(draft.id, feedback);
+  };
+
+  return (
+    <>
+      {showSendConfirm && (
+        <SendConfirmDialog
+          toEmail={contact?.email || ''}
+          toName={contact?.full_name || ''}
+          fromEmail="UBinterns@troybanks.com"
+          subject={isEditing ? subject : draft.subject_line}
+          onConfirm={handleSendConfirmed}
+          onCancel={() => setShowSendConfirm(false)}
+        />
+      )}
+      {showRegenerateDialog && (
+        <RegenerateDialog
+          onConfirm={handleRegenerateConfirm}
+          onCancel={() => setShowRegenerateDialog(false)}
+        />
+      )}
+
+      <div className="mt-4 border border-gray-200 rounded-lg overflow-hidden">
+        {/* Draft header */}
+        <div className="bg-gray-50 px-4 py-3 border-b border-gray-200 space-y-1.5 text-sm">
+          <div className="flex gap-3 items-center">
+            <span className="w-16 text-xs font-semibold text-gray-500 uppercase flex-shrink-0">Subject</span>
+            {isEditing ? (
+              <input
+                type="text"
+                value={subject}
+                onChange={e => setSubject(e.target.value)}
+                className="flex-1 px-2 py-0.5 border border-blue-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            ) : (
+              <span className="font-semibold text-gray-900">{subject}</span>
+            )}
+          </div>
+          {draft.savings_estimate && (
+            <div className="flex gap-3">
+              <span className="w-16 text-xs font-semibold text-gray-500 uppercase flex-shrink-0">Savings</span>
+              <span className="text-green-700 font-semibold">{draft.savings_estimate}</span>
+            </div>
+          )}
+          {draft.template_used && (
+            <div className="flex gap-3">
+              <span className="w-16 text-xs font-semibold text-gray-500 uppercase flex-shrink-0">Angle</span>
+              <span className="text-xs bg-gray-200 text-gray-600 rounded px-1.5 py-0.5">{draft.template_used}</span>
+            </div>
+          )}
+        </div>
+
+        {/* Body */}
+        <div className="px-4 py-4">
+          {isEditing ? (
+            <textarea
+              value={body}
+              onChange={e => setBody(e.target.value)}
+              rows={10}
+              className="w-full px-3 py-2 border border-blue-300 rounded text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 leading-relaxed"
+            />
+          ) : (
+            <div className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">{body}</div>
+          )}
+        </div>
+
+        {/* Actions */}
+        <div className="px-4 pb-4 flex gap-2 flex-wrap border-t border-gray-100 pt-3">
+          <button
+            onClick={() => setShowSendConfirm(true)}
+            disabled={isLoading}
+            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400 transition font-semibold text-sm"
+          >
+            {isEditing ? '✓ Save & Send' : '✓ Send'}
+          </button>
+          <button
+            onClick={() => setIsEditing(v => !v)}
+            disabled={isLoading}
+            className={`px-4 py-2 rounded-lg transition font-semibold text-sm ${isEditing ? 'bg-gray-200 text-gray-700 hover:bg-gray-300' : 'bg-blue-600 text-white hover:bg-blue-700'}`}
+          >
+            {isEditing ? 'Cancel' : '✎ Edit'}
+          </button>
+          <button
+            onClick={() => setShowRegenerateDialog(true)}
+            disabled={isLoading}
+            className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 disabled:bg-gray-400 transition font-semibold text-sm"
+          >
+            ↻ Regenerate
+          </button>
+        </div>
+      </div>
+    </>
+  );
+}
+
+/**
+ * CrmCompanyCard: one card per CRM company.
+ * Shows company info, contact, context notes input, and draft section.
+ */
+function CrmCompanyCard({ company, onSend, onRegenerate }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [notesRaw, setNotesRaw] = useState(company.context_notes_raw || '');
+  const [notesFormatted, setNotesFormatted] = useState(company.context_notes_formatted || '');
+  const [draft, setDraft] = useState(company.latest_draft || null);
+  const [isSavingContext, setIsSavingContext] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [contextSaved, setContextSaved] = useState(!!company.context_notes_raw);
+  const [error, setError] = useState(null);
+
+  const handleSaveContext = async () => {
+    if (!notesRaw.trim()) return;
+    setIsSavingContext(true);
+    setError(null);
+    try {
+      const result = await saveCompanyContext(company.company_id, notesRaw, 'user');
+      setNotesFormatted(result.notes_formatted || notesRaw);
+      setContextSaved(true);
+    } catch (err) {
+      setError('Failed to save context. Try again.');
+    } finally {
+      setIsSavingContext(false);
+    }
+  };
+
+  const handleGenerate = async () => {
+    setIsGenerating(true);
+    setError(null);
+    try {
+      const newDraft = await generateCrmEmail(company.company_id, 'user');
+      setDraft(newDraft);
+    } catch (err) {
+      setError('Failed to generate email. Try again.');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleSend = async (draftId, newSubject, newBody) => {
+    setIsSending(true);
+    setError(null);
+    try {
+      if (newSubject || newBody) {
+        await editEmail(draftId, 'user', newSubject, newBody);
+      }
+      const result = await approveEmail(draftId, 'user');
+      if (result?.sent) {
+        // Email actually delivered by SendGrid
+        setDraft(prev => ({ ...prev, approved_human: true, approved_at: new Date().toISOString() }));
+      } else {
+        // Approved in DB but SendGrid rejected (bad key, unsubscribed, daily limit, etc.)
+        const reason = result?.message || 'Send failed — check SendGrid config.';
+        setError(reason);
+      }
+    } catch (err) {
+      setError('Failed to send. Try again.');
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  const handleRegenerate = async (draftId, feedback) => {
+    setIsGenerating(true);
+    setError(null);
+    try {
+      const newDraft = await generateCrmEmail(company.company_id, 'user', feedback || null);
+      setDraft(newDraft);
+    } catch (err) {
+      setError('Failed to regenerate. Try again.');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const isSent = draft?.approved_human === true && draft?.approved_at;
+
+  return (
+    <div className="bg-white rounded-lg shadow mb-4 border border-gray-200 overflow-hidden">
+      {/* Collapsed header */}
+      <div
+        className="px-5 py-4 cursor-pointer hover:bg-gray-50 transition select-none"
+        onClick={() => setIsExpanded(v => !v)}
+      >
+        <div className="flex items-center gap-3">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="font-bold text-gray-900 text-base">{company.name}</span>
+              <span className="bg-purple-100 text-purple-700 text-xs font-semibold px-2 py-0.5 rounded-full">CRM Lead</span>
+              {isSent && <span className="bg-green-100 text-green-700 text-xs font-semibold px-2 py-0.5 rounded-full">✓ Sent</span>}
+              {draft && !isSent && <span className="bg-blue-100 text-blue-700 text-xs font-semibold px-2 py-0.5 rounded-full">Draft Ready</span>}
+              {draft?.low_confidence && <span className="bg-yellow-100 text-yellow-800 text-xs font-semibold px-2 py-0.5 rounded-full">⚠ Low confidence</span>}
+            </div>
+            <p className="text-sm text-gray-500 mt-0.5">
+              {company.industry} · {company.city}, {company.state}
+              {company.contact && <span className="ml-2">· {company.contact.full_name}{company.contact.title ? `, ${company.contact.title}` : ''}</span>}
+            </p>
+          </div>
+          <span className="text-gray-400 text-lg flex-shrink-0">{isExpanded ? '▲' : '▼'}</span>
+        </div>
+      </div>
+
+      {/* Expanded content */}
+      {isExpanded && (
+        <div className="border-t border-gray-200 px-5 py-5 space-y-5">
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-3 py-2 rounded-lg">{error}</div>
+          )}
+
+          {/* Company + Contact info */}
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Company</p>
+              <p className="font-semibold text-gray-900">{company.name}</p>
+              <p className="text-gray-600">{company.industry}</p>
+              <p className="text-gray-600">{company.city}, {company.state}</p>
+              {company.employee_count && <p className="text-gray-500">{company.employee_count} employees</p>}
+              {company.site_count && <p className="text-gray-500">{company.site_count} site(s)</p>}
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-gray-500 uppercase mb-1">Contact</p>
+              {company.contact ? (
+                <>
+                  <p className="font-semibold text-gray-900">{company.contact.full_name}</p>
+                  <p className="text-gray-600">{company.contact.title}</p>
+                  <p className="text-blue-600 text-xs">{company.contact.email}</p>
+                </>
+              ) : (
+                <p className="text-gray-400 italic text-sm">No contact — add manually before sending</p>
+              )}
+            </div>
+          </div>
+
+          {/* Context notes */}
+          <div>
+            <p className="text-xs font-semibold text-gray-500 uppercase mb-2">Meeting Context</p>
+            <textarea
+              value={notesRaw}
+              onChange={e => { setNotesRaw(e.target.value); setContextSaved(false); }}
+              rows={4}
+              placeholder="What did you discuss? Pain points, number of sites, interest in audit, anything they mentioned about their utility costs..."
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+            />
+            <div className="flex items-center gap-3 mt-2">
+              <button
+                onClick={handleSaveContext}
+                disabled={isSavingContext || !notesRaw.trim()}
+                className="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 transition text-sm font-semibold"
+              >
+                {isSavingContext ? '⏳ Formatting...' : contextSaved ? '✓ Saved & Formatted' : '💾 Save & Format'}
+              </button>
+              {contextSaved && <span className="text-xs text-gray-500">LLM formatted ✓</span>}
+            </div>
+
+            {/* Formatted bullet points */}
+            {notesFormatted && contextSaved && (
+              <div className="mt-3 bg-blue-50 border border-blue-100 rounded-lg px-4 py-3">
+                <p className="text-xs font-semibold text-blue-700 mb-1.5">Formatted signals (used by writer)</p>
+                <div className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">{notesFormatted}</div>
+              </div>
+            )}
+          </div>
+
+          {/* Draft section */}
+          <div>
+            <p className="text-xs font-semibold text-gray-500 uppercase mb-2">Email Draft</p>
+
+            {/* Prominent loading state */}
+            {isGenerating && (
+              <div className="bg-indigo-50 border border-indigo-200 rounded-lg px-4 py-5 flex items-center gap-4">
+                <div className="w-6 h-6 border-3 border-indigo-600 border-t-transparent rounded-full animate-spin flex-shrink-0" style={{borderWidth: '3px'}} />
+                <div>
+                  <p className="text-indigo-800 font-semibold text-sm">Writing email with AI…</p>
+                  <p className="text-indigo-600 text-xs mt-0.5">Running Writer → Critic loop · may take up to 60 s</p>
+                </div>
+              </div>
+            )}
+
+            {!isGenerating && draft ? (
+              isSent ? (
+                <div className="bg-green-50 border border-green-200 rounded-lg px-4 py-3">
+                  <div className="flex items-center justify-between flex-wrap gap-3">
+                    <div>
+                      <p className="text-green-800 font-semibold text-sm">✓ Email sent</p>
+                      <p className="text-green-600 text-xs mt-0.5">
+                        To: {company.contact?.email || 'unknown'} · {new Date(draft.approved_at).toLocaleString()}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setDraft(prev => ({ ...prev, approved_at: null }))}
+                      className="px-3 py-1.5 text-xs font-semibold bg-white border border-green-300 text-green-700 rounded-lg hover:bg-green-50 transition"
+                    >
+                      ↻ Resend
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <CrmDraftView
+                  draft={draft}
+                  onSend={handleSend}
+                  onRegenerate={handleRegenerate}
+                  isLoading={isSending}
+                  contact={company.contact}
+                />
+              )
+            ) : null}
+
+            {!isGenerating && !draft && (
+              <div className="space-y-2">
+                <button
+                  onClick={handleGenerate}
+                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 active:bg-indigo-800 transition font-semibold text-sm"
+                >
+                  ✨ Generate Email
+                </button>
+                {!contextSaved && (
+                  <p className="text-xs text-yellow-600">⚠ No context saved — email will be generic</p>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * CrmLeadsTab: lists all CRM companies with context + draft workflow.
+ */
+function CrmLeadsTab() {
+  const [companies, setCompanies] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const load = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const data = await fetchCrmCompanies();
+        setCompanies(data.companies || []);
+      } catch (err) {
+        setError('Failed to load CRM companies. Check API connection.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    load();
+  }, []);
+
+  if (isLoading) {
+    return <div className="text-center py-12 text-gray-500">Loading CRM leads...</div>;
+  }
+
+  if (error) {
+    return <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">{error}</div>;
+  }
+
+  if (companies.length === 0) {
+    return (
+      <div className="bg-white rounded-lg shadow p-12 text-center">
+        <p className="text-gray-500 text-lg">No CRM leads found</p>
+        <p className="text-gray-400 text-sm mt-1">Companies with <code className="bg-gray-100 px-1 rounded">data_origin = hubspot_crm</code> will appear here</p>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-6 text-purple-900">
+        <p className="font-semibold">
+          <span className="text-lg font-bold">{companies.length}</span> CRM lead{companies.length !== 1 ? 's' : ''} — add meeting context and generate a personalised email for each.
+        </p>
+        <p className="text-sm mt-1">Drafts are pre-approved. Click Send when ready — no separate approval step needed.</p>
+      </div>
+      {companies.map(company => (
+        <CrmCompanyCard
+          key={company.company_id}
+          company={company}
+        />
+      ))}
+    </div>
+  );
+}
+
+// ============================================================================
 // MAIN COMPONENT
 // ============================================================================
 
@@ -443,6 +936,9 @@ function CompanyDraftCard({
  * EmailReview: Email approval queue page
  */
 export default function EmailReview() {
+  // 'pipeline' | 'crm'
+  const [activeTab, setActiveTab] = useState('pipeline');
+
   const [emails, setEmails] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isApproving, setIsApproving] = useState(false);
@@ -628,9 +1124,42 @@ export default function EmailReview() {
 
   return (
     <div className="h-full overflow-y-auto bg-gray-50 p-6">
-      {isLoading && <LoadingOverlay message="Loading emails..." />}
+      {isLoading && activeTab === 'pipeline' && <LoadingOverlay message="Loading emails..." />}
       <div className="max-w-6xl mx-auto">
         <PageHeader pendingCount={emails.length} />
+
+        {/* Tab switcher */}
+        <div className="flex gap-1 mb-6 bg-white rounded-lg shadow p-1 w-fit">
+          {[
+            { key: 'pipeline', label: '📋 Pipeline Queue', count: emails.length },
+            { key: 'crm',      label: '🏢 CRM Leads' },
+          ].map(({ key, label, count }) => (
+            <button
+              key={key}
+              onClick={() => setActiveTab(key)}
+              className={`px-5 py-2 rounded-md text-sm font-semibold transition ${
+                activeTab === key
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              {label}
+              {count !== undefined && (
+                <span className={`ml-2 px-1.5 py-0.5 rounded-full text-xs font-bold ${
+                  activeTab === key ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-600'
+                }`}>
+                  {count}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+
+        {/* CRM tab */}
+        {activeTab === 'crm' && <CrmLeadsTab />}
+
+        {/* Pipeline tab — all existing content unchanged */}
+        {activeTab === 'pipeline' && (<>
 
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
@@ -708,6 +1237,7 @@ export default function EmailReview() {
             </p>
           </div>
         )}
+        </>)}
       </div>
     </div>
   );

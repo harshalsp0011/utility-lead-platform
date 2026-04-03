@@ -77,3 +77,69 @@ class EmailListResponse(BaseModel):
     pending_approval: int
     approved_count: int
     sent_count: int
+
+
+# ---------------------------------------------------------------------------
+# CRM Lead schemas (Phase CRM-1)
+# ---------------------------------------------------------------------------
+
+class CrmGenerateRequest(BaseModel):
+    """Request body for generating a CRM email draft."""
+
+    company_id: UUID
+    created_by: str = "user"
+    user_feedback: Optional[str] = None  # When set: rewrite existing draft with this feedback (no critic)
+
+
+class CrmContextSaveRequest(BaseModel):
+    """Request body for saving personal context notes for a CRM company."""
+
+    notes_raw: str
+    created_by: str = "user"
+
+
+class CrmContextSaveResponse(BaseModel):
+    """Response after saving and formatting context notes."""
+
+    company_id: UUID
+    notes_raw: str
+    notes_formatted: str
+    updated_at: datetime
+    formatter_used: bool  # True if LLM formatted successfully, False if fell back to raw
+
+
+class CrmContactInfo(BaseModel):
+    """Contact info embedded in CRM company response."""
+
+    id: UUID
+    full_name: str
+    title: str
+    email: str
+
+
+class CrmCompanyResponse(BaseModel):
+    """Single CRM company with contact, context notes, and latest draft (if any)."""
+
+    company_id: UUID
+    name: str
+    industry: str
+    city: str
+    state: str
+    employee_count: Optional[int] = None
+    site_count: Optional[int] = None
+    website: Optional[str] = None
+    status: str
+    contact: Optional[CrmContactInfo] = None
+    context_notes_raw: Optional[str] = None
+    context_notes_formatted: Optional[str] = None
+    context_saved_at: Optional[datetime] = None
+    latest_draft: Optional[EmailDraftResponse] = None
+
+    model_config = {"from_attributes": True}
+
+
+class CrmCompanyListResponse(BaseModel):
+    """List of CRM companies."""
+
+    companies: List[CrmCompanyResponse]
+    total_count: int

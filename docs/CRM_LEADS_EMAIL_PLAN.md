@@ -1,129 +1,139 @@
 # CRM Leads Email Flow — Feature Plan
 
-> Created: April 2026
-> Status: Planning — not yet implemented
-> Scope: New tab on Email Review page + CRM-specific writer path + context storage
+> Created: April 2026  
+> Last updated: April 2026  
+> Status: Phases CRM-0 through CRM-3 complete. Phase CRM-4 (polish) + Phase CRM-5 (HubSpot send) planned.
 
 ---
 
-## What We Want to Achieve
+## What This Feature Does
 
-The existing pipeline (Scout → Analyst → Writer) assumes every company was discovered
-programmatically. It requires `company_features` (savings estimates, site count, deregulation)
-and `lead_scores` (score_reason) before it can write an email.
+Enables personalized email drafting and sending for CRM-sourced leads (`data_origin = 'hubspot_crm'`)
+who bypassed the Scout → Analyst pipeline entirely.
 
-CRM-sourced companies — those fetched from HubSpot with `data_origin = 'hubspot_crm'` — skip
-Scout and Analyst entirely. They arrive in the `companies` table with basic fields only.
-Running the standard writer on them fails silently (missing data = generic or blank drafts).
+**The scenario:** You met a prospect in person. You added them to HubSpot. You want to send a
+follow-up email that references what you actually discussed — not a generic cold pitch.
+This feature gives you a place to write that context, stores it, has the LLM draft the email
+from it, and lets you review/send from a dedicated CRM tab.
 
-**The real scenario this solves:**
-You met a prospect face-to-face. You know their situation — what they said, what they care about,
-what came up in conversation. You added them to your CRM. Now you want to send a personalized
-follow-up email. The context lives in your head, not in the database. This feature gives you a
-place to write that context down, store it, and have the LLM draft the email from it — without
-needing to run the full pipeline.
-
-**Secondary goal:**
-CRM leads are already qualified (you or your team put them in). They don't need a human approval
-gate — the draft is pre-approved by default. The human still sees and can edit it before it sends,
-but it skips the pending queue.
+**Key difference from pipeline leads:**
+- No `company_features`, no `lead_scores` — the Analyst never ran on these companies
+- No benchmark savings — you've met them; a fabricated number damages credibility
+- No human approval gate — CRM = already qualified; draft is pre-approved, send is one click
+- No automated critic loop — **you are the critic**; Regenerate asks what to change
 
 ---
 
-## The Gap (Why the Current System Breaks)
+## Agentic Design
 
-| Input Writer Needs | Pipeline Companies | CRM Companies |
-|---|---|---|
-| `company_features` (savings, site count, deregulated) | ✅ Written by Analyst | ❌ Missing |
-| `lead_scores.score_reason` (why this is a good lead) | ✅ Written by Analyst | ❌ Missing |
-| `contacts` (name, title, email) | ✅ Enriched by Analyst | ✅ Available (from CRM) |
-| `email_win_rate` (angle hint) | ✅ Read by Writer | ✅ Available (if past emails sent) |
-| Basic company info (name, industry, city, state) | ✅ | ✅ |
-
-The writer currently returns `None` and logs a warning when `company` or `score` rows are missing.
-CRM companies will always hit this path.
+| Step | Agent | Agentic Concept | Tool | Tech |
+|---|---|---|---|---|
+| Save context | Context Formatter | Information Structuring — LLM reorganizes free-text notes into ordered bullet-point signals | LLM call | `context_formatter.py`, LangChain + Ollama/OpenAI |
+| Generate email | CRM Writer | Context-Aware Generation — uses meeting notes as `score_reason` substitute; no pipeline data needed | LLM call | `writer_agent.process_crm_company()` |
+| Regenerate | Human-in-the-Loop Critic | Human IS the critic — feedback dialog sends your instruction as the rewrite prompt | LLM call | `_rewrite_draft()` with user feedback |
+| Send | Email Provider | Current: SendGrid. Planned (CRM-5): HubSpot Engagements API | API call | `email_sender.py` → HubSpot |
 
 ---
 
-## What We Are Building
+## Context Formatter — How It Works
 
-### 1. New DB Table — `company_context_notes`
-
-Stores free-text meeting notes / personal context for any company.
-Acts as the `score_reason` substitute for the CRM writer path.
-Flagged as `source = 'manual_input'` so it is distinguishable from pipeline-derived data.
+When you save meeting notes, the raw text passes through an LLM before storage:
 
 ```
-id             UUID PK
-company_id     UUID FK → companies.id
-notes          TEXT        ← the meeting context / discussion points
-source         VARCHAR(50) default 'manual_input'
-created_at     TIMESTAMP
-created_by     VARCHAR(100)
+Raw input (what you type):
+  "Met John at the conference, they have offices in Buffalo and Rochester,
+   CFO said they overpay on gas every winter, no energy contract currently,
+   seemed very open to the idea of a free audit"
+
+LLM output (stored as notes_formatted, used by Writer):
+  - Met CFO (John) at industry conference
+  - 2 locations: Buffalo and Rochester, NY
+  - Self-reported overpayment on gas utilities in winter months
+  - No current energy vendor contract in place
+  - Expressed clear interest in a free utility audit
 ```
 
-### 2. New Backend Endpoints
-
-| Method | Path | Purpose |
-|---|---|---|
-| `GET` | `/api/companies/crm` | List all `data_origin = 'hubspot_crm'` companies with contacts + existing drafts + any saved context |
-| `POST` | `/api/companies/{id}/context` | Save or update personal context notes for a company |
-| `POST` | `/api/emails/crm-generate` | Generate a draft for a CRM company using stored context; saves as pre-approved |
-
-### 3. CRM Writer — new function in `writer_agent.py`
-
-`process_crm_company(company_id, context_notes, db_session)` — a parallel path to
-`process_one_company()` that:
-
-- Reads: company basic fields, contact, email_win_rate hint
-- Uses `context_notes` as the `score_reason` field (replaces Analyst output)
-- Constructs dummy savings range from industry average if features are missing
-  (or omits the savings figure and lets the LLM focus on relationship angle instead)
-- Runs the same Writer → Critic loop (context-aware generation + reflection)
-- Saves draft with `approved_human = True` (pre-approved — CRM = trusted source)
-- Still sets `low_confidence = True` if Critic never reaches 7.0
-
-### 4. Frontend — Two Tabs on Email Review Page
-
-`EmailReview.jsx` gets a tab switcher at the top.
-
-**Tab 1 — Pipeline Queue** (unchanged)
-Everything that exists today. No modifications.
-
-**Tab 2 — CRM Leads**
-- Fetches from `GET /api/companies/crm`
-- Shows one card per CRM company with:
-  - Company info (name, industry, city, state, site count if available)
-  - Contact info (name, title, email from CRM)
-  - Context notes text area — saves on blur or via explicit Save button
-  - "Generate Email" button — calls `POST /api/emails/crm-generate`
-  - Generated draft shown inline once created (subject + body)
-  - Edit (inline) + Send buttons — Send calls the existing `PATCH /emails/{id}/approve`
-- Badge: "CRM Lead" shown on each card
-- If draft already exists for this company: shows it immediately (no need to regenerate)
+Both raw and formatted are stored (`company_context_notes` table). Raw is kept for reference.
+If LLM fails → raw notes stored in both columns, generation is never blocked.
 
 ---
 
-## What Will Be Affected
+## Email Signature (Locked)
 
-| Layer | File / Table | Change |
-|---|---|---|
-| DB | new: `company_context_notes` table | New migration file |
-| ORM | `database/orm_models.py` | Add `CompanyContextNote` model |
-| Writer | `agents/writer/writer_agent.py` | Add `process_crm_company()` function |
-| API models | `api/models/email.py` | Add `CrmGenerateRequest`, `CrmCompanyResponse` schemas |
-| API routes | `api/routes/emails.py` | Add `POST /crm-generate` endpoint |
-| API routes | `api/routes/leads.py` or new `api/routes/companies.py` | Add `GET /crm` + `POST /{id}/context` endpoints |
-| API main | `api/main.py` | Register any new routers |
-| Frontend | `dashboard/src/pages/EmailReview.jsx` | Add tab switcher + CrmLeadsTab component |
-| Frontend | `dashboard/src/services/api.js` | Add 3 new API call functions |
-| Docs | `docs/BUILD_STATUS.md` | Update phase completion table |
+Every generated email ends with exactly:
 
-**What is NOT affected:**
-- Existing pipeline writer (`process_one_company`) — untouched
-- Tab 1 (Pipeline Queue) — untouched
-- Outreach sender, follow-up scheduler, Tracker — untouched
-- Scout, Analyst, Orchestrator — untouched
+```
+Best regards,
+Kevin Gibs
+Sr. Vice President
+Troy & Banks Inc.
+https://troybanks.com/
+```
+
+Injected directly into writer and rewrite prompts — LLM cannot deviate from it.
+Configurable via `.env`: `TB_SENDER_NAME`, `TB_SENDER_TITLE`, `TB_WEBSITE`.
+
+---
+
+## Send Flow (SendGrid — current and active)
+
+```
+Click "✓ Send"
+  → SendConfirmDialog shows: TO email, FROM address, Subject
+  → Confirm → PATCH /emails/{draft_id}/approve
+  → email_sender.send_email()
+      - Loads contact.email from DB
+      - Checks contact.unsubscribed → blocks if true
+      - Checks daily limit (50/day from .env EMAIL_DAILY_LIMIT) → blocks if reached
+      - Sends via SendGrid
+          FROM: UBinterns@troybanks.com  (SENDGRID_FROM_EMAIL in .env)
+          TO:   contact.email
+          + open tracking pixel enabled
+          + click tracking enabled
+      - Logs to outreach_events (event_type='sent', message_id stored)
+      - Sets company.status = 'contacted'
+```
+
+---
+
+## What SendGrid Tracks (via Webhook → Port 8002)
+
+After send, SendGrid calls back our webhook listener at `POST /webhooks/email` (port 8002).
+Every event is stored in the `outreach_events` table.
+
+| SendGrid Event | Stored as (`event_type`) | What it means | What we do |
+|---|---|---|---|
+| `open` | `opened` | Recipient opened the email (pixel fired) | Logged to `outreach_events`. No status change — opens are noisy. |
+| `click` | `clicked` | Recipient clicked a link in the email | Logged to `outreach_events`. Strong buying signal. |
+| `inbound` (reply) | `replied` | Recipient replied to the email | `company.status → 'replied'`. Reply text stored. Sentiment saved. **All follow-ups cancelled.** |
+| `bounce` | `bounced` | Email could not be delivered | `contact.verified = False`. Bounce event logged. No follow-ups sent to this contact. |
+| `unsubscribe` | `unsubscribed` | Recipient clicked unsubscribe link | `contact.unsubscribed = True`. All follow-ups cancelled. If no active contacts remain → `company.status = 'archived'`. |
+
+**Reply handling detail:**
+- Reply content is extracted and cleaned (quoted chains stripped, signature lines stripped)
+- Stored in `outreach_events.reply_content`
+- Sentiment is stored in `outreach_events.reply_sentiment` (LLM classifies: wants_meeting / wants_info / not_interested / unsubscribe)
+- Company status flips to `replied` immediately
+
+**What SendGrid does NOT track:**
+- Whether the prospect forwarded the email
+- Whether they opened it on mobile vs desktop (raw pixel only)
+- Replies sent from a different email address than the one we sent to
+
+---
+
+## Send Flow (Planned — HubSpot, Phase CRM-5, NOT BUILT)
+
+> HubSpot integration has not been started. This section describes future intent only.
+> Current send path for ALL leads (pipeline and CRM) is SendGrid.
+
+Once HubSpot integration is live, CRM emails may be sent through HubSpot's Engagements API
+so the email thread is visible on the contact timeline inside HubSpot.
+
+**What needs to be built first:**
+- HubSpot Phase 1 pull (sync contacts/companies → store `hubspot_contact_id` on DB rows)
+- `send_via_hubspot()` in `email_sender.py`
+- Routing: `if company.data_origin == 'hubspot_crm' → HubSpot, else → SendGrid`
 
 ---
 
@@ -131,150 +141,165 @@ Everything that exists today. No modifications.
 
 | Question | Decision |
 |---|---|
-| Show all CRM companies or only unsent? | **All companies.** If a draft already exists (any status), show it immediately — don't regenerate. Show Regenerate button instead of Generate. |
-| If company already has a draft, fetch and store it? | **Yes.** `GET /api/companies/crm` joins to `email_drafts` and returns the latest draft per company inline. No separate fetch needed. |
-| Critic loop for CRM drafts? | **Yes, full loop kept.** Critic rubric extended with a 6th criterion: `context_accuracy` — does the email actually reflect the meeting discussion points? This replaces the pipeline's `score_reason` check. |
-| Context notes editable after saving? | **Yes, always editable.** But raw notes are passed through an LLM formatter on save — the LLM structures them into clean bullet points before storing. The formatted version is what gets shown and used by the writer. |
-| Missing savings data? | **Use industry average from `industry_benchmarks.json`.** Writer falls back to industry benchmark if `company_features` row is absent. |
-| Context notes required before generating? | **Optional — warn inline if empty, but do not block generation.** |
+| Critic loop for CRM drafts? | **Removed.** Human is the critic. Regenerate dialog asks what to change. No automated LLM quality gate. |
+| Max rewrites? | **None automatic.** Each Regenerate = 1 LLM call. User decides when it's good. |
+| Savings estimate for CRM? | **None.** Benchmark numbers are not verified and damage credibility with a personal contact. Audit offer is the CTA. |
+| 1 draft per contact? | **Yes — upsert.** `_save_draft()` checks existing draft by `company_id + contact_id`. Updates in place on regenerate. Follow-up drafts are `outreach_events` rows, not `email_drafts`. |
+| Context notes required to generate? | **Optional — warn inline but do not block generation.** |
+| Context notes editable after saving? | **Yes, always.** Re-save re-runs LLM formatter and updates `notes_formatted`. |
+| Approved_human on CRM drafts? | **True on creation.** CRM = pre-qualified; skips pending queue. Human still must click Send. |
+| Send provider now? | **SendGrid.** `SENDGRID_FROM_EMAIL = UBinterns@troybanks.com` |
+| Send provider after HubSpot integration? | **HubSpot Engagements API** for `data_origin = 'hubspot_crm'` companies. SendGrid stays for pipeline leads. |
 
 ---
 
-## Updated Design Notes
+## Database
 
-### Context Formatter (added to Phase CRM-1)
+### `company_context_notes` table (migration 019)
 
-When the user saves context notes, the raw text is not stored directly.
-It is first sent to an LLM call that structures it into bullet points:
-
-```
-Raw input:
-  "Met John at the conference, they have 12 locations across Ohio and Michigan,
-   CFO mentioned they overpay on gas in winter, open to audit, no vendor contract currently"
-
-Formatted output (stored):
-  - Met contact (John) at conference
-  - 12 locations across Ohio and Michigan
-  - CFO noted overpayment on gas utilities in winter months
-  - Currently has no vendor energy contract — open to switching
-  - Expressed openness to a free audit
+```sql
+id              UUID PK
+company_id      UUID FK → companies.id  ON DELETE CASCADE
+notes_raw       TEXT      -- what the user typed
+notes_formatted TEXT      -- LLM-structured bullet points (used by Writer)
+source          VARCHAR(50) DEFAULT 'manual_input'
+created_by      VARCHAR(100)
+created_at      TIMESTAMP
+updated_at      TIMESTAMP
+-- UNIQUE INDEX on company_id (one context record per company)
 ```
 
-The writer uses the formatted bullet points as `score_reason`.
-The raw input is also stored for reference (separate column) so nothing is lost.
+---
 
-### Extended Critic Rubric (6 criteria, 12 pts max, pass threshold stays at 7)
+## Files Changed
 
-Added criterion for CRM drafts only:
-
-| Criterion | Points | What it checks |
+| Layer | File | What Changed |
 |---|---|---|
-| personalization | 0–2 | Company name or specific detail mentioned |
-| savings_figure | 0–2 | Dollar or % estimate present |
-| clear_cta | 0–2 | Specific next step |
-| human_tone | 0–2 | Reads like a person |
-| subject_quality | 0–2 | Specific subject line |
-| **context_accuracy** | **0–2** | **Email reflects the actual discussion points from context notes** |
+| DB migration | `database/migrations/019_create_company_context_notes.sql` | New table + unique index |
+| ORM | `database/orm_models.py` | Added `CompanyContextNote` model |
+| Context Formatter | `agents/writer/context_formatter.py` | New file — LLM note structuring agent |
+| Writer | `agents/writer/writer_agent.py` | Added `process_crm_company()`, `_sender_fields()`, `_MAX_REWRITES_CRM=1`; `_rewrite_draft()` now accepts user feedback; signature injected into both prompts |
+| LLM connector | `agents/writer/llm_connector.py` | Added `max_tokens` param to `call_ollama()` for latency control |
+| LLM config | `config/llm_config.py` | Added `num_predict=300` to ChatOllama (critic path) |
+| Settings | `config/settings.py` | Added `TB_WEBSITE` field |
+| .env | `.env` | Updated `TB_SENDER_NAME=Kevin Gibs`, `TB_SENDER_TITLE=Sr. Vice President`, added `TB_WEBSITE=https://troybanks.com/` |
+| API models | `api/models/email.py` | Added `CrmGenerateRequest` (with optional `user_feedback`), `CrmContextSaveRequest/Response`, `CrmContactInfo`, `CrmCompanyResponse/ListResponse` |
+| API routes | `api/routes/companies.py` | New file — `GET /companies/crm`, `POST /companies/{id}/context` |
+| API routes | `api/routes/emails.py` | Added `POST /emails/crm-generate` (passes `user_feedback` through) |
+| API main | `api/main.py` | Registered `companies` router at `/companies` |
+| Frontend API | `dashboard/src/services/api.js` | Added `fetchCrmCompanies()`, `saveCompanyContext()`, `generateCrmEmail(companyId, createdBy, userFeedback)` |
+| Frontend UI | `dashboard/src/pages/EmailReview.jsx` | Added tab switcher, `CrmLeadsTab`, `CrmCompanyCard`, `CrmDraftView`, `RegenerateDialog`, `SendConfirmDialog` |
 
-Score is recalculated as sum of all 6 criteria (max 12). Pass threshold scales proportionally:
-`pass = score >= 8.4` (7/10 × 12 = 8.4, rounds to 8).
-
-The Critic prompt for CRM path receives the formatted context bullet points as an extra block
-so it can check alignment.
+**What was NOT changed:**
+- Pipeline writer `process_one_company()` — untouched
+- Tab 1 Pipeline Queue — untouched
+- Critic agent (`critic_agent.py`) — unchanged for pipeline path; CRM path bypasses it entirely now
+- Scout, Analyst, Orchestrator, Tracker — untouched
 
 ---
 
 ## Phase Plan
 
 ### Phase CRM-0 — DB + ORM ✅
-- [x] Write migration `database/migrations/019_create_company_context_notes.sql`
-  - Columns: `id`, `company_id` (FK, CASCADE delete), `notes_raw` (TEXT), `notes_formatted` (TEXT),
-    `source` (VARCHAR default `'manual_input'`), `created_at`, `updated_at`, `created_by`
-  - Unique index on `company_id` — one context record per company (upsert target)
-- [x] Add `CompanyContextNote` ORM model to `database/orm_models.py`
-- [x] Run migration against DB, confirm table created — `CREATE TABLE` + `CREATE INDEX` ✅
+- [x] Migration `019_create_company_context_notes.sql` written and run
+- [x] `CompanyContextNote` ORM model added
+- [x] Table confirmed in DB
 
-### Phase CRM-1 — Backend: Context Endpoints + Formatter
-- [ ] Add `GET /api/companies/crm` endpoint
-  - Filter: `Company.data_origin == 'hubspot_crm'`
-  - Returns per company: company fields + contact + latest draft (if any) + context notes (if any)
-- [ ] Add `POST /api/companies/{id}/context` endpoint
-  - Accepts: `{ notes_raw, created_by }`
-  - Calls LLM formatter → produces `notes_formatted` (structured bullet points)
-  - Upserts `company_context_notes` row (both `notes_raw` + `notes_formatted`)
-  - Returns: `{ notes_raw, notes_formatted, updated_at }`
-- [ ] Write LLM formatter function in `agents/writer/context_formatter.py`
-  - System prompt: "Format these meeting notes into clean bullet points. Each point = one fact or signal. Keep it factual, no padding."
-  - Input: raw notes string
-  - Output: bullet-point string
-  - Fallback: if LLM fails, store raw notes as-is in both columns
+### Phase CRM-1 — Backend: Context Endpoints + Formatter ✅
+- [x] `GET /companies/crm` — bulk loads CRM companies + contacts + context + latest draft
+- [x] `POST /companies/{id}/context` — saves notes, runs LLM formatter, upserts context row
+- [x] `context_formatter.py` — LLM preprocessing agent, fallback to raw on failure
+- [x] CRM schemas added to `api/models/email.py`
+- [x] `companies` router registered in `api/main.py`
 
-### Phase CRM-2 — CRM Writer + Extended Critic
-- [ ] Extend `critic_agent.py` to accept an optional `context_notes` parameter
-  - If provided: add `context_accuracy` criterion to rubric (6th criterion, 2 pts)
-  - Adjust pass threshold to 8 (out of 12) when 6 criteria used
-  - Recalculate score from all 6 criteria
-  - Critic prompt includes context bullet points block for alignment check
-  - If `context_notes` is None: uses original 5-criterion rubric unchanged (pipeline path unaffected)
-- [ ] Add `process_crm_company(company_id, db_session)` in `writer_agent.py`
-  - Load company basic fields + contact + `company_context_notes` (formatted)
-  - Use win_rate hint via existing `get_best_angle()`
-  - Use industry average from `industry_benchmarks.json` if no `company_features` row
-  - Build writer context: `score_reason = notes_formatted` (or raw if formatted missing)
-  - Call existing `_write_draft()` (no changes to writer prompt)
-  - Call extended `critic_agent.evaluate(..., context_notes=notes_formatted)`
-  - Run same rewrite loop (max 2 rewrites, `low_confidence` flag)
-  - Save draft with `approved_human = True`
-- [ ] Add `POST /api/emails/crm-generate` endpoint
-  - Accepts: `{ company_id, created_by }`
-  - Reads context from `company_context_notes` for this company
-  - Calls `process_crm_company()`
-  - Returns full draft response (same `EmailDraftResponse` schema)
+### Phase CRM-2 — CRM Writer ✅
+- [x] `process_crm_company()` added to `writer_agent.py`
+  - No `company_features` or `lead_scores` needed
+  - No benchmark savings — audit offer is the CTA
+  - `notes_formatted` used as `score_reason`
+  - Draft saved with `approved_human = True`
+- [x] `POST /emails/crm-generate` endpoint added
+- [x] Upsert logic in `_save_draft()` — 1 draft per contact, updates in place on regenerate
 
-### Phase CRM-3 — Frontend Tab
-- [ ] Add tab switcher to `EmailReview.jsx`
-  - Tabs: "Pipeline Queue" | "CRM Leads"
-  - Default tab: Pipeline Queue
-  - Tab state: `useState('pipeline')`
-- [ ] Build `CrmLeadsTab` component (in `EmailReview.jsx` or separate file)
-  - On mount: fetch `GET /api/companies/crm`
-  - Renders one `CrmCompanyCard` per company
-- [ ] Build `CrmCompanyCard` component
-  - **Company info section**: name, industry, city/state, employee count, website
-  - **Contact section**: name, title, email (from CRM)
-  - **Context notes section**:
-    - Text area (raw input) — pre-filled with `notes_raw` if already saved
-    - "Save & Format" button → calls `POST /api/companies/{id}/context`
-    - After save: shows formatted bullet points below the text area (read-only display)
-    - Formatted notes always editable — clicking "Edit" re-opens text area
-  - **Draft section**:
-    - If draft exists (returned by API): show it immediately (subject + body)
-    - If no draft: show "Generate Email" button (disabled if context not yet saved)
-    - After generation: show draft inline with Edit + Send buttons
-    - Regenerate button replaces Generate once draft exists
-  - **Send button**: calls existing `approveEmail(draftId)` — no new endpoint needed
-  - **Badge**: "CRM Lead" + "Pre-approved" shown on card header
-- [ ] Add 4 new functions to `dashboard/src/services/api.js`:
-  - `fetchCrmCompanies()`
-  - `saveCompanyContext(companyId, notesRaw, createdBy)`
-  - `generateCrmEmail(companyId, createdBy)`
-  - `regenerateCrmEmail(draftId)` — reuses existing `regenerateEmail()` or wraps it
+### Phase CRM-3 — Frontend Tab ✅
+- [x] Tab switcher — Pipeline Queue | CRM Leads
+- [x] `CrmLeadsTab` — fetches on mount, count banner, one card per company
+- [x] `CrmCompanyCard` — collapsed/expanded, context textarea, Save & Format, draft section
+- [x] `CrmDraftView` — subject/body display, inline edit, Send/Edit/Regenerate
+- [x] `RegenerateDialog` — modal asking what to change; empty = fresh write
+- [x] `SendConfirmDialog` — shows TO / FROM / Subject before sending; confirm required
+- [x] Loading overlay on generate (full-width banner with spinner)
 
-### Phase CRM-4 — Polish + Docs
-- [ ] Edge cases:
-  - Company has no contact → show editable "To Email" field on card; store in draft as override
-  - Context notes empty + Generate clicked → show inline warning banner, do not block
-  - `low_confidence = true` on saved draft → show "⚠ Low confidence" badge on card
-  - LLM formatter fails → fall back silently, store raw as both columns, show note to user
-- [ ] Update `docs/BUILD_STATUS.md` — move CRM email flow from "In Planning" to Phase Completion table
+### Phase CRM-3b — Optimisations + UX Fixes ✅
+- [x] Removed automated critic loop from CRM path — 1 LLM call per generate (was 2–6)
+- [x] `num_predict` caps on all Ollama calls: writer=650, rewrite=450, critic=300, formatter=350
+- [x] `_MAX_REWRITES_CRM = 1` (separate from pipeline's 2)
+- [x] `RegenerateDialog` — user types what to change; writer rewrites with that as the instruction
+- [x] Hardcoded real signature injected into writer + rewrite prompts
+- [x] `SendConfirmDialog` — shows exactly who the email goes to before sending
+- [x] `NameError: critic_score` fixed (leftover reference after critic removal)
+
+### Phase CRM-4 — Polish + Docs (Planned)
+- [ ] No-contact edge case: show editable "To Email" field when no contact found on card
+- [ ] Update `docs/BUILD_STATUS.md` — move CRM flow to Phase Completion table
 - [ ] Update `agents/writer/README.md` — document `process_crm_company()` and context formatter
+
+### Known Issues to Fix Before Phase CRM-5 (HubSpot Connect)
+
+> These were found during SendGrid testing. Must be resolved before wiring HubSpot.
+
+- **Double-send risk**: Clicking Send twice fast creates 2 `outreach_events` rows and sends
+  the email twice. Root cause: no in-flight lock — the button disables only on the client side.
+  Fix: add a DB-level check in `approve_draft` — if `outreach_events` already has a `sent`
+  row for this `email_draft_id`, skip the send and return `{success:true, sent:false, already_sent:true}`.
+  Frontend should show "Already sent" instead of re-sending.
+
+- **UI shows Sent even when not actually delivered**: `isSent` was checking `approved_human && approved_at`
+  but `approved_at` was never set client-side after send. Fixed (April 2026) — now reads `result.sent`
+  from API response. Resend button added to sent banner in case user needs to retry.
+
+- **SendGrid message_id not stored**: `response.headers` is `http.client.HTTPMessage`, not a dict —
+  `isinstance(response.headers, dict)` was always False so `X-Message-Id` was never captured.
+  Fixed (April 2026) — use `.get()` directly on the header object.
+
+- **Emails landing in spam (SendGrid only)**: `troybanks.com` domain is not authenticated in
+  SendGrid (no SPF/DKIM/DMARC records). Gmail treats unsigned emails from unverified domains as
+  suspicious. Fix: SendGrid dashboard → Sender Authentication → Authenticate Domain → add the
+  3 DNS records (2 DKIM CNAMEs + 1 SPF) to troybanks.com DNS.
+  **This is NOT an issue with HubSpot send (Phase CRM-5)** — HubSpot uses its own authenticated
+  sending infrastructure and sends from the connected rep's inbox (e.g. kevin.gibs@troybanks.com),
+  which has established Gmail/Outlook trust. No manual DNS setup needed for HubSpot path.
 
 ---
 
-## Why This Is Safe to Build
+### Phase CRM-5 — HubSpot Send Path (NOT STARTED — depends on HubSpot Phase 1 pull)
 
-- The CRM writer path is entirely additive — it does not touch `process_one_company()`.
-- Tab 1 is untouched — existing pending queue is not affected.
-- `approved_human = True` on save means the draft bypasses the normal approval gate but
-  the human still sees it in Tab 2 and clicks Send — it is not auto-sent without human action.
-- The new `company_context_notes` table has no FK constraints on any existing flow.
+> HubSpot integration has not been built. All sends currently go through SendGrid.
+> This phase cannot start until HubSpot Phase 1 (contact/company sync) is complete
+> so that `hubspot_contact_id` and `hubspot_company_id` exist on our DB rows.
+
+- [ ] HubSpot Phase 1 pull must be complete first (contacts + companies synced, IDs stored)
+- [ ] Add `send_via_hubspot()` to `agents/outreach/email_sender.py`
+      - POST to HubSpot Engagements API: `/crm/v3/objects/emails`
+      - Associates with contact + company in HubSpot timeline
+      - HubSpot tracks opens/clicks/replies natively from this point
+- [ ] Add send routing in `email_sender.send_email()`:
+      `data_origin = 'hubspot_crm'` → HubSpot, else → SendGrid
+- [ ] Add `HUBSPOT_API_KEY` to `.env` and `config/settings.py`
+- [ ] Update `SendConfirmDialog` — show "Sending via HubSpot" badge for CRM leads
+- [ ] Live engagement fetch on CRM card (no storage needed):
+      - On card expand, call `GET /engagements/v1/engagements/associated/CONTACT/{hubspot_contact_id}/paged`
+      - Display inline: "Opened 2 days ago · Clicked link · No reply yet"
+      - Temp fetch only — not written to our DB
+      - NOTE: this only works for emails sent via HubSpot. Emails sent via SendGrid
+        (before Phase CRM-5) are invisible to HubSpot and cannot be fetched this way.
+
+---
+
+## What Is NOT Affected
+
+- Existing pipeline writer `process_one_company()` — untouched
+- Tab 1 Pipeline Queue — untouched  
+- SendGrid path for pipeline leads — untouched
+- Scout, Analyst, Orchestrator, Tracker — untouched
+- Follow-up scheduler (`sequence_manager.py`) — CRM follow-up gap is a known issue, tracked separately

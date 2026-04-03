@@ -434,6 +434,51 @@ export async function fetchRunStatus(runId) {
 }
 
 // ============================================================================
+// CRM LEADS FUNCTIONS
+// ============================================================================
+
+/**
+ * Fetch all hubspot_crm companies with contact, context notes, and latest draft.
+ * @returns {Promise<object>} - CrmCompanyListResponse
+ */
+export async function fetchCrmCompanies() {
+  return fetchAPI('/companies/crm');
+}
+
+/**
+ * Save and LLM-format personal meeting context notes for a CRM company.
+ * @param {string} companyId - Company UUID
+ * @param {string} notesRaw - Free-text meeting notes
+ * @param {string} createdBy - Username
+ * @returns {Promise<object>} - { notes_raw, notes_formatted, updated_at, formatter_used }
+ */
+export async function saveCompanyContext(companyId, notesRaw, createdBy = 'user') {
+  return fetchAPI(`/companies/${companyId}/context`, {
+    method: 'POST',
+    body: JSON.stringify({ notes_raw: notesRaw, created_by: createdBy }),
+    timeout: 60000,  // LLM formatter can take a moment
+  });
+}
+
+/**
+ * Generate a CRM email draft using stored context notes.
+ * Runs Writer → extended Critic loop (context_accuracy criterion).
+ * Draft saved as pre-approved.
+ * @param {string} companyId - Company UUID
+ * @param {string} createdBy - Username
+ * @returns {Promise<object>} - EmailDraftResponse
+ */
+export async function generateCrmEmail(companyId, createdBy = 'user', userFeedback = null) {
+  const payload = { company_id: companyId, created_by: createdBy };
+  if (userFeedback && userFeedback.trim()) payload.user_feedback = userFeedback.trim();
+  return fetchAPI('/emails/crm-generate', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+    timeout: 90000,  // 1 LLM call only — no critic loop
+  });
+}
+
+// ============================================================================
 // HEALTH CHECK FUNCTION
 // ============================================================================
 

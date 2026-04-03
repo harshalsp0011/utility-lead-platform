@@ -21,7 +21,8 @@ def get_llm() -> Any:
             from importlib import import_module
             chat_ollama = import_module("langchain_ollama").ChatOllama
 
-            return chat_ollama(model=settings.LLM_MODEL, base_url=settings.OLLAMA_BASE_URL)
+            # num_predict caps token output — critic returns small JSON (~200 tokens)
+            return chat_ollama(model=settings.LLM_MODEL, base_url=settings.OLLAMA_BASE_URL, num_predict=300)
 
     if provider == "openai":
         if not settings.OPENAI_API_KEY:

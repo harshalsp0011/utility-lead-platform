@@ -13,8 +13,15 @@ logger = logging.getLogger(__name__)
 _VALID_PROVIDERS = {"ollama", "openai"}
 
 
-def call_ollama(prompt: str) -> str:
-    """Send a prompt to Ollama chat API and return response text."""
+def call_ollama(prompt: str, max_tokens: int = 700) -> str:
+    """Send a prompt to Ollama chat API and return response text.
+
+    Args:
+        prompt:     The user prompt to send.
+        max_tokens: Cap on tokens generated (num_predict). Keeps latency predictable.
+                    Default 700 covers a full email + reasoning. Pass lower values
+                    for short responses (e.g. critic JSON: 300, formatter: 400).
+    """
     settings = get_settings()
 
     try:
@@ -27,6 +34,7 @@ def call_ollama(prompt: str) -> str:
         response = client.chat(
             model=settings.LLM_MODEL,
             messages=[{"role": "user", "content": prompt}],
+            options={"num_predict": max_tokens},
         )
     except Exception as exc:
         raise RuntimeError(

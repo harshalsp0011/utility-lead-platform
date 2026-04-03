@@ -43,6 +43,7 @@ from database.orm_models import AgentRun, Company, CompanyFeature, EmailDraft, E
 logger = logging.getLogger(__name__)
 
 _MAX_REWRITES = 2
+_MAX_REWRITES_CRM = 1   # CRM leads are pre-qualified — 1 rewrite is enough; saves 2 LLM calls
 _PASS_THRESHOLD = 7.0
 
 # Minimum emails sent before win rate data is trusted
@@ -134,11 +135,21 @@ def format_savings(amount: float) -> str:
 # LLM writer calls
 # ---------------------------------------------------------------------------
 
-def _call_llm(prompt: str) -> str:
+def _sender_fields() -> dict[str, str]:
+    """Return sender signature fields from settings for prompt injection."""
+    s = get_settings()
+    return {
+        "sender_name":    _str(getattr(s, "TB_SENDER_NAME", "")) or "Kevin Gibs",
+        "sender_title":   _str(getattr(s, "TB_SENDER_TITLE", "")) or "Sr. Vice President",
+        "sender_website": _str(getattr(s, "TB_WEBSITE", "")) or "https://troybanks.com/",
+    }
+
+
+def _call_llm(prompt: str, max_tokens: int = 700) -> str:
     provider = llm_connector.select_provider()
     if provider == "openai":
         return llm_connector.call_openai(prompt)
-    return llm_connector.call_ollama(prompt)
+    return llm_connector.call_ollama(prompt, max_tokens=max_tokens)
 
 
 _WRITER_PROMPT = """You are writing a cold outreach email on behalf of a utility cost consulting firm.
@@ -176,7 +187,14 @@ Then write the email. Requirements:
 - Opening: reference something specific about them (expansion, industry, location)
 - Body: mention the savings estimate (use the mid figure)
 - CTA: one clear ask — free audit, 15-min call, or reply to schedule
-- Sign-off: professional, from the consulting firm
+- Sign-off: end EXACTLY with this block, no variations:
+
+Best regards,
+{sender_name}
+{sender_title}
+Troy & Banks Inc.
+{sender_website}
+
 - Length: 100–160 words for the body (not too long, not too short)
 - Tone: warm, direct, human — not template-like or salesy
 
@@ -195,12 +213,19 @@ Subject: {subject}
 
 {body}
 
-== CRITIC FEEDBACK ==
-Score: {score}/10
-Issue: {feedback}
+== FEEDBACK ==
+{feedback}
 
 == TASK ==
-Rewrite the email to fix the issue above. Keep everything that was good.
+Rewrite the email to address the feedback above. Keep everything that was good.
+The sign-off must end EXACTLY with:
+
+Best regards,
+{sender_name}
+{sender_title}
+Troy & Banks Inc.
+{sender_website}
+
 Same format — return:
 SUBJECT: <subject line>
 BODY:
@@ -210,12 +235,13 @@ BODY:
 def _write_draft(context: dict[str, Any]) -> tuple[str, str, str]:
     """Call Writer LLM. Returns (subject, body, angle)."""
     prompt = _WRITER_PROMPT.format(**context)
-    raw = _call_llm(prompt)
+    # 650 tokens: ~50 reasoning + ~15 angle + ~585 subject+body (160 word email ≈ 220 tokens)
+    raw = _call_llm(prompt, max_tokens=650)
     return _parse_writer_output(raw)
 
 
 def _rewrite_draft(subject: str, body: str, score: float, feedback: str, angle: str) -> tuple[str, str, str]:
-    """Ask Writer to rewrite given Critic feedback. Returns (subject, body, angle).
+    """Ask Writer to rewrite given Critic/human feedback. Returns (subject, body, angle).
 
     Angle is preserved from the original draft — rewrites fix tone/content,
     not the overall approach.
@@ -225,8 +251,10 @@ def _rewrite_draft(subject: str, body: str, score: float, feedback: str, angle: 
         body=body,
         score=score,
         feedback=feedback,
+        **_sender_fields(),
     )
-    raw = _call_llm(prompt)
+    # Rewrite only needs subject + body — no reasoning block, so 450 tokens is enough
+    raw = _call_llm(prompt, max_tokens=450)
     new_subject, new_body, new_angle = _parse_writer_output(raw)
     # Keep original angle through rewrites; only adopt if LLM explicitly changed it
     return new_subject, new_body, new_angle if new_angle in _VALID_ANGLES else angle
@@ -476,6 +504,7 @@ def process_one_company(
         "contact_name":   contact_name,
         "contact_title":  contact_title,
         "angle_hint":     angle_hint,
+        **_sender_fields(),
     }
 
     # Critic context (same data, formatted for critic prompt)
@@ -580,11 +609,45 @@ def _save_draft(
     rewrite_count: int,
     db_session: Session,
 ) -> str:
+    """Upsert an email draft — one draft per company/contact pair.
+
+    If a draft already exists for this company_id + contact_id, it is updated
+    in place (regenerate behaviour). A new row is only created when none exists.
+
+    Follow-up drafts (Day 3/7/14) are separate outreach_events and are not
+    affected by this upsert — they are never the 'main' draft for a contact.
+    """
+    cid = _parse_uuid(company_id, "company_id")
+    coid = _parse_uuid(contact_id, "contact_id") if contact_id else None
+
+    # Check for existing draft for this company + contact
+    existing = db_session.execute(
+        select(EmailDraft).where(
+            EmailDraft.company_id == cid,
+            EmailDraft.contact_id == coid,
+        ).limit(1)
+    ).scalar_one_or_none()
+
+    if existing:
+        # Update in place — preserve id, created_at, approved_human state
+        existing.subject_line   = subject
+        existing.body           = body
+        existing.savings_estimate = savings_estimate
+        existing.template_used  = template_used
+        existing.critic_score   = critic_score
+        existing.low_confidence = low_confidence
+        existing.rewrite_count  = rewrite_count
+        existing.edited_human   = False
+        db_session.flush()
+        logger.info("[writer] Updated existing draft %s for company_id=%s", existing.id, company_id)
+        return str(existing.id)
+
+    # No existing draft — create new
     draft_id = uuid.uuid4()
     draft = EmailDraft(
         id=draft_id,
-        company_id=_parse_uuid(company_id, "company_id"),
-        contact_id=_parse_uuid(contact_id, "contact_id") if contact_id else None,
+        company_id=cid,
+        contact_id=coid,
         subject_line=subject,
         body=body,
         savings_estimate=savings_estimate,
@@ -597,7 +660,285 @@ def _save_draft(
     )
     db_session.add(draft)
     db_session.flush()
+    logger.info("[writer] Created new draft %s for company_id=%s", draft_id, company_id)
     return str(draft.id)
+
+
+# ---------------------------------------------------------------------------
+# CRM writer path
+# ---------------------------------------------------------------------------
+
+# Industry name → benchmark bucket mapping (case-insensitive prefix match)
+_INDUSTRY_BUCKET_MAP = {
+    "health": "healthcare",
+    "hospital": "healthcare",
+    "clinic": "healthcare",
+    "hotel": "hospitality",
+    "hospitality": "hospitality",
+    "restaurant": "hospitality",
+    "manufactur": "manufacturing",
+    "factory": "manufacturing",
+    "retail": "retail",
+    "store": "retail",
+    "shop": "retail",
+    "government": "public_sector",
+    "public": "public_sector",
+    "municipal": "public_sector",
+    "school": "education",
+    "education": "education",
+    "university": "education",
+    "college": "education",
+    "tech": "technology",
+    "software": "technology",
+    "finance": "finance",
+    "bank": "finance",
+    "insurance": "finance",
+    "logistics": "logistics",
+    "warehouse": "logistics",
+    "transport": "logistics",
+    "office": "office",
+    "consulting": "office",
+}
+
+
+def _resolve_benchmark_bucket(industry: str) -> str:
+    """Map a free-text industry string to a benchmark bucket name."""
+    lower = industry.lower().strip()
+    for key, bucket in _INDUSTRY_BUCKET_MAP.items():
+        if key in lower:
+            return bucket
+    return "default"
+
+
+def _savings_from_benchmarks(industry: str, state: str, site_count: int, employee_count: int) -> tuple[float, float, float]:
+    """Estimate savings low/mid/high from industry benchmarks when company_features is absent.
+
+    Agentic concept: Graceful Degradation — falls back to industry averages rather than
+    failing or producing a generic draft with no savings figure.
+
+    Returns: (savings_low, savings_mid, savings_high)
+    """
+    import json as _json
+    import os
+
+    benchmarks_path = os.path.join(
+        os.path.dirname(__file__), "..", "..", "database", "seed_data", "industry_benchmarks.json"
+    )
+    try:
+        with open(benchmarks_path) as f:
+            data = _json.load(f)
+    except Exception:
+        logger.warning("[crm_writer] Could not load industry_benchmarks.json — using zero savings")
+        return 0.0, 0.0, 0.0
+
+    bucket = _resolve_benchmark_bucket(industry)
+    benchmarks = {b["industry_bucket"]: b for b in data.get("industry_benchmarks", [])}
+    bench = benchmarks.get(bucket) or benchmarks.get("default") or {}
+
+    rates = data.get("electricity_rate_by_state", {})
+    rate = rates.get(state.upper(), rates.get("default", 0.12))
+
+    sqft_per_site = float(bench.get("avg_sqft_per_site", 60000))
+    kwh_per_sqft = float(bench.get("kwh_per_sqft_per_year", 18))
+    telecom_per_emp = float(bench.get("telecom_per_employee", 1000))
+
+    sites = max(site_count, 1)
+    emps = max(employee_count, 1)
+
+    annual_utility = sqft_per_site * sites * kwh_per_sqft * rate
+    annual_telecom = telecom_per_emp * emps
+    total_spend = annual_utility + annual_telecom
+
+    savings_low = total_spend * 0.10
+    savings_mid = total_spend * 0.135
+    savings_high = total_spend * 0.17
+
+    logger.info(
+        "[crm_writer] Benchmark savings for industry=%s state=%s sites=%d: low=%.0f mid=%.0f high=%.0f",
+        industry, state, sites, savings_low, savings_mid, savings_high,
+    )
+    return savings_low, savings_mid, savings_high
+
+
+def process_crm_company(
+    company_id: str,
+    db_session: Session,
+    on_progress: Any | None = None,
+    user_feedback: str | None = None,
+) -> str | None:
+    """Generate (or rewrite) one email draft for a CRM-sourced company.
+
+    Agentic concepts:
+      Context-Aware Generation  — uses formatted meeting notes as score_reason substitute.
+      Human-in-the-Loop Critic  — no automatic critic loop; the human IS the critic.
+                                  On regenerate, the user's feedback is the rewrite instruction.
+
+    Key differences from process_one_company():
+      - No critic loop — 1 LLM call for fresh, 1 LLM call for rewrite (fast).
+      - Does NOT require company_features or lead_scores rows.
+      - Does NOT use benchmark savings — savings omitted intentionally.
+        CRM leads are personal relationships; a fabricated savings figure damages credibility.
+      - Reads context from company_context_notes (formatted bullet points).
+      - Saves draft with approved_human = True (CRM leads are pre-qualified).
+
+    Args:
+      user_feedback: When set (non-empty), rewrites the existing draft using this text as
+                     the rewrite instruction. When None/empty, writes a fresh draft.
+
+    Returns draft UUID string, or None if company not found.
+    """
+    from database.orm_models import CompanyContextNote  # noqa: PLC0415
+    from sqlalchemy import select as _select  # noqa: PLC0415
+
+    def _emit(step: str, **kw: Any) -> None:
+        if on_progress:
+            on_progress(step, **kw)
+
+    cid = _parse_uuid(company_id, "company_id")
+    company = db_session.get(Company, cid)
+    if not company:
+        logger.warning("[crm_writer] Company %s not found — skipping", company_id)
+        return None
+
+    # --- Load context notes ---
+    context_row = db_session.execute(
+        _select(CompanyContextNote).where(CompanyContextNote.company_id == cid)
+    ).scalar_one_or_none()
+
+    notes_formatted = ""
+    if context_row:
+        notes_formatted = str(context_row.notes_formatted or context_row.notes_raw or "").strip()
+
+    if not notes_formatted:
+        logger.info("[crm_writer] No context notes for %s — writing without meeting context", company_id)
+
+    # --- Load contact ---
+    contact = enrichment_client.get_priority_contact(company_id=company_id, db_session=db_session)
+    contact_id: str | None = None
+    contact_name = "there"
+    contact_title = ""
+
+    if contact:
+        contact_id = str(_read(contact, "id") or "")
+        full_name = _str(_read(contact, "full_name"))
+        contact_name = full_name.split()[0] if full_name else "there"
+        contact_title = _str(_read(contact, "title"))
+
+    industry = _str(_read(company, "industry"))
+    state = _str(_read(company, "state"))
+    site_count = _int(_read(company, "site_count")) or 1
+
+    # --- Win-rate hint ---
+    best_angle = get_best_angle(industry, db_session)
+    angle_hint = (
+        f"== WIN RATE HINT ==\n"
+        f"For {industry}, the angle '{best_angle}' has the highest reply rate "
+        f"based on past emails. Prefer this angle unless the company signals strongly suggest otherwise.\n\n"
+    ) if best_angle else ""
+
+    # --- Build writer context ---
+    # Savings intentionally omitted for CRM path — benchmark numbers are not verified
+    # and could damage credibility with someone you've already met in person.
+    # The personal context is the hook; a free audit / next meeting is the CTA.
+    score_reason = notes_formatted if notes_formatted else "CRM contact — met in person, qualified lead."
+
+    writer_context = {
+        "company_name":  _str(_read(company, "name")),
+        "industry":      industry,
+        "city":          _str(_read(company, "city")),
+        "state":         state,
+        "site_count":    site_count,
+        "savings_low":   "to be assessed",
+        "savings_mid":   "to be assessed in free audit",
+        "savings_high":  "to be assessed",
+        "deregulated":   "no",
+        "score_reason":  score_reason,
+        "contact_name":  contact_name,
+        "contact_title": contact_title,
+        "angle_hint":    angle_hint,
+        **_sender_fields(),
+    }
+
+    critic_context = {
+        "company_name":  writer_context["company_name"],
+        "industry":      writer_context["industry"],
+        "city":          writer_context["city"],
+        "state":         writer_context["state"],
+        "site_count":    str(site_count),
+        "savings_mid":   "to be assessed in free audit",
+        "score_reason":  score_reason,
+        "contact_name":  contact_name,
+        "contact_title": contact_title,
+    }
+
+    # --- Write or rewrite (no critic loop — human is the critic) ---
+    rewrite_count = 0
+
+    if user_feedback and user_feedback.strip():
+        # Rewrite existing draft using the human's specific feedback as the instruction.
+        # Agentic concept: Human-in-the-Loop — user replaces the automated critic.
+        _emit("↩️ Rewriting", done=False, rewrites=1, low_confidence=False)
+        existing = db_session.execute(
+            select(EmailDraft).where(EmailDraft.company_id == cid).limit(1)
+        ).scalar_one_or_none()
+
+        if existing:
+            existing_angle = _str(existing.template_used) or "audit_offer"
+            subject, body, angle = _rewrite_draft(
+                subject=_str(existing.subject_line),
+                body=_str(existing.body),
+                score=0,
+                feedback=user_feedback.strip(),
+                angle=existing_angle,
+            )
+            rewrite_count = (existing.rewrite_count or 0) + 1
+            logger.info("[crm_writer] Rewriting draft for %s with user feedback", writer_context["company_name"])
+        else:
+            # No existing draft to rewrite from — write fresh instead
+            _emit("✍️ Writing", done=False, rewrites=0, low_confidence=False)
+            subject, body, angle = _write_draft(writer_context)
+            logger.info("[crm_writer] No existing draft to rewrite — writing fresh for %s", writer_context["company_name"])
+    else:
+        # Fresh generation
+        _emit("✍️ Writing", done=False, rewrites=0, low_confidence=False)
+        subject, body, angle = _write_draft(writer_context)
+        logger.info("[crm_writer] Fresh draft for %s — angle=%s", writer_context["company_name"], angle)
+
+    low_confidence = False
+
+    draft_id = _save_draft(
+        company_id=company_id,
+        contact_id=contact_id,
+        subject=subject,
+        body=body,
+        savings_estimate="",  # CRM path — no benchmark savings, to be assessed in audit
+        template_used=angle,
+        critic_score=None,    # No critic in CRM path — human reviews directly
+        low_confidence=False,
+        rewrite_count=rewrite_count,
+        db_session=db_session,
+    )
+
+    # CRM leads are pre-approved — mark immediately
+    draft_obj = db_session.get(EmailDraft, _parse_uuid(draft_id))
+    if draft_obj:
+        draft_obj.approved_human = True
+
+    if company is not None:
+        company.status = "draft_created"
+        company.updated_at = datetime.now(timezone.utc)
+
+    db_session.commit()
+
+    _emit(
+        "✅ Done",
+        done=True, rewrites=rewrite_count, low_confidence=low_confidence,
+    )
+    logger.info(
+        "[crm_writer] Draft saved for %s — id=%s rewrites=%d approved=True",
+        writer_context["company_name"], draft_id, rewrite_count,
+    )
+    return draft_id
 
 
 # keep backward-compat aliases used by older callers
